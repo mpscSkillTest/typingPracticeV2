@@ -58,3 +58,13 @@
     @apply bg-background text-foreground;
   }
 }
+
+body {
+  height: 100dvh;
+  width: 100dvw;
+}
+
+#root {
+  height: 100%;
+  width: 100%;
+}
