@@ -1,16 +1,30 @@
 import { Router } from "express";
 import {
-  registerUser,
-  loginUser,
-  forgotPassword,
-  verifyUser,
-} from "../controllers/authorization.js";
+  loginStudent,
+  forgotStudentPassword,
+  registerStudent,
+} from "../controllers/index.js";
+import {
+  userLoginSchema,
+  userRegistrationSchema,
+  forgotPasswordSchema,
+} from "../schema/user.schema.js";
+import { validateData } from "../middlewares/validationMiddleWare.js";
 
 const AuthorizationRouter = Router();
 
-AuthorizationRouter.route("/verify").post(verifyUser);
-AuthorizationRouter.route("/register").post(registerUser);
-AuthorizationRouter.route("/login").post(loginUser);
-AuthorizationRouter.route("/forgotPassword").post(forgotPassword);
+AuthorizationRouter.post(
+  "/register",
+  validateData(userRegistrationSchema),
+  registerStudent
+);
+
+AuthorizationRouter.post("/login", validateData(userLoginSchema), loginStudent);
+
+AuthorizationRouter.post(
+  "/forgotPassword",
+  validateData(forgotPasswordSchema),
+  forgotStudentPassword
+);
 
 export default AuthorizationRouter;

@@ -1,7 +1,12 @@
 "use client";
+import { useState, useRef } from "react";
 import type { HTMLInputTypeAttribute } from "react";
+import { useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import type { UseFormReturn } from "react-hook-form";
+import axios from "axios";
 import { Button } from "@/components/ui/button";
-import { TypographyH3 } from "@/components/ui/typography";
+import { Card, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Form,
   FormField,
@@ -20,17 +25,29 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
 import type { UserRegistrationSchema } from "./RegistrationSchema";
 import userRegistrationSchema from "./RegistrationSchema";
 import classes from "./registration.module.scss";
 
 function Registration() {
+  const [loader, setLoader] = useState<boolean>(false);
+  const isUserCreated = useRef<boolean>(false);
+
+  const navigate = useNavigate();
+
   const registrationForm = useForm<UserRegistrationSchema>({
     resolver: zodResolver(userRegistrationSchema),
     defaultValues: {
-      userName: "",
+      userName: "Test",
+      contactNumber: 1234567890,
+      emailId: "smarttypehub@gmail.com",
+      city: "test",
+      password: "1234567",
       gender: "male",
+      selectedCourses: {
+        english: "3",
+        marathi: "6",
+      },
     },
     mode: "onBlur",
   });
@@ -39,12 +56,26 @@ function Registration() {
     formState: { isDirty, isValid },
   } = registrationForm;
 
-  const onSubmitRegistration = (userInputs: UserRegistrationSchema) => {
-    console.log({ userInputs });
+  const onSubmitUserData = async (userInput: UserRegistrationSchema) => {
+    try {
+      setLoader(true);
+      const response = await axios.post(
+        "http://localhost:5000/api/authorize/register/",
+        userInput
+      );
+      setLoader(false);
+      console.log({ userData: response.data });
+      if (response.data.user) {
+        isUserCreated.current = true;
+      }
+    } catch (error) {
+      setLoader(false);
+      console.error(error);
+    }
   };
 
   const shouldDisableSubmit = () => {
-    return !isDirty || !isValid;
+    return !isDirty || !isValid || isUserCreated.current;
   };
 
   const getTextFormField = (
@@ -147,13 +178,19 @@ function Registration() {
     );
   };
 
+  const redirectToLogin = () => {
+    navigate("/login");
+  };
+
   return (
-    <div className="w-full h-full bg-white flex flex-col items-center justify-center">
-      <TypographyH3 text="Student Registration" />
+    <Card className="w-full h-full bg-white flex flex-col items-center justify-center">
+      <CardHeader className="space-y-0 p-[10px]">
+        <CardTitle>Student Registration</CardTitle>
+      </CardHeader>
       <Form {...registrationForm}>
         <form
-          onSubmit={registrationForm.handleSubmit(onSubmitRegistration)}
-          className={`min-w-[300px] m-[10px] box-content p-[20px] overflow-y-auto ${classes.formBackground}`}
+          onSubmit={registrationForm.handleSubmit(onSubmitUserData)}
+          className={`min-w-[300px] px-[10px] m-0 box-content overflow-y-auto ${classes.formBackground}`}
         >
           {getTextFormField("userName", "User Name", "text")}
           {getTextFormField("contactNumber", "Contact Number", "number")}
@@ -163,7 +200,11 @@ function Registration() {
           {getCoursesField("selectedCourses.english", "English")}
           {getCoursesField("selectedCourses.marathi", "Marathi")}
           {getTextFormField("password", "Password", "password")}
+          {isUserCreated.current ? (
+            <div>Please Confirm Email Address</div>
+          ) : null}
           <Button
+            showLoader={loader}
             disabled={shouldDisableSubmit()}
             style={{ marginTop: "10px", marginBottom: "10px" }}
             className="w-full"
@@ -173,7 +214,17 @@ function Registration() {
           </Button>
         </form>
       </Form>
-    </div>
+      <CardFooter>
+        If already have an account?
+        <Button
+          onClick={redirectToLogin}
+          className="pl-[5px] relative bottom-[1px]"
+          variant="link"
+        >
+          Sign In
+        </Button>
+      </CardFooter>
+    </Card>
   );
 }
 
