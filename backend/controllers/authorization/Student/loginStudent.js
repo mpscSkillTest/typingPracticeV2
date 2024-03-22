@@ -11,8 +11,10 @@ export const loginStudent = async (req, res) => {
       password: password,
     });
     console.log({ user, session });
-    if (user && session) {
-      res.status(200).send({ user, accessToken: session });
+    if (user.user_metadata && session.access_token) {
+      res
+        .status(200)
+        .send({ user: user.user_metadata, accessToken: session.access_token });
     }
     throw new Error(error);
   } catch (error) {

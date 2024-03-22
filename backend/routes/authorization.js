@@ -3,6 +3,7 @@ import {
   loginStudent,
   forgotStudentPassword,
   registerStudent,
+  verifyStudent,
 } from "../controllers/index.js";
 import {
   userLoginSchema,
@@ -26,5 +27,7 @@ AuthorizationRouter.post(
   validateData(forgotPasswordSchema),
   forgotStudentPassword
 );
+
+AuthorizationRouter.post("/verify", verifyStudent);
 
 export default AuthorizationRouter;

@@ -1,12 +1,7 @@
 "use client";
 import { useState } from "react";
-import type {
-  BaseSyntheticEvent,
-  HTMLInputTypeAttribute,
-  SyntheticEvent,
-} from "react";
+import type { BaseSyntheticEvent, HTMLInputTypeAttribute } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { Card, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -19,12 +14,17 @@ import {
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { AUTH_TOKEN_KEY } from "../../../utils/constant";
 import type { UserLoginSchema } from "./LoginSchema";
+import axios from "../../../config/customAxios";
 import userLoginSchema from "./LoginSchema";
+import useCookie from "../../../utils/hooks/useCookie";
 import classes from "./login.module.scss";
 
 function Login() {
   const [loader, setLoader] = useState<boolean>(false);
+  const [accessToken, setAccessToken] = useCookie(AUTH_TOKEN_KEY);
+
   const navigate = useNavigate();
 
   const registrationForm = useForm<UserLoginSchema>({
@@ -44,12 +44,19 @@ function Login() {
   const onLoginUser = async (userInput: UserLoginSchema) => {
     try {
       setLoader(true);
-      const response = await axios.post(
-        "http://localhost:5000/api/authorize/login/",
-        userInput
-      );
+      const response = await axios.post("/authorize/login/", userInput);
       setLoader(false);
-      console.log(response.data);
+      const { data } = response || {};
+      console.log({ data, response });
+      if (
+        data &&
+        data.user &&
+        typeof data.accessToken === "string" &&
+        typeof setAccessToken === "function"
+      ) {
+        setAccessToken(data.accessToken);
+        navigate("/student/122/dashboard");
+      }
     } catch (error) {
       setLoader(false);
       console.error(error);
@@ -59,10 +66,9 @@ function Login() {
   const handleForgotPassword = async (event: BaseSyntheticEvent) => {
     event.preventDefault();
     try {
-      const response = await axios.post(
-        "http://localhost:5000/api/authorize/forgotPassword/",
-        { email: getFormFieldValues("emailId") }
-      );
+      const response = await axios.post("/authorize/forgotPassword/", {
+        email: getFormFieldValues("emailId"),
+      });
       console.log(response.data);
     } catch (error) {
       console.error(error);
@@ -70,7 +76,7 @@ function Login() {
   };
 
   const shouldDisableSubmit = () => {
-    return !isValid;
+    return !isDirty && !isValid;
   };
 
   const redirectToSignup = () => {

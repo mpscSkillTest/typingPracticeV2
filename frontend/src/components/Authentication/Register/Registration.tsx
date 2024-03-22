@@ -3,8 +3,6 @@ import { useState, useRef } from "react";
 import type { HTMLInputTypeAttribute } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import type { UseFormReturn } from "react-hook-form";
-import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { Card, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -25,6 +23,7 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
+import axios from "../../../config/customAxios";
 import type { UserRegistrationSchema } from "./RegistrationSchema";
 import userRegistrationSchema from "./RegistrationSchema";
 import classes from "./registration.module.scss";
@@ -59,10 +58,7 @@ function Registration() {
   const onSubmitUserData = async (userInput: UserRegistrationSchema) => {
     try {
       setLoader(true);
-      const response = await axios.post(
-        "http://localhost:5000/api/authorize/register/",
-        userInput
-      );
+      const response = await axios.post("/authorize/register/", userInput);
       setLoader(false);
       console.log({ userData: response.data });
       if (response.data.user) {
