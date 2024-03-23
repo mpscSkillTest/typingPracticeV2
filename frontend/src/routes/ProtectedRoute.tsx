@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { ReactElement } from "react";
 import { Navigate } from "react-router-dom";
 import { AUTH_TOKEN_KEY, SUPABASE_AUTH_URL_KEY } from "../utils/constant";
@@ -13,17 +13,32 @@ type ProtectedRouteProps = {
 const ProtectedRoute = (props: ProtectedRouteProps) => {
   const { children } = props;
   const hashParams = useHashParams();
+  const [showLoader, setShowLoader] = useState<boolean>(true);
+  const [isValidUser, setIsValidUser] = useState<boolean>(false);
   const accessTokenFromURL = hashParams[SUPABASE_AUTH_URL_KEY] || "";
-  const [accessToken, setAccessToken] = useCookie(AUTH_TOKEN_KEY);
+  const { cookie: accessToken, setCookieValue: setAccessToken } =
+    useCookie(AUTH_TOKEN_KEY);
   const hasAccessTokenVerified = useRef<boolean>(false);
 
   const verifyUser = async () => {
     try {
       const response = await axios.post("/authorize/verify/");
-      console.log("verify user", response.data);
+      const { data } = response || {};
+      const { user, error } = data || {};
+      if (user) {
+        setIsValidUser(true);
+      } else if (error) {
+        throw new Error(error);
+      }
     } catch (error) {
       console.error(error);
+      setIsValidUser(false);
     }
+  };
+
+  const waitForVerification = async () => {
+    await verifyUser();
+    setShowLoader(false);
   };
 
   useEffect(() => {
@@ -34,19 +49,17 @@ const ProtectedRoute = (props: ProtectedRouteProps) => {
   }, []);
 
   useEffect(() => {
-    if (
-      !hasAccessTokenVerified.current &&
-      typeof accessToken === "string" &&
-      accessToken !== ""
-    ) {
+    if (!hasAccessTokenVerified.current && typeof accessToken === "string") {
       hasAccessTokenVerified.current = true;
-      verifyUser();
+      waitForVerification();
     }
   }, [accessToken]);
 
-  return children;
+  if (showLoader) {
+    return <div>Loader</div>;
+  }
 
-  return !accessToken ? children : <Navigate to={"/login"} replace />;
+  return isValidUser ? children : <Navigate to={"/login"} replace />;
 };
 
 export default ProtectedRoute;

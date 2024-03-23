@@ -1,22 +1,18 @@
 import { supabase } from "../../../dbClient.js";
 
 export const verifyStudent = async (req, res) => {
-  if (!req.headers.authorization) {
-    res.status(401).send({ message: "Authorization token missing" });
+  let accessToken = req.headers.authorization;
+  if (!accessToken) {
+    res.status(401).send({ user: null, error: "Authorization token missing" });
+    return;
   }
-  let accessToken = `${req.headers.authorization}`;
   accessToken = accessToken.split("Bearer ").pop();
+  const { data } = await supabase.auth.getUser(accessToken);
+  const { user } = data || {};
 
-  try {
-    const response = await supabase.auth.getUser(accessToken);
-    console.log({ response });
-    if (response.data.user) {
-      console.log({ user: response.data.user });
-      res.status(200).send({ user: response.data.user.user_metadata });
-    }
-    throw new Error(error);
-  } catch (error) {
-    console.log(error);
-    res.status(401).send({ error: "Session Expired" });
+  if (user) {
+    res.status(200).send({ user: data.user.user_metadata, error: null });
+  } else {
+    res.status(401).send({ user: null, error: "Session Expired" });
   }
 };

@@ -24,7 +24,11 @@ function useCookie(cookieName: string) {
     setCookie("");
   };
 
-  return [cookie, setCookieValue, removeCookie];
+  return {
+    cookie,
+    setCookieValue,
+    removeCookie,
+  };
 }
 
 export default useCookie;

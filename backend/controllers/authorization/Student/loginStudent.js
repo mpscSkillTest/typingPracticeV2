@@ -2,23 +2,26 @@ import { supabase } from "../../../dbClient.js";
 
 export const loginStudent = async (req, res) => {
   const { emailId, password } = req.body || {};
-  try {
-    const {
-      data: { user, session },
-      error,
-    } = await supabase.auth.signInWithPassword({
-      email: emailId,
-      password: password,
+  const {
+    data: { user, session },
+  } = await supabase.auth.signInWithPassword({
+    email: emailId,
+    password: password,
+  });
+  if (user.user_metadata && session.access_token) {
+    res
+      .status(200)
+      .send({
+        user: user.user_metadata,
+        accessToken: session.access_token,
+        error: null,
+      });
+  } else {
+    res.status(401).send({
+      user: null,
+      accessToken: null,
+      error: "Invalid user name & password",
     });
-    console.log({ user, session });
-    if (user.user_metadata && session.access_token) {
-      res
-        .status(200)
-        .send({ user: user.user_metadata, accessToken: session.access_token });
-    }
-    throw new Error(error);
-  } catch (error) {
-    res.status(401).send({ error: "Invalid user name & password" });
   }
 };
 

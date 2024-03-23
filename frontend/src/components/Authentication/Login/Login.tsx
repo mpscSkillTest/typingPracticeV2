@@ -23,7 +23,7 @@ import classes from "./login.module.scss";
 
 function Login() {
   const [loader, setLoader] = useState<boolean>(false);
-  const [accessToken, setAccessToken] = useCookie(AUTH_TOKEN_KEY);
+  const { setCookieValue: setAccessToken } = useCookie(AUTH_TOKEN_KEY);
 
   const navigate = useNavigate();
 
@@ -47,7 +47,6 @@ function Login() {
       const response = await axios.post("/authorize/login/", userInput);
       setLoader(false);
       const { data } = response || {};
-      console.log({ data, response });
       if (
         data &&
         data.user &&
@@ -66,10 +65,9 @@ function Login() {
   const handleForgotPassword = async (event: BaseSyntheticEvent) => {
     event.preventDefault();
     try {
-      const response = await axios.post("/authorize/forgotPassword/", {
+      await axios.post("/authorize/forgotPassword/", {
         email: getFormFieldValues("emailId"),
       });
-      console.log(response.data);
     } catch (error) {
       console.error(error);
     }

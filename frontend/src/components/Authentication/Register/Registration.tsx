@@ -60,7 +60,6 @@ function Registration() {
       setLoader(true);
       const response = await axios.post("/authorize/register/", userInput);
       setLoader(false);
-      console.log({ userData: response.data });
       if (response.data.user) {
         isUserCreated.current = true;
       }
