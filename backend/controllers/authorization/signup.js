@@ -1,6 +1,7 @@
-import { supabase } from "../../../dbClient.js";
+import { supabase } from "../../dbClient.js";
+import UserTypeEnum from "../../enums/UserTypeEnum.js";
 
-export const registerStudent = async (req, res) => {
+export const signup = async (req, res) => {
   const {
     emailId,
     password,
@@ -12,8 +13,6 @@ export const registerStudent = async (req, res) => {
   } = req.body || {};
 
   const { english, marathi } = selectedCourses || {};
-  const selectedEnglishCourse = Number(english) || null;
-  const selectedMarathiCourse = Number(marathi) || null;
 
   try {
     const { data, error } = await supabase.auth.signUp({
@@ -26,12 +25,15 @@ export const registerStudent = async (req, res) => {
           gender,
           name,
           contactNumber,
-          selectedEnglishCourse,
-          selectedMarathiCourse,
+          type: UserTypeEnum.STUDENT.name,
+          selectedCourses: {
+            english: Number(english) || null,
+            marathi: Number(marathi) || null,
+          },
         },
       },
     });
-    if (data.user) {
+    if (data?.user) {
       res.status(200).send({ user: data.user.id });
     } else {
       throw new Error(error);

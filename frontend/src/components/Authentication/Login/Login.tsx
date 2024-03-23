@@ -54,7 +54,7 @@ function Login() {
         typeof setAccessToken === "function"
       ) {
         setAccessToken(data.accessToken);
-        navigate("/student/122/dashboard");
+        navigate("/dashboard/");
       }
     } catch (error) {
       setLoader(false);
@@ -78,7 +78,7 @@ function Login() {
   };
 
   const redirectToSignup = () => {
-    navigate("/register");
+    navigate("/signup");
   };
 
   const getTextFormField = (

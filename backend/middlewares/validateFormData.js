@@ -1,7 +1,7 @@
 import { ZodError } from "zod";
 import { StatusCodes } from "http-status-codes";
 
-export function validateData(schema) {
+export function validateFormData(schema) {
   return (req, res, next) => {
     try {
       schema.parse(req.body);

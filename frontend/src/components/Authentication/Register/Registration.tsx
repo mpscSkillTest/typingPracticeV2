@@ -58,7 +58,7 @@ function Registration() {
   const onSubmitUserData = async (userInput: UserRegistrationSchema) => {
     try {
       setLoader(true);
-      const response = await axios.post("/authorize/register/", userInput);
+      const response = await axios.post("/authorize/signup/", userInput);
       setLoader(false);
       if (response.data.user) {
         isUserCreated.current = true;

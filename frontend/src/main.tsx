@@ -14,7 +14,12 @@ const getProtectedRoute = (component: ReactElement) => {
 const router = createBrowserRouter([
   {
     path: "/",
-    element: getProtectedRoute(<Dashboard type="student" />),
+    element: getProtectedRoute(<Dashboard />),
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: "/dashboard",
+    element: getProtectedRoute(<Dashboard />),
     errorElement: <ErrorPage />,
   },
   {
@@ -23,18 +28,8 @@ const router = createBrowserRouter([
     errorElement: <ErrorPage />,
   },
   {
-    path: "/register",
+    path: "/signup",
     element: <Authentication type="signup" />,
-    errorElement: <ErrorPage />,
-  },
-  {
-    path: "/student/:studentId/dashboard",
-    element: getProtectedRoute(<Dashboard type="student" />),
-    errorElement: <ErrorPage />,
-  },
-  {
-    path: "/institute/:instituteId/dashboard",
-    element: getProtectedRoute(<Dashboard type="institute" />),
     errorElement: <ErrorPage />,
   },
 ]);

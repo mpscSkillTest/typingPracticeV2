@@ -2,8 +2,9 @@ import express from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
 import { config } from "dotenv";
-import { USER_AUTHORIZATION_API } from "./constant.js";
+import { USER_AUTHORIZATION_API, STUDENT_DETAILS_API } from "./constant.js";
 import AuthorizationRouter from "./routes/authorization.js";
+import StudentRouter from "./routes/student.js";
 
 const app = express();
 
@@ -19,8 +20,10 @@ app.use(bodyParser.json());
 //support parsing of application/x-www-form-urlencoded post data
 app.use(bodyParser.urlencoded({ extended: true }));
 
-//middleware or to set router
+//middleware or to set router for user sign in and sign up flow
 app.use(USER_AUTHORIZATION_API, AuthorizationRouter);
+
+app.use(STUDENT_DETAILS_API, StudentRouter);
 
 //when undefined route is called by client then hit following error message
 app.all("*", (req, res, next) => {

@@ -1,36 +1,36 @@
 import { Router } from "express";
 import {
-  loginStudent,
-  forgotStudentPassword,
-  registerStudent,
-  verifyStudent,
-  logoutStudent,
+  login,
+  forgotPassword,
+  signup,
+  logout,
+  verify,
 } from "../controllers/index.js";
 import {
   userLoginSchema,
   userRegistrationSchema,
   forgotPasswordSchema,
 } from "../schema/user.schema.js";
-import { validateData } from "../middlewares/validationMiddleWare.js";
+import { validateFormData } from "../middlewares/index.js";
 
 const AuthorizationRouter = Router();
 
 AuthorizationRouter.post(
-  "/register",
-  validateData(userRegistrationSchema),
-  registerStudent
+  "/signup",
+  validateFormData(userRegistrationSchema),
+  signup
 );
 
-AuthorizationRouter.post("/login", validateData(userLoginSchema), loginStudent);
+AuthorizationRouter.post("/login", validateFormData(userLoginSchema), login);
 
 AuthorizationRouter.post(
   "/forgotPassword",
-  validateData(forgotPasswordSchema),
-  forgotStudentPassword
+  validateFormData(forgotPasswordSchema),
+  forgotPassword
 );
 
-AuthorizationRouter.post("/verify", verifyStudent);
+AuthorizationRouter.post("/verify", verify);
 
-AuthorizationRouter.post("/logout", logoutStudent);
+AuthorizationRouter.post("/logout", logout);
 
 export default AuthorizationRouter;
