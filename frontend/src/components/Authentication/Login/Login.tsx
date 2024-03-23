@@ -3,13 +3,14 @@ import { useState } from "react";
 import type { BaseSyntheticEvent, HTMLInputTypeAttribute } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import {
   Form,
   FormField,
   FormItem,
   FormControl,
   FormMessage,
+  FormLabel,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -19,7 +20,6 @@ import type { UserLoginSchema } from "./LoginSchema";
 import axios from "../../../config/customAxios";
 import userLoginSchema from "./LoginSchema";
 import useCookie from "../../../utils/hooks/useCookie";
-import classes from "./login.module.scss";
 
 function Login() {
   const [loader, setLoader] = useState<boolean>(false);
@@ -77,10 +77,6 @@ function Login() {
     return !isDirty && !isValid;
   };
 
-  const redirectToSignup = () => {
-    navigate("/signup");
-  };
-
   const getTextFormField = (
     fieldName: any,
     fieldLabel: string,
@@ -92,6 +88,7 @@ function Login() {
         name={fieldName}
         render={({ field }) => (
           <FormItem className="flex flex-col">
+            <FormLabel className="my-[5px]">{fieldLabel}</FormLabel>
             <FormControl>
               <Input
                 className="focus-visible:ring-offset-0"
@@ -118,38 +115,25 @@ function Login() {
   };
 
   return (
-    <Card className="w-full h-full bg-white flex flex-col items-center justify-center">
-      <CardHeader className="space-y-0 p-[10px]">
-        <CardTitle>Student Registration</CardTitle>
-      </CardHeader>
+    <Card className="rounded-md">
       <Form {...registrationForm}>
         <form
           onSubmit={registrationForm.handleSubmit(onLoginUser)}
-          className={`min-w-[300px] px-[10px] m-0 box-content overflow-y-auto ${classes.formBackground}`}
+          className="min-w-[300px] px-[10px] m-0 box-content overflow-y-auto"
         >
-          {getTextFormField("emailId", "Email Id", "text")}
+          {getTextFormField("emailId", "Email", "text")}
           {getTextFormField("password", "Password", "password")}
           <Button
             showLoader={loader}
             disabled={shouldDisableSubmit()}
-            style={{ marginTop: "10px", marginBottom: "10px" }}
+            style={{ marginBottom: "10px" }}
             className="w-full"
             type="submit"
           >
-            Log in
+            Sign in
           </Button>
         </form>
       </Form>
-      <CardFooter>
-        Don't have an account?
-        <Button
-          onClick={redirectToSignup}
-          className="pl-[5px] relative bottom-[1px]"
-          variant="link"
-        >
-          Sign up
-        </Button>
-      </CardFooter>
     </Card>
   );
 }

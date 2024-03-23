@@ -59,7 +59,7 @@ const ProtectedRoute = (props: ProtectedRouteProps) => {
     return <div>Loader</div>;
   }
 
-  return isValidUser ? children : <Navigate to={"/login"} replace />;
+  return isValidUser ? children : <Navigate to={"/signin"} replace />;
 };
 
 export default ProtectedRoute;

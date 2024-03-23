@@ -23,8 +23,8 @@ const router = createBrowserRouter([
     errorElement: <ErrorPage />,
   },
   {
-    path: "/login",
-    element: <Authentication type="login" />,
+    path: "/signin",
+    element: <Authentication type="signin" />,
     errorElement: <ErrorPage />,
   },
   {
