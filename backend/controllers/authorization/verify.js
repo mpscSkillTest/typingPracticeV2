@@ -1,18 +1,49 @@
+import { StatusCodes } from "http-status-codes";
 import { supabase } from "../../dbClient.js";
-import { getAccessTokenFromHeaders } from "../../utils/utils.js";
 
 export const verify = async (req, res) => {
-  const accessToken = getAccessTokenFromHeaders(req);
-  if (!accessToken) {
-    res.status(401).send({ user: null, error: "Authorization token missing" });
-    return;
-  }
-  const { data } = await supabase.auth.getUser(accessToken);
-  const { user } = data || {};
+  const { accessToken, type } = req.body || {};
 
-  if (user) {
-    res.status(200).send({ user: user?.user_metadata, error: null });
-  } else {
-    res.status(401).send({ user: null, error: "Session Expired" });
+  try {
+    if (!accessToken) {
+      throw new Error("Access token missing");
+    }
+
+    /**
+     * Handling for access token set in cookie of browser
+     */
+    const { data, error } = await supabase.auth.getUser(accessToken);
+    if (error) {
+      throw new Error("Access token expired. Please sign up again");
+    }
+
+    const { user } = data || {};
+    const { id } = user || {};
+
+    if (!id) {
+      throw new Error("No user found");
+    }
+
+    let responseData = {
+      isVerified: true,
+      error: null,
+    };
+
+    /**
+     * Handling confirmation link change to redirect user to dashboard
+     */
+    if (type === "signup") {
+      responseData = {
+        ...responseData,
+        token: accessToken,
+      };
+    }
+    res.status(StatusCodes.OK).send(responseData);
+  } catch (error) {
+    res.status(StatusCodes.BAD_REQUEST).send({
+      error: error?.message,
+      isVerified: false,
+      token: null,
+    });
   }
 };

@@ -2,6 +2,7 @@
 import { useState } from "react";
 import type { BaseSyntheticEvent, HTMLInputTypeAttribute } from "react";
 import { useNavigate } from "react-router-dom";
+import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
@@ -16,14 +17,16 @@ import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { AUTH_TOKEN_KEY } from "../../../utils/constant";
+import { getCookieHandlers } from "../../../utils/utils";
 import type { UserLoginSchema } from "./LoginSchema";
 import axios from "../../../config/customAxios";
 import userLoginSchema from "./LoginSchema";
-import useCookie from "../../../utils/hooks/useCookie";
 
 function Login() {
   const [loader, setLoader] = useState<boolean>(false);
-  const { setCookieValue: setAccessToken } = useCookie(AUTH_TOKEN_KEY);
+  const { toast } = useToast();
+  const { setCookieValue: setAccessToken } =
+    getCookieHandlers(AUTH_TOKEN_KEY)();
 
   const navigate = useNavigate();
 
@@ -48,17 +51,22 @@ function Login() {
       setLoader(false);
       const { data } = response || {};
       if (
-        data &&
-        data.user &&
-        typeof data.accessToken === "string" &&
+        data?.user &&
+        typeof data?.accessToken === "string" &&
         typeof setAccessToken === "function"
       ) {
         setAccessToken(data.accessToken);
         navigate("/dashboard/");
       }
-    } catch (error) {
+    } catch (error: unknown) {
+      const errorMessage = error?.response?.data?.error || "Something wrong";
       setLoader(false);
       console.error(error);
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong",
+        description: errorMessage,
+      });
     }
   };
 

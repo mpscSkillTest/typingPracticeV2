@@ -11,7 +11,6 @@ export function validateUser() {
           .send({ user: null, error: "User not found" });
         return;
       }
-      accessToken = accessToken.split("Bearer ").pop();
       const { data } = await supabase.auth.getUser(accessToken);
       const { user } = data || {};
       if (!user) {

@@ -1,7 +1,8 @@
 "use client";
-import { useState, useRef } from "react";
+import { useState } from "react";
 import type { HTMLInputTypeAttribute } from "react";
 import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
@@ -13,14 +14,14 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useToast } from "@/components/ui/use-toast";
 import axios from "../../../config/customAxios";
 import type { UserRegistrationSchema } from "./RegistrationSchema";
 import userRegistrationSchema from "./RegistrationSchema";
 
 function Registration() {
   const [loader, setLoader] = useState<boolean>(false);
-  const isUserCreated = useRef<boolean>(false);
+  const { toast } = useToast();
 
   const registrationForm = useForm<UserRegistrationSchema>({
     resolver: zodResolver(userRegistrationSchema),
@@ -43,16 +44,25 @@ function Registration() {
       const response = await axios.post("/authorize/signup/", userInput);
       setLoader(false);
       if (response.data.user) {
-        isUserCreated.current = true;
+        toast({
+          title: "Confirmation Mail Sent",
+          description: "Please verify your email address",
+        });
       }
     } catch (error) {
+      const errorMessage = error?.response?.data?.error || "Something broke";
       setLoader(false);
       console.error(error);
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong",
+        description: errorMessage,
+      });
     }
   };
 
   const shouldDisableSubmit = () => {
-    return !isDirty || !isValid || isUserCreated.current;
+    return !isDirty || !isValid;
   };
 
   const getTextFormField = (
@@ -94,9 +104,6 @@ function Registration() {
           {getTextFormField("contactNumber", "Contact Number", "text")}
           {getTextFormField("emailId", "Email", "text")}
           {getTextFormField("password", "Password", "password")}
-          {isUserCreated.current ? (
-            <div>Please Confirm Email Address</div>
-          ) : null}
           <Button
             showLoader={loader}
             disabled={shouldDisableSubmit()}

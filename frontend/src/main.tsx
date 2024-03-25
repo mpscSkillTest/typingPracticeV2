@@ -32,6 +32,11 @@ const router = createBrowserRouter([
     element: <Authentication type="signup" />,
     errorElement: <ErrorPage />,
   },
+  {
+    path: "/confirm-signup",
+    element: <Authentication type="confirm-signup" />,
+    errorElement: <ErrorPage />,
+  },
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")!).render(

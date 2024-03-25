@@ -1,5 +1,5 @@
 import axios from "axios";
-import { getCookie } from "../utils/hooks/useCookie";
+import { getCookie } from "../utils/utils";
 import { AUTH_TOKEN_KEY } from "../utils/constant";
 
 const BASE_URL = "http://localhost:5000/api";
@@ -16,7 +16,7 @@ instance.interceptors.request.use(
     const accessToken = getCookie(AUTH_TOKEN_KEY);
     // Add the access token to the request headers
     if (accessToken) {
-      config.headers.Authorization = `Bearer ${accessToken}`;
+      config.headers.Authorization = accessToken;
     }
     return config;
   },

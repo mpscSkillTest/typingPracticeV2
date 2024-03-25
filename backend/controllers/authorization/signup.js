@@ -1,3 +1,4 @@
+import { StatusCodes } from "http-status-codes";
 import { supabase } from "../../dbClient.js";
 import UserTypeEnum from "../../enums/UserTypeEnum.js";
 
@@ -18,12 +19,13 @@ export const signup = async (req, res) => {
       },
     });
     if (data?.user) {
-      res.status(200).send({ user: data.user.id });
+      res.status(StatusCodes.OK).send({ user: data.user.id });
     } else {
       throw new Error(error);
     }
   } catch (error) {
-    const { status = "Something Broke", statusCode = 500 } = error || {};
-    res.status(statusCode).send({ msg: status, error });
+    res
+      .status(StatusCodes.BAD_REQUEST)
+      .send({ user: null, error: "something broke" });
   }
 };

@@ -1,62 +1,78 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import type { ReactElement } from "react";
 import { Navigate } from "react-router-dom";
-import { AUTH_TOKEN_KEY, SUPABASE_AUTH_URL_KEY } from "../utils/constant";
+import { AUTH_TOKEN_KEY } from "../utils/constant";
 import axios from "../config/customAxios";
-import useHashParams from "../utils/hooks/useHashParams";
-import useCookie from "../utils/hooks/useCookie";
+import { getHashParams, getCookieHandlers } from "../utils/utils";
 
 type ProtectedRouteProps = {
   children: ReactElement;
 };
 
-const ProtectedRoute = (props: ProtectedRouteProps) => {
-  const { children } = props;
-  const hashParams = useHashParams();
-  const [showLoader, setShowLoader] = useState<boolean>(true);
-  const [isValidUser, setIsValidUser] = useState<boolean>(false);
-  const accessTokenFromURL = hashParams[SUPABASE_AUTH_URL_KEY] || "";
-  const { cookie: accessToken, setCookieValue: setAccessToken } =
-    useCookie(AUTH_TOKEN_KEY);
-  const hasAccessTokenVerified = useRef<boolean>(false);
+type UserValidity = boolean | undefined;
 
-  const verifyUser = async () => {
+const ProtectedRoute = (props: ProtectedRouteProps) => {
+  const hashParams = getHashParams();
+  const [isValidUser, setIsValidUser] = useState<UserValidity>(undefined);
+
+  const {
+    removeCookie: removeAccessToken,
+    getUpdatedCookie: getAccessToken,
+    setCookieValue: setAccessToken,
+  } = getCookieHandlers(AUTH_TOKEN_KEY)();
+
+  const accessToken = getAccessToken();
+
+  const accessTokenFromURL = hashParams[AUTH_TOKEN_KEY] || "";
+  const type = hashParams["type"];
+
+  const { children } = props;
+
+  const verifyUser = async (
+    updatedAccessToken: string = "",
+    type: string = ""
+  ) => {
+    let updatedIsValidUser = false;
     try {
-      const response = await axios.post("/authorize/verify/");
+      const response = await axios.post("/authorize/verify/", {
+        type,
+        accessToken: updatedAccessToken,
+      });
       const { data } = response || {};
-      const { user, error } = data || {};
-      if (user) {
-        setIsValidUser(true);
-      } else if (error) {
+      const { error, token } = data || {};
+      if (error) {
         throw new Error(error);
       }
-    } catch (error) {
-      console.error(error);
+      if (token) {
+        setAccessToken(token);
+      }
+      updatedIsValidUser = true;
+    } catch (err) {
+      console.error({ err });
+      removeAccessToken();
+      updatedIsValidUser = false;
+    }
+    return updatedIsValidUser;
+  };
+
+  useEffect(() => {
+    if (accessToken || (accessTokenFromURL && type)) {
+      if (typeof accessTokenFromURL === "string" && accessTokenFromURL !== "") {
+        verifyUser(accessTokenFromURL, type).then((isValid) => {
+          setIsValidUser(isValid);
+        });
+      } else if (accessToken) {
+        verifyUser(accessToken).then((isValid) => {
+          setIsValidUser(isValid);
+        });
+      }
+    } else {
       setIsValidUser(false);
     }
-  };
-
-  const waitForVerification = async () => {
-    await verifyUser();
-    setShowLoader(false);
-  };
-
-  useEffect(() => {
-    if (accessTokenFromURL && typeof setAccessToken === "function") {
-      setAccessToken(accessTokenFromURL);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    if (!hasAccessTokenVerified.current && typeof accessToken === "string") {
-      hasAccessTokenVerified.current = true;
-      waitForVerification();
-    }
-  }, [accessToken]);
-
-  if (showLoader) {
-    return <div>Loader</div>;
+  if (isValidUser === undefined) {
+    return null;
   }
 
   return isValidUser ? children : <Navigate to={"/signin"} replace />;
