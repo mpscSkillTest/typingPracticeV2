@@ -1,10 +1,11 @@
+import DashboardLayout from "../components/layout/dashboard-layout";
 import Student from "../components/Dashboard/Student/Student";
 
 function Dashboard() {
   return (
-    <div className="flex h-[inherit] w-[inherit]">
+    <DashboardLayout>
       <Student />
-    </div>
+    </DashboardLayout>
   );
 }
 

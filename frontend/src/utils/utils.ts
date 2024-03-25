@@ -1,4 +1,10 @@
-export type HashParams = Record<string, string>;
+import { type ClassValue, clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
+import type { HashParams } from "../types";
+
+export const cn = (...inputs: ClassValue[]) => {
+  return twMerge(clsx(inputs));
+};
 
 export function getHashParams() {
   // this added to handle access token provided by supabase

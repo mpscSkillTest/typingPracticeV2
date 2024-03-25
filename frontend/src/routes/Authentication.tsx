@@ -56,9 +56,9 @@ function Authentication({ type = "signin" }: Props) {
   }
 
   return (
-    <div className="flex align-middle w-[inherit] h-[inherit] justify-center">
-      <div className="bg-indigo-400  h-[inherit] w-0 md:w-[50%]"></div>
-      <div className="flex bg-indigo-100 align-middle justify-center h-[inherit] w-100% md:w-[50%]">
+    <div className="flex h-dvh w-dvw overflow-hidden">
+      <div className="h-[inherit] bg-primary w-0 md:w-[50%]"></div>
+      <div className="flex align-middle justify-center w-[100%] md:w-[50%] h-[inherit]">
         {getUserDetailsComponent()}
       </div>
       <Toaster />

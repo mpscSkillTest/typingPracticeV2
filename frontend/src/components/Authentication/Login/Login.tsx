@@ -56,7 +56,7 @@ function Login() {
         typeof setAccessToken === "function"
       ) {
         setAccessToken(data.accessToken);
-        navigate("/dashboard/");
+        navigate("/");
       }
     } catch (error: unknown) {
       const errorMessage = error?.response?.data?.error || "Something wrong";
