@@ -6,10 +6,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { Subject, UserDetails } from "../../../types";
 import axios from "../../../config/customAxios";
 import PageHead from "../../shared/page-head";
-import OverView from "./OverView";
-import RecentResults from "./RecentResults";
 
-const StudentDashboard = () => {
+const Practice = () => {
   const [showLoader, setShowLoader] = useState<boolean>(true);
   const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
 
@@ -56,8 +54,8 @@ const StudentDashboard = () => {
     return (
       <TabsContent value={subject} className="h-full space-y-4">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-8">
-          <OverView subject={subject} />
-          <RecentResults subject={subject} />
+          <div>Passage {subject}</div>
+          <div>User Input {subject}</div>
         </div>
       </TabsContent>
     );
@@ -65,13 +63,8 @@ const StudentDashboard = () => {
 
   return (
     <>
-      <PageHead title="Dashboard" />
+      <PageHead title="Practice" />
       <div className="flex-1 space-y-4 p-4 pt-6 md:p-8">
-        <div className="flex items-center justify-between space-y-2">
-          <h2 className="text-3xl font-bold tracking-tight">
-            Hi {userDetails?.name || ""}, Welcome back 👋
-          </h2>
-        </div>
         <Tabs defaultValue="ENGLISH" className=" flex-1 space-y-4">
           <TabsList>
             <TabsTrigger value="ENGLISH">English</TabsTrigger>
@@ -85,4 +78,4 @@ const StudentDashboard = () => {
   );
 };
 
-export default StudentDashboard;
+export default Practice;

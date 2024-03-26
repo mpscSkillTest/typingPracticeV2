@@ -15,7 +15,7 @@ export const navItems: NavItem[] = [
     icon: "Practice",
     label: "Practice",
   },
-  {
+  /*   {
     title: "Payment",
     href: "/payment-history",
     icon: "Payment",
@@ -26,5 +26,5 @@ export const navItems: NavItem[] = [
     href: "/leader-board",
     icon: "LeaderBoard",
     label: "Leader Board",
-  },
+  }, */
 ];

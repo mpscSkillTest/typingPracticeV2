@@ -14,7 +14,12 @@ const getProtectedRoute = (component: ReactElement) => {
 const router = createBrowserRouter([
   {
     path: "/",
-    element: getProtectedRoute(<Dashboard />),
+    element: getProtectedRoute(<Dashboard page="dashboard" />),
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: "/practice",
+    element: getProtectedRoute(<Dashboard page="practice" />),
     errorElement: <ErrorPage />,
   },
   {

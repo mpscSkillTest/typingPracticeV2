@@ -50,7 +50,7 @@ export default function DashboardNav({ items, setOpen }: DashboardNavProps) {
   }
 
   return (
-    <nav className="-mx-3 space-y-6">
+    <nav className="space-y-6">
       {items.map((item) => (
         <DashboardNavItem key={item.href} item={item} setOpen={setOpen} />
       ))}

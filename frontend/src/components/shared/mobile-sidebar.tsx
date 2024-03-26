@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { navItems } from "../../utils/constant";
 import DashboardNav from "./dashboard-nav";
+import Logout from "./logout";
 
 type TMobileSidebarProps = {
   className?: string;
@@ -24,6 +25,7 @@ export default function MobileSidebar({
               </Link>
               <div className="space-y-1 px-2">
                 <DashboardNav items={navItems} setOpen={setSidebarOpen} />
+                <Logout />
               </div>
             </div>
           </div>

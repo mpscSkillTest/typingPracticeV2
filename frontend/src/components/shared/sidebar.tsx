@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { navItems } from "../../utils/constant";
 import DashboardNav from "./dashboard-nav";
+import Logout from "./logout";
 
 export default function Sidebar() {
   return (
@@ -8,8 +9,9 @@ export default function Sidebar() {
       <Link to="/" className="text-3xl font-bold text-white">
         Logo
       </Link>
-      <div className="mt-6 flex flex-1 flex-col justify-between">
+      <div className="mt-6 mx-[20px] flex flex-1 flex-col justify-between">
         <DashboardNav items={navItems} />
+        <Logout />
       </div>
     </aside>
   );

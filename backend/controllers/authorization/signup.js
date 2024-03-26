@@ -11,7 +11,7 @@ export const signup = async (req, res) => {
       password: password,
       options: {
         data: {
-          emailId,
+          email: emailId,
           name,
           contactNumber,
           type: UserTypeEnum.STUDENT.name,
@@ -24,6 +24,7 @@ export const signup = async (req, res) => {
       throw new Error(error);
     }
   } catch (error) {
+    console.log(error);
     res
       .status(StatusCodes.BAD_REQUEST)
       .send({ user: null, error: "something broke" });
