@@ -15,7 +15,13 @@ export const navItems: NavItem[] = [
     icon: "Practice",
     label: "Practice",
   },
-  /*   {
+  {
+    title: "Speed Test",
+    href: "/speed-test",
+    icon: "SpeedTest",
+    label: "Speed Test",
+  },
+  /*  {
     title: "Payment",
     href: "/payment-history",
     icon: "Payment",

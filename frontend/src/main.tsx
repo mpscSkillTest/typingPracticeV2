@@ -23,6 +23,11 @@ const router = createBrowserRouter([
     errorElement: <ErrorPage />,
   },
   {
+    path: "/speed-test",
+    element: getProtectedRoute(<Dashboard page="speedTest" />),
+    errorElement: <ErrorPage />,
+  },
+  {
     path: "/signin",
     element: <Authentication type="signin" />,
     errorElement: <ErrorPage />,

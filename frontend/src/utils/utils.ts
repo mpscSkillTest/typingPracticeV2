@@ -29,9 +29,9 @@ export function getCookieHandlers(cookieName: string) {
   let cookie = getCookie(cookieName);
 
   const setCookieValue = (value: string) => {
-    const expirationDate = new Date();
-    expirationDate.setDate(expirationDate.getDate() + 2);
-    document.cookie = `${cookieName}=${value}; expires=${expirationDate.toUTCString()}; path=/`;
+    // cookie will be expired after 30 mins
+    const cookieExpiration = new Date(new Date().getTime() + 40 * 60 * 1000);
+    document.cookie = `${cookieName}=${value}; expires=${cookieExpiration.toUTCString()}; path=/`;
     cookie = value;
   };
 

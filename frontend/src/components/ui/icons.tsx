@@ -31,6 +31,7 @@ import {
   Keyboard,
   Wallet,
   Trophy,
+  AlarmClockCheck,
 } from "lucide-react";
 
 export type Icon = LucideIcon;
@@ -67,4 +68,5 @@ export const Icons = {
   Practice: Keyboard,
   Payment: Wallet,
   LeaderBoard: Trophy,
+  SpeedTest: AlarmClockCheck,
 };
