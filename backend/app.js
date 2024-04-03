@@ -3,6 +3,8 @@ import cors from "cors";
 import bodyParser from "body-parser";
 import { config } from "dotenv";
 import { USER_AUTHORIZATION_API, STUDENT_DETAILS_API } from "./constant.js";
+import morganMiddleware from "./middlewares/morgan.js";
+import logger from "./utils/logger.js";
 import AuthorizationRouter from "./routes/authorization.js";
 import StudentRouter from "./routes/student.js";
 
@@ -10,6 +12,8 @@ const app = express();
 
 // initialize env variables
 config();
+
+app.use(morganMiddleware);
 
 // support cross origin resource request
 app.use(cors());
@@ -47,10 +51,10 @@ app.use((error, req, res, next) => {
 const start = async () => {
   try {
     app.listen(process.env.PORT, () => {
-      console.log(`${process.env.PORT} Yes I am connected`);
+      logger.info(`${process.env.PORT} Yes I am connected`);
     });
   } catch (error) {
-    console.log(error);
+    logger.error(error);
   }
 };
 

@@ -8,8 +8,6 @@ const PROD_BASE_URL = "https://typingpracticev2.onrender.com/api";
 
 const isLocalEnv = process.env.NODE_ENV === "development";
 
-console.log({ isLocalEnv, env: process.env.NODE_ENV });
-
 // Set config defaults when creating the instance
 const instance = axios.create({
   baseURL: isLocalEnv ? BASE_URL : PROD_BASE_URL,

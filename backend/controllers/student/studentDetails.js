@@ -1,5 +1,6 @@
 import { StatusCodes } from "http-status-codes";
 import { supabase } from "../../dbClient.js";
+import logger from "../../utils/logger.js";
 import { getAccessTokenFromHeaders } from "../../utils/utils.js";
 
 export const getStudentDetails = async (req, res) => {
@@ -44,7 +45,7 @@ export const getStudentDetails = async (req, res) => {
       error: null,
     });
   } catch (error) {
-    console.log(error);
+    logger.error(error);
     res
       .status(StatusCodes.BAD_REQUEST)
       .send({ user: null, error: "User not found. Please try again" });

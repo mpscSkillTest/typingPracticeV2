@@ -1,5 +1,6 @@
 import { StatusCodes } from "http-status-codes";
 import { supabase } from "../../dbClient.js";
+import logger from "../../utils/logger.js";
 import UserTypeEnum from "../../enums/UserTypeEnum.js";
 
 export const signup = async (req, res) => {
@@ -20,11 +21,12 @@ export const signup = async (req, res) => {
     });
     if (data?.user) {
       res.status(StatusCodes.OK).send({ user: data.user.id });
+      return;
     } else {
       throw new Error(error);
     }
   } catch (error) {
-    console.log(error);
+    logger.error(error);
     res
       .status(StatusCodes.BAD_REQUEST)
       .send({ user: null, error: "something broke" });

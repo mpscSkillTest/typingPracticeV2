@@ -1,6 +1,7 @@
 import { StatusCodes } from "http-status-codes";
 import { supabase } from "../../dbClient.js";
 import { getUserResults } from "../../utils/getPassageUtils.js";
+import logger from "../../utils/logger.js";
 
 export const submitResults = async (req, res) => {
   const {
@@ -46,7 +47,7 @@ export const submitResults = async (req, res) => {
   });
 
   if (error) {
-    console.log(error);
+    logger.error(error);
     res
       .status(StatusCodes.BAD_REQUEST)
       .send({ result: null, error: error.message });
