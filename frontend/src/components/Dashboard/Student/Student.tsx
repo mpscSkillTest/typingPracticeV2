@@ -75,7 +75,6 @@ const StudentDashboard = () => {
         <Tabs defaultValue="ENGLISH" className=" flex-1 space-y-4">
           <TabsList>
             <TabsTrigger value="ENGLISH">English</TabsTrigger>
-            <TabsTrigger value="MARATHI">Marathi</TabsTrigger>
           </TabsList>
           {getTabContentDom("ENGLISH")}
           {getTabContentDom("MARATHI")}

@@ -5,3 +5,8 @@ export type UserDetails = {
   type: UserType;
   name: string;
 };
+
+export type Passage = {
+  passageId: string;
+  passageText: string;
+};

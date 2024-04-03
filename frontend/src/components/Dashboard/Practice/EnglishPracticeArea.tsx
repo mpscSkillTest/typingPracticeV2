@@ -1,7 +1,25 @@
-import { BaseSyntheticEvent } from "react";
+import {
+  useState,
+  useRef,
+  useEffect,
+  type BaseSyntheticEvent,
+  KeyboardEvent,
+  ChangeEventHandler,
+} from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Subject, UserDetails, TypingMode } from "@/types";
+import { useToast } from "@/components/ui/use-toast";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Subject, UserDetails, TypingMode, Passage } from "@/types";
+import { handleEnglishKeyDown } from "./utils/handleEnglishKeydown";
+import axios from "../../../config/customAxios";
 import Result from "./Result";
 import Timer from "../../shared/timer";
 import classes from "./styles.module.scss";
@@ -12,53 +30,281 @@ type Props = {
   mode: TypingMode;
 };
 
-const practicePassageEnglish =
-  "The great advantage of early rising is the good start it gives us in our day's work. The early riser has done a large amount of hard work before other men have got out of bed. In the early morning the mind is fresh, and there are few sounds or other distractions, so that work done at that time is generally well done. In many cases the early riser also finds time to take some exercise in the fresh morning air, and this exercise supplies him a fund of energy that will last until the evening. By beginning so early, he knows that he has plenty of time to do thoroughly all the work he can be expected to do, and is not tempted to hurry over any part of it. All his work being finished in good time, he has a long interval of rest in the evening before the timely hour when he goes to bed. He gets to sleep several hours before midnight, at the time when sleep is most refreshing and after a sound night's rest, rises early next morning in good health and spirits for the labors of a new day. It is very plain that such a life as this is far more conducive to health than that of the man who shortens his waking hours by rising late, and so can afford in the course of the day little leisure for necessary rest. Anyone who lies in bed late, must, if he wishes to do a full day's work, go on working to a correspondingly late hour, and deny himself the hour or two of evening exercise that he ought to take for the benefit of his health. But in spite of all his efforts, he will probably produce as good results as the early riser, because he misses the best working hours of the day. It may be objected to this that some find the perfect quiet of midnight by far the best time for working. This is no doubt true in certain cases. Several great thinkers have found by experience that their intellect is clearest, and they can write best, when they burn the midnight oil. But even in such cases the practice of working late at night cannot be commended. Few men, if any, can exert the full power of their intellect at the time when nature prescribes sleep, without ruining their health thereby.";
+type UserResult = Record<string, number | number[]>;
 
-const practicePassageMarathi =
-  "गुढीपाडवा म्हणजे हिंजू नववर्षाचा पहिला दिवस. हा सण चैत्र शुद्ध प्रतिपदेला साजरा करण्यात येताे. संपूर्ण भारतात व प्रामुख्याने महाराष्ट्रात माेठ्या उत्साहाने हा सण साजरा केला जाताे. नववर्षाचे स्वागत करण्यासाठी घराच्या दारासमाेर गुढी उभारली जाते. गुढी उभारण्यासाठी लांब बांबूच्या टाेकाला रेश्‍मी वस्त्र बांधले जाते. त्यावर साखरेची माळ, कडुलिंबाची पाने, आंब्याच्या डहाळ्या व झेंडूच्या फुलांचे हार बांधल जाते व त्यावर एक कलश ठेवला जाताे. ही गंढी आकाशाच्या दिशेले उभारली जाते. या गुढीला विजयाचे प्रतीक मानले जाते. चाैदा पर्षांचा वनवास संपवून प्रभू श्रीराम जेव्हा अयाेध्या आले व त्यांचे राजभिषेक झाले तेव्हा हा सण साजरा केला गेला असे मानले जाते. गुढीपाडव्याच्या दिवशी कडुलिंबाच्या काेवळ्या पानांचे सेवन करण्याची पद्धत आहे. यामुळे रक्त शुद्ध हाेते व शरीराची राेगप्रतिकारक शक्ती वाढते. या दिवशी अनेक कुटुंबात पुरणपाेळी किंवा श्रीखंड पुरीचा छान बेत असताे. झालं गेलं विसरून आयुष्याला नव्या उत्साहाने व आनंदाने सामाेरे जावे हाच संदेश गुढीपाडव्याचा सण आपलला देत असताे. गुढीपाडवा हा भारतीय संस्कृतीतला एक महत्त्वाचा सण आहे. हिंदू दिनदर्शिकेप्रमाणे चैत्र शुद्ध प्रतिपदेला म्हणजेच वसंत ऋतूचा पहिल्या दिवशी ही सण साजरा केला जाताे. नववर्षाचा हा पहिला दिवस अतिशय पवित्र मानला जाताे. वसंत ऋतूची चाहूल देणारा हा गुढीपाडवा संपूर्ण भारतात माेठ्या उत्साहाने साजरा केला जाताे. व जास्ती करून महाराष्ट्रतात प्रभू रामचंद्रानी रावणाचा पराभव करून वनवास संपून आयाेध्या नगरी मध्ये प्रवेश केला. त्या दिवशी श्रीरामाचे स्वागत करण्यासाठी आयाेध्येतील प्रजेने गुढ्या, ताेरण उभारली हाेती आणि आनंद साजरा केला हाेता. तीच प्रथा वर्षानुवर्षे चालत आली म्हणून. आजही घराेघरी गुढी उभारली जाते. दारासमाेर सुबक रांगाेळी काढली जाते. या नवीन वर्षाचे स्वागत करण्यासाठी घराच्या दारासमाेर गुढी उभारली जाते. गुढी उभारण्यासाठी लांब काठी घेऊन तिच्या टाेकावर जरीचे किंवा रेशमी वस्त्र बांधले जाते. त्यावर कडुलिंबाचे पाने, रंगीबिरंगी बत्ताश्‍याची माळ, आंब्याच्या डहाळ्या फुलांच्या माळा बांधल्या जातात. आणि त्या वर एक कलश ठेवला जाताे. ती गुढी बांधून तिची पूजा केली जाते.";
+const TimerDetails = {
+  PRACTICE: {
+    initialValue: 0,
+    isCountDown: false,
+  },
+  TEST: {
+    initialValue: 600,
+    isCountDown: true,
+  },
+};
 
-const EnglishPracticeArea = ({ userDetails, subject }: Props) => {
-  console.log({ userDetails, subject });
+const EnglishPracticeArea = ({ userDetails, subject, mode }: Props) => {
+  const [keystrokesCount, setKeystrokesCount] = useState<number>(0);
+  const [backspacesCount, setBackspacesCount] = useState<number>(0);
+  const [userInputText, setUserInputText] = useState<string>("");
+  const [availablePassages, setAvailablePassages] = useState<Passage[]>([]);
+  const [questionPassage, setQuestionPassage] = useState<string>("");
+  const [selectedPassageId, setSelectedPassageId] = useState<string>("");
+  const [shouldStartTimer, setShouldStartTimer] = useState<boolean>(false);
+  const [shouldShowResult, setShouldShowResult] = useState<boolean>(false);
+  const [totalTypedWords, setTotalTypedWords] = useState<number>(0);
+  const [totalPendingWords, setTotalPendingWords] = useState<number>(0);
+  const [shouldShowLoader, setShouldShowLoader] = useState<boolean>(false);
+  const [duration, setDuration] = useState<number>(0);
+
+  const userResult = useRef<UserResult>({});
+
+  const { userId } = userDetails;
+
+  const toast = useToast();
+
+  const totalWords = useRef<number>(0);
 
   const restrictActions = (event: BaseSyntheticEvent) => {
     event?.preventDefault?.();
     return false;
   };
 
+  const onUserInputKeyDown = (event: KeyboardEvent) => {
+    if (!shouldStartTimer) {
+      setShouldStartTimer(true);
+    }
+    const { updatedBackspacesCount, updatedKeystrokesCount } =
+      handleEnglishKeyDown({
+        event,
+        inputText: userInputText,
+        currentBackspacesCount: backspacesCount,
+        currentKeystrokesCount: keystrokesCount,
+      });
+    setBackspacesCount(updatedBackspacesCount);
+    setKeystrokesCount(updatedKeystrokesCount);
+  };
+
+  const onUserInputChange: ChangeEventHandler = (event) => {
+    if (subject === "MARATHI") {
+      return;
+    }
+    if (subject === "ENGLISH") {
+      const updatedInputText = event.target.value || "";
+      const totalTypedWordsClone = updatedInputText.trim().split(" ").length;
+      const totalPendingWordsClone = totalWords.current - totalTypedWordsClone;
+      setTotalTypedWords(totalTypedWordsClone);
+      setTotalPendingWords(totalPendingWordsClone);
+      setUserInputText(updatedInputText);
+    }
+  };
+
+  const shouldDisableUserInputText = () => {
+    return (
+      typeof userInputText !== "string" ||
+      userInputText === "" ||
+      userResult.current?.totalTypedWords
+    );
+  };
+
+  const onQuestionPassageSelect = (selectedPassageId: string) => {
+    const selectedQuestionPassage: Passage | undefined = availablePassages.find(
+      ({ passageId }: Passage) => {
+        return passageId === selectedPassageId;
+      }
+    );
+    setShouldShowResult(false);
+    setQuestionPassage(selectedQuestionPassage?.passageText || "");
+  };
+
+  const onSubmitPassage = async () => {
+    if (shouldStartTimer) {
+      setShouldStartTimer(false);
+    }
+    setShouldShowLoader(true);
+    try {
+      const response = await axios.post("/student/submit-result/", {
+        mode,
+        subject,
+        inputText: userInputText,
+        passageText: questionPassage,
+        keystrokesCount,
+        backspacesCount,
+        userId,
+        passageId: selectedPassageId,
+        duration,
+      });
+      const { result } = response?.data || {};
+      if (!result) {
+        throw new Error("No Passages Available");
+      }
+      userResult.current = result;
+    } catch (error: unknown) {
+      userResult.current = {};
+      const errorMessage = error?.response?.data?.error || "Something wrong";
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong",
+        description: errorMessage,
+        className: "my-[10px]",
+      });
+    } finally {
+      setShouldShowLoader(false);
+    }
+    setShouldShowResult(true);
+  };
+
+  const getPassageSelectDropdown = () => {
+    return (
+      <Select value={selectedPassageId} onValueChange={onQuestionPassageSelect}>
+        <SelectTrigger className="w-[50%]">
+          <SelectValue placeholder="Select Question Passage" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectGroup>
+            {availablePassages.map(({ passageId }: Passage, index: number) => {
+              return (
+                <SelectItem key={passageId} value={passageId}>
+                  Passage {index + 1}
+                </SelectItem>
+              );
+            })}
+          </SelectGroup>
+        </SelectContent>
+      </Select>
+    );
+  };
+
+  const getAvailablePassages = async () => {
+    let newPassages = [];
+    try {
+      const response = await axios.post("/student/passages/", {
+        mode,
+        subject,
+      });
+      if (!response?.data?.passages) {
+        throw new Error("No Passages Available");
+      }
+      newPassages = response?.data?.passages || [];
+    } catch (error: unknown) {
+      newPassages = [];
+      const errorMessage = error?.response?.data?.error || "Something wrong";
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong",
+        description: errorMessage,
+        className: "my-[10px]",
+      });
+    }
+    return newPassages;
+  };
+
+  const getUserInputPassage = () => {
+    return (
+      <Textarea
+        unselectable="on"
+        spellCheck={false}
+        value={userInputText}
+        onKeyDown={onUserInputKeyDown}
+        onChange={onUserInputChange}
+        onCut={restrictActions}
+        onPaste={restrictActions}
+        onCopy={restrictActions}
+        onWheel={restrictActions}
+        className={`h-[200px] resize-none font-normal text-md text-black ${classes.userSelect}`}
+        placeholder="Type your passage here."
+      />
+    );
+  };
+
+  const getUserPassage = () => {
+    if (!shouldShowResult) {
+      return (
+        <Textarea
+          readOnly
+          className={`resize-none h-[200px] font-medium text-md text-black ${classes.passageText} ${classes.userSelect}`}
+          disabled
+          onChange={restrictActions}
+          onPaste={restrictActions}
+          onCopy={restrictActions}
+          value={questionPassage}
+        />
+      );
+    }
+    const expectedWords = questionPassage?.trim?.()?.split(" ").filter(Boolean);
+
+    return (
+      <div
+        className={` w-full border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50  overflow-y-auto flex flex-wrap gap-1 rounded-md focus-visible:ring-offset-2 h-[200px] font-medium text-md text-black ${classes.passageText}`}
+      >
+        {expectedWords.map((word, index) => {
+          if (userResult.current?.correctWordIndices?.includes(index)) {
+            return <span className="text-[16px]  text-green-500">{word}</span>;
+          }
+          return <span className="text-[16px] text-red-500">{word}</span>;
+        })}
+      </div>
+    );
+  };
+
+  const fetchDetails = async () => {
+    const updatedPassages = await getAvailablePassages();
+    setAvailablePassages(updatedPassages);
+  };
+
+  useEffect(() => {
+    fetchDetails();
+  }, []);
+
+  useEffect(() => {
+    const defaultQuestionPassage: Passage = availablePassages[0];
+    const { passageId = "", passageText = "" } = defaultQuestionPassage || {};
+    const updatedTotalWords = passageText?.split(" ")?.length;
+    totalWords.current = updatedTotalWords;
+    setTotalPendingWords(updatedTotalWords);
+    setQuestionPassage(passageText);
+    setSelectedPassageId(passageId);
+  }, [availablePassages]);
+
   return (
     <>
       <div className="grid grid-cols-1 gap-[20px] xl:grid-cols-4">
         <div className="col-span-3">
-          <Timer
-            initialValue={0}
-            interval={1000}
-            isCountdown={false}
-            shouldStart={false}
-          />
-          <div className="flex flex-col gap-[20px]">
-            <Textarea
-              className={`resize-none h-[200px] font-medium text-md text-black ${classes.passageText}`}
-              disabled
-              value={
-                subject === "ENGLISH"
-                  ? practicePassageEnglish
-                  : practicePassageMarathi
-              }
+          <div className="flex items-center justify-center">
+            {getPassageSelectDropdown()}
+            <Timer
+              interval={1000}
+              isCountDown={!!TimerDetails[mode].isCountDown}
+              initialValue={TimerDetails[mode].initialValue}
+              shouldStart={shouldStartTimer}
+              updateDuration={setDuration}
             />
+          </div>
+
+          <div className="flex flex-col gap-[20px]">
+            {getUserPassage()}
             <div className="flex gap-[10px] flex-col">
-              <Textarea
-                onPaste={restrictActions}
-                onCopy={restrictActions}
-                className="h-[200px] resize-none font-normal text-md text-black"
-                placeholder="Type your passage here."
-              />
-              {<Button>Submit Passage</Button>}
+              {getUserInputPassage()}
+              <Button
+                disabled={!!shouldDisableUserInputText()}
+                onClick={onSubmitPassage}
+                showLoader={shouldShowLoader}
+              >
+                Submit Passage
+              </Button>
             </div>
           </div>
         </div>
         <div className="col-span-3 xl:col-span-1">
-          <Result totalWordsCount={0} />
+          <Result
+            totalWordsCount={totalWords.current}
+            keystrokesCount={keystrokesCount}
+            backspaceCount={backspacesCount}
+            accuracy={userResult.current.accuracy || 0}
+            errorCount={userResult.current.totalErrorCount || 0}
+            typedWordsCount={totalTypedWords}
+            pendingWordsCount={totalPendingWords}
+          />
         </div>
       </div>
     </>

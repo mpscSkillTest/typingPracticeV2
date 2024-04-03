@@ -77,12 +77,8 @@ const Practice = ({ mode, title }: Props) => {
             <TabsTrigger className="h-full w-[50%]" value="ENGLISH">
               English
             </TabsTrigger>
-            <TabsTrigger className="h-full w-[50%]" value="MARATHI">
-              Marathi
-            </TabsTrigger>
           </TabsList>
           {getTabContentDom("ENGLISH")}
-          {getTabContentDom("MARATHI")}
         </Tabs>
       </div>
     </>

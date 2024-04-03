@@ -5,4 +5,4 @@ export type Subject = "ENGLISH" | "MARATHI";
 
 export type TypingMode = "PRACTICE" | "TEST";
 
-export type { UserDetails, UserType } from "./User";
+export type { UserDetails, UserType, Passage } from "./User";
