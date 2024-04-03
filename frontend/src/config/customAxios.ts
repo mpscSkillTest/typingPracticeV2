@@ -4,9 +4,15 @@ import { AUTH_TOKEN_KEY } from "../utils/constant";
 
 const BASE_URL = "http://localhost:5000/api";
 
+const PROD_BASE_URL = "https://typingpracticev2.onrender.com/api";
+
+const isLocalEnv = process.env.NODE_ENV === "development";
+
+console.log({ isLocalEnv, env: process.env.NODE_ENV });
+
 // Set config defaults when creating the instance
 const instance = axios.create({
-  baseURL: BASE_URL,
+  baseURL: isLocalEnv ? BASE_URL : PROD_BASE_URL,
 });
 
 // Add a request interceptor
