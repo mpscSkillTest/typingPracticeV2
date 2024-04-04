@@ -30,16 +30,17 @@ export const getPassages = async (req, res) => {
         passageText: passageDetails?.passage_text,
       };
     });
-
     logger.info("Checking the getPassages status: Fetched passage details");
     res.status(StatusCodes.OK).send({
       passages: parsedPassages || [],
       error: null,
     });
+    return;
   } catch (error) {
     logger.error(error);
     res
       .status(StatusCodes.BAD_REQUEST)
       .send({ passages: [], error: "No passages available" });
+    return;
   }
 };

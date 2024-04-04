@@ -46,4 +46,5 @@ export const verify = async (req, res) => {
       token: null,
     });
   }
+  return;
 };

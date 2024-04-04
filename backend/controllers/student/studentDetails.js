@@ -44,10 +44,12 @@ export const getStudentDetails = async (req, res) => {
       },
       error: null,
     });
+    return;
   } catch (error) {
     logger.error(error);
     res
       .status(StatusCodes.BAD_REQUEST)
       .send({ user: null, error: "User not found. Please try again" });
+    return;
   }
 };

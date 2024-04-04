@@ -54,4 +54,5 @@ export const submitResults = async (req, res) => {
     return;
   }
   res.status(StatusCodes.OK).send({ result });
+  return;
 };

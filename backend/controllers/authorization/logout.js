@@ -8,4 +8,5 @@ export const logout = async (req, res) => {
     await supabase.auth.admin.signOut(accessToken, "global");
   }
   res.status(StatusCodes.OK).send({ message: "User logged out successfully" });
+  return;
 };

@@ -20,8 +20,10 @@ export const login = async (req, res) => {
       error: "Invalid user name & password",
     });
   }
+  return;
 };
 
 export const forgotPassword = async (req, res) => {
   res.status(200).send({ msg: "Forgot Password" });
+  return;
 };

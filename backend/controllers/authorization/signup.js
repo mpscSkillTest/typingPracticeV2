@@ -31,4 +31,5 @@ export const signup = async (req, res) => {
       .status(StatusCodes.BAD_REQUEST)
       .send({ user: null, error: "something broke" });
   }
+  return;
 };
