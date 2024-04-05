@@ -3,9 +3,9 @@ import { useState, useEffect, useRef } from "react";
 type Props = {
   initialValue: number;
   interval: number;
-  isCountdown?: boolean;
+  isCountdown: boolean;
   shouldStart?: boolean;
-  shouldStop?: boolean;
+  shouldResetTimer: string;
   updateDuration?: (duration: number) => void;
 };
 
@@ -16,10 +16,10 @@ export type Time = {
 
 const Timer = ({
   interval,
-  isCountdown = true,
+  isCountdown,
   initialValue,
   shouldStart = false,
-  shouldStop = false,
+  shouldResetTimer,
   updateDuration,
 }: Props) => {
   const [time, setTime] = useState<Time>({});
@@ -64,10 +64,12 @@ const Timer = ({
   }, [seconds]);
 
   useEffect(() => {
-    if (shouldStop) {
+    if (shouldResetTimer) {
+      setTime(secondsToTime(initialValue));
+      setSeconds(initialValue);
       clearInterval(timer.current);
     }
-  }, [shouldStop]);
+  }, [shouldResetTimer]);
 
   return (
     <div className="my-[10px] mx-auto p-[5px] w-[200px] font-bold text-lg border-2 text-center rounded-lg border-solid border-primary">

@@ -1,5 +1,6 @@
 import { StatusCodes } from "http-status-codes";
 import { supabase } from "../../dbClient.js";
+import { PASSAGE_DB_NAME } from "../../constant.js";
 import logger from "../../utils/logger.js";
 
 export const getPassages = async (req, res) => {
@@ -7,13 +8,14 @@ export const getPassages = async (req, res) => {
   logger.info("Checking the getPassages status: Everything is OK");
   try {
     const { data, error } = await supabase
-      .from("passages")
+      .from(PASSAGE_DB_NAME)
       .select(
         `
     id,
     passage_text
   `
       )
+      .limit(5)
       .eq("subject", subject)
       .eq("typing_mode", mode);
 

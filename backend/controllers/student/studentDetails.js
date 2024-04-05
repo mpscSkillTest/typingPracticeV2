@@ -1,6 +1,7 @@
 import { StatusCodes } from "http-status-codes";
 import { supabase } from "../../dbClient.js";
 import logger from "../../utils/logger.js";
+import { PROFILE_DB_NAME } from "../../constant.js";
 import { getAccessTokenFromHeaders } from "../../utils/utils.js";
 
 export const getStudentDetails = async (req, res) => {
@@ -17,7 +18,7 @@ export const getStudentDetails = async (req, res) => {
     }
 
     const { data: profileData, error: profileError } = await supabase
-      .from("profiles")
+      .from(PROFILE_DB_NAME)
       .select(
         `
       name,

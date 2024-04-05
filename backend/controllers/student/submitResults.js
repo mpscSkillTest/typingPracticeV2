@@ -1,6 +1,7 @@
 import { StatusCodes } from "http-status-codes";
 import { supabase } from "../../dbClient.js";
 import { getUserResults } from "../../utils/getPassageUtils.js";
+import { RESULTS_DB_NAME } from "../../constant.js";
 import logger from "../../utils/logger.js";
 
 export const submitResults = async (req, res) => {
@@ -31,7 +32,7 @@ export const submitResults = async (req, res) => {
   }
   const { totalErrorCount, accuracy } = result;
 
-  const { error } = await supabase.from("results").insert({
+  const { error } = await supabase.from(RESULTS_DB_NAME).insert({
     user_id: userId,
     subject,
     keystorkes_count: keystrokesCount,

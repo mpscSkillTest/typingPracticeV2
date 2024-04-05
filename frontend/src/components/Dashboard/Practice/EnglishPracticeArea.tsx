@@ -108,13 +108,7 @@ const EnglishPracticeArea = ({ userDetails, subject, mode }: Props) => {
   };
 
   const onQuestionPassageSelect = (selectedPassageId: string) => {
-    const selectedQuestionPassage: Passage | undefined = availablePassages.find(
-      ({ passageId }: Passage) => {
-        return passageId === selectedPassageId;
-      }
-    );
-    setShouldShowResult(false);
-    setQuestionPassage(selectedQuestionPassage?.passageText || "");
+    setSelectedPassageId(selectedPassageId);
   };
 
   const onSubmitPassage = async () => {
@@ -252,19 +246,38 @@ const EnglishPracticeArea = ({ userDetails, subject, mode }: Props) => {
     setAvailablePassages(updatedPassages);
   };
 
+  const resetUserActions = (updatedTotalWords: number = 0) => {
+    totalWords.current = updatedTotalWords;
+    userResult.current = {};
+    setKeystrokesCount(0);
+    setBackspacesCount(0);
+    setTotalTypedWords(0);
+    setTotalPendingWords(updatedTotalWords);
+    setDuration(0);
+    setUserInputText("");
+    setShouldStartTimer(false);
+    setShouldShowResult(false);
+    setShouldShowLoader(false);
+  };
+
   useEffect(() => {
     fetchDetails();
   }, []);
 
   useEffect(() => {
-    const defaultQuestionPassage: Passage = availablePassages[0];
-    const { passageId = "", passageText = "" } = defaultQuestionPassage || {};
-    const updatedTotalWords = passageText?.split(" ")?.length;
-    totalWords.current = updatedTotalWords;
-    setTotalPendingWords(updatedTotalWords);
-    setQuestionPassage(passageText);
-    setSelectedPassageId(passageId);
-  }, [availablePassages]);
+    if (!selectedPassageId) {
+      setSelectedPassageId(availablePassages[0]?.passageId);
+    } else {
+      const selectedQuestionPassage: Passage | undefined =
+        availablePassages.find(({ passageId }: Passage) => {
+          return passageId === selectedPassageId;
+        });
+      const { passageText = "" } = selectedQuestionPassage || {};
+      const updatedTotalWords = passageText?.split(" ")?.length || 0;
+      resetUserActions(updatedTotalWords);
+      setQuestionPassage(passageText || "");
+    }
+  }, [availablePassages, selectedPassageId]);
 
   return (
     <>
@@ -274,10 +287,11 @@ const EnglishPracticeArea = ({ userDetails, subject, mode }: Props) => {
             {getPassageSelectDropdown()}
             <Timer
               interval={1000}
-              isCountDown={!!TimerDetails[mode].isCountDown}
+              isCountdown={!!TimerDetails[mode].isCountDown}
               initialValue={TimerDetails[mode].initialValue}
               shouldStart={shouldStartTimer}
               updateDuration={setDuration}
+              shouldResetTimer={selectedPassageId}
             />
           </div>
 
