@@ -1,6 +1,6 @@
 import { config } from "dotenv";
 import winston from "winston";
-import "winston-syslog";
+import { PapertrailTransport } from "winston-papertrail-transport";
 import os from "os";
 
 config();
@@ -49,7 +49,8 @@ const format = winston.format.combine(
   winston.format.colorize({ all: true }),
   // Define the format of the message showing the timestamp, the level and the message
   winston.format.printf(
-    (info) => `typing practice ${info.timestamp} ${info.level}: ${info.message}`
+    (info) =>
+      `typing practice - ${env}  ${info.timestamp} ${info.level}: ${info.message}`
   )
 );
 
@@ -58,7 +59,6 @@ const options = {
   port: process.env.LOGGER_PORT,
   app_name: "mpsc-skilltest",
   localhost: os.hostname(),
-  eol: "\n",
 };
 
 // Define which transports the logger must use to print out messages.
@@ -66,9 +66,12 @@ const options = {
 const transports = [
   // Allow the use the console to print the messages
   new winston.transports.Console({ eol: "\n" }),
-
-  new winston.transports.Syslog(options),
 ];
+
+// Add Papertrail transport only for production
+if (env === "production") {
+  transports.push(new winston.transports(PapertrailTransport(options)));
+}
 
 // Create the logger instance that has to be exported
 // and used to log messages.
