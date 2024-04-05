@@ -20,7 +20,9 @@
     "http-status-codes": "^2.3.0",
     "morgan": "^1.10.0",
     "nodemon": "^3.1.0",
+    "os": "^0.1.2",
     "winston": "^3.13.0",
+    "winston-syslog": "^2.7.0",
     "zod": "^3.22.4"
   }
 }

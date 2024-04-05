@@ -1,5 +1,12 @@
+import { config } from "dotenv";
 import winston from "winston";
+import "winston-syslog";
+import os from "os";
 
+config();
+
+const env = process.env.NODE_ENV || "development";
+const isDevelopment = env === "development";
 // Define your severity levels.
 // With them, You can create log files,
 // see or hide levels based on the running ENV.
@@ -16,8 +23,6 @@ const levels = {
 // if the server was run in development mode; otherwise,
 // if it was run in production, show only warn and error messages.
 const level = () => {
-  const env = process.env.NODE_ENV || "development";
-  const isDevelopment = env === "development";
   return isDevelopment ? "debug" : "warn";
 };
 
@@ -44,23 +49,25 @@ const format = winston.format.combine(
   winston.format.colorize({ all: true }),
   // Define the format of the message showing the timestamp, the level and the message
   winston.format.printf(
-    (info) => `${info.timestamp} ${info.level}: ${info.message}`
+    (info) => `typing practice ${info.timestamp} ${info.level}: ${info.message}`
   )
 );
+
+const options = {
+  host: process.env.LOGGER_HOST,
+  port: process.env.LOGGER_PORT,
+  app_name: "mpsc-skilltest",
+  localhost: os.hostname(),
+  eol: "\n",
+};
 
 // Define which transports the logger must use to print out messages.
 // In this example, we are using three different transports
 const transports = [
   // Allow the use the console to print the messages
-  new winston.transports.Console(),
-  // Allow to print all the error level messages inside the error.log file
-  new winston.transports.File({
-    filename: "logs/error.log",
-    level: "error",
-  }),
-  // Allow to print all the error message inside the all.log file
-  // (also the error log that are also printed inside the error.log(
-  new winston.transports.File({ filename: "logs/all.log" }),
+  new winston.transports.Console({ eol: "\n" }),
+
+  new winston.transports.Syslog(options),
 ];
 
 // Create the logger instance that has to be exported
@@ -71,5 +78,9 @@ const logger = winston.createLogger({
   format,
   transports,
 });
+
+if (!isDevelopment) {
+  logger.info("application running on prod");
+}
 
 export default logger;
