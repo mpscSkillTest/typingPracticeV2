@@ -7,6 +7,8 @@ config();
 
 const env = process.env.NODE_ENV || "development";
 const isDevelopment = env === "development";
+const isProduction = env === "production";
+
 // Define your severity levels.
 // With them, You can create log files,
 // see or hide levels based on the running ENV.
@@ -69,8 +71,13 @@ const transports = [
 ];
 
 // Add Papertrail transport only for production
-if (env === "production") {
-  transports.push(new winston.transports(PapertrailTransport(options)));
+if (isProduction) {
+  transports.push(
+    new PapertrailTransport({
+      format,
+      ...options,
+    })
+  );
 }
 
 // Create the logger instance that has to be exported
