@@ -24,12 +24,6 @@ function Registration() {
 
   const registrationForm = useForm<UserRegistrationSchema>({
     resolver: zodResolver(userRegistrationSchema),
-    defaultValues: {
-      userName: "Test",
-      contactNumber: 1234567890,
-      emailId: "smarttypehub@gmail.com",
-      password: "1234567",
-    },
     mode: "onBlur",
   });
 

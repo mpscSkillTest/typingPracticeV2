@@ -12,12 +12,14 @@ export const getPassages = async (req, res) => {
       .select(
         `
     id,
-    passage_text
+    passage_text,
+    passage_title
   `
       )
-      .limit(5)
       .eq("subject", subject)
-      .eq("typing_mode", mode);
+      .eq("typing_mode", mode)
+      .order("created_at", { ascending: true })
+      .limit(5);
 
     if (error) {
       logger.error(
@@ -30,6 +32,7 @@ export const getPassages = async (req, res) => {
       return {
         passageId: passageDetails?.id,
         passageText: passageDetails?.passage_text,
+        passageTitle: passageDetails.passage_title,
       };
     });
     logger.info("Checking the getPassages status: Fetched passage details");

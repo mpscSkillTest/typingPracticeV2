@@ -72,6 +72,7 @@
     --input: 240 5.9% 90%;
     --ring: 142.1 76.2% 36.3%;
     --radius: 1rem;
+    --active-bg-color: #f6f6ff;
   }
 
   .dark {

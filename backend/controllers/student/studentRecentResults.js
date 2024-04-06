@@ -43,14 +43,15 @@ export const getStudentRecentResults = async (req, res) => {
       typed_words_count,
       accuracy,
       duration,
-      passage_id
+      passage_id,
+      passages ( passage_title )
     `
       )
-      .limit(20)
       .eq("user_id", userId)
       .eq("subject", subject)
-      .eq("type", mode);
-
+      .eq("type", mode)
+      .order("created_at", { ascending: false })
+      .limit(15);
     if (resultsError) {
       logger.error("Fetching Recent Results for user Failed");
       throw new Error(resultsError);
@@ -68,6 +69,8 @@ export const getStudentRecentResults = async (req, res) => {
           passage_id,
           total_words_count,
           typed_words_count,
+          id,
+          passages,
         } = result || {};
         return {
           accuracy,
@@ -81,6 +84,8 @@ export const getStudentRecentResults = async (req, res) => {
           subject,
           totalWordsCount: total_words_count,
           typedWordsCount: typed_words_count,
+          resultId: id,
+          passageTitle: passages.passage_title,
         };
       }) || [];
 

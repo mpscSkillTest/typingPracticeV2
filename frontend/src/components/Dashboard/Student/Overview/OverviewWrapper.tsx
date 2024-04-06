@@ -1,17 +1,14 @@
 import { useEffect, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Icons } from "@/components/ui/icons";
-import { Columns } from "./DataTable/Column";
-import { DataTable } from "./DataTable/Table";
 import type { Subject, Result, TypingMode } from "../../../../types";
 import axios from "../../../../config/customAxios";
+import OverView from "./OverView";
 
 type Props = {
   subject: Subject;
   mode: TypingMode;
 };
 
-const RecentResults = (props: Props) => {
+const OverviewWrapper = (props: Props) => {
   const { subject, mode } = props;
   const [showLoader, setShowLoader] = useState<boolean>(false);
   const [studentResults, setStudentResults] = useState<Result[]>([]);
@@ -38,29 +35,26 @@ const RecentResults = (props: Props) => {
     setStudentResults(updatedStudentResults);
   };
 
-  const getTableDom = () => {
-    if (showLoader) {
-      return (
-        <div className="h-full flex items-center justify-center">
-          <Icons.spinner height={48} width={48} className="animate-spin" />
-        </div>
-      );
-    }
-    return <DataTable columns={Columns} data={studentResults} />;
-  };
-
   useEffect(() => {
     getStudentResults();
   }, [subject, mode]);
 
   return (
-    <Card className="col-span-8">
-      <CardHeader>
-        <CardTitle>Recent Results</CardTitle>
-      </CardHeader>
-      <CardContent>{getTableDom()}</CardContent>
-    </Card>
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-12">
+      <OverView
+        results={studentResults}
+        type="GENERAL_KEYSTROKES_CONFIG"
+        title="Keystrokes Vs Backspaces Count"
+        showLoader={showLoader}
+      />
+      <OverView
+        type="GENERAL_ACCURACY_CONFIG"
+        title="Accuracy Percentage Vs Error Count"
+        showLoader={showLoader}
+        results={studentResults}
+      />
+    </div>
   );
 };
 
-export default RecentResults;
+export default OverviewWrapper;

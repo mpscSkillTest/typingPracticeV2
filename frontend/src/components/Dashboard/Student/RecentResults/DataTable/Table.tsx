@@ -75,7 +75,6 @@ export function DataTable<TData, TValue>({
                   const { dataType = "text" } =
                     header?.column?.columnDef?.meta || {};
                   const isNumberType = dataType === "number";
-                  console.log({ header, dataType });
                   return (
                     <TableHead
                       className={`${isNumberType ? "text-end" : "text-start"}`}

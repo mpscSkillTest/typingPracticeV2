@@ -156,10 +156,10 @@ const EnglishPracticeArea = ({ userDetails, subject, mode }: Props) => {
         </SelectTrigger>
         <SelectContent>
           <SelectGroup>
-            {availablePassages.map(({ passageId }: Passage, index: number) => {
+            {availablePassages.map(({ passageId, passageTitle }: Passage) => {
               return (
                 <SelectItem key={passageId} value={passageId}>
-                  Passage {index + 1}
+                  {passageTitle}
                 </SelectItem>
               );
             })}

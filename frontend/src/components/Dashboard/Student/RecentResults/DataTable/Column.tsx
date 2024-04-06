@@ -25,7 +25,7 @@ const getColumnHeaderWithSort = (column, headerText: string) => {
 };
 
 export const Columns: ColumnDef<Result>[] = [
-  { accessorKey: "passageId", header: "Passage Id" },
+  { accessorKey: "passageTitle", header: "Passage Title" },
   {
     accessorKey: "totalWordsCount",
     header: "Total Words",

@@ -14,4 +14,6 @@ export type Result = {
   subject: Subject;
   totalWordsCount: number;
   typedWordsCount: number;
+  resultId?: number;
+  passageTitle?: string;
 };

@@ -2,16 +2,19 @@ import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { Icons } from "@/components/ui/icons";
 import { useToast } from "@/components/ui/use-toast";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import type { Subject, UserDetails } from "../../../types";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Label } from "@/components/ui/label";
+import type { Subject, TypingMode, UserDetails } from "../../../types";
 import axios from "../../../config/customAxios";
 import PageHead from "../../shared/page-head";
-import OverView from "./Overview/OverView";
+import OverviewWrapper from "./Overview/OverviewWrapper";
 import RecentResults from "./RecentResults/RecentResults";
 
 const StudentDashboard = () => {
   const [showLoader, setShowLoader] = useState<boolean>(true);
   const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
+  const [selectedMode, setSelectedMode] = useState<TypingMode>("TEST");
+  const [selectedSubject, setSelectedSubject] = useState<Subject>("ENGLISH");
 
   const { toast } = useToast();
 
@@ -36,6 +39,18 @@ const StudentDashboard = () => {
     }
   };
 
+  const updateSelectedMode = (updatedMode: string) => {
+    if (updatedMode && updatedMode !== selectedMode) {
+      setSelectedMode(updatedMode);
+    }
+  };
+
+  const updateSelectedSubject = (updatedSubject: string) => {
+    if (updatedSubject && updatedSubject !== selectedSubject) {
+      setSelectedSubject(updatedSubject);
+    }
+  };
+
   useEffect(() => {
     getStudentDetails();
   }, []);
@@ -52,33 +67,86 @@ const StudentDashboard = () => {
     return <Navigate to="/signin" replace />;
   }
 
-  const getTabContentDom = (subject: Subject) => {
+  const getSubjectSelection = () => {
     return (
-      <TabsContent value={subject} className="h-full space-y-4">
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-12">
-          <OverView subject={subject} />
-          <RecentResults subject={subject} />
-        </div>
-      </TabsContent>
+      <div className="flex flex-col gap-[10px]">
+        <Label>Subject</Label>
+        <ToggleGroup
+          value={selectedSubject}
+          onValueChange={updateSelectedSubject}
+          type="single"
+          className="border-2 rounded-sm gap-0"
+        >
+          <ToggleGroupItem
+            className="rounded-none data-[state=on]:bg-[var(--active-bg-color)]"
+            value="ENGLISH"
+          >
+            English
+          </ToggleGroupItem>
+          <ToggleGroupItem
+            className="rounded-none data-[state=on]:bg-[var(--active-bg-color)]"
+            disabled
+            value="MARATHI"
+          >
+            Marathi
+          </ToggleGroupItem>
+        </ToggleGroup>
+      </div>
+    );
+  };
+
+  const getTypingModeSelection = () => {
+    return (
+      <div className="flex flex-col gap-[10px]">
+        <Label>Typing Mode</Label>
+        <ToggleGroup
+          value={selectedMode}
+          onValueChange={updateSelectedMode}
+          type="single"
+          className="border-2 rounded-sm gap-0"
+        >
+          <ToggleGroupItem
+            className="rounded-none data-[state=on]:bg-[var(--active-bg-color)]"
+            value="TEST"
+          >
+            Speed Test
+          </ToggleGroupItem>
+          <ToggleGroupItem
+            className="rounded-none data-[state=on]:bg-[var(--active-bg-color)]"
+            value="PRACTICE"
+          >
+            Practice
+          </ToggleGroupItem>
+        </ToggleGroup>
+      </div>
+    );
+  };
+
+  const getContentDom = () => {
+    return (
+      <div className="h-full space-y-4">
+        <OverviewWrapper mode={selectedMode} subject={selectedSubject} />
+        <RecentResults mode={selectedMode} subject={selectedSubject} />
+      </div>
     );
   };
 
   return (
     <>
       <PageHead title="Dashboard" />
-      <div className="flex-1 space-y-4 p-4 pt-6 md:p-8">
+      <div className="h-full flex-1 space-y-8 p-4 pt-6 md:p-8">
         <div className="flex items-center justify-between space-y-2">
           <h2 className="text-3xl font-bold tracking-tight">
             Hi {userDetails?.name || ""}, Welcome back 👋
           </h2>
         </div>
-        <Tabs defaultValue="ENGLISH" className=" flex-1 space-y-4">
-          <TabsList>
-            <TabsTrigger value="ENGLISH">English</TabsTrigger>
-          </TabsList>
-          {getTabContentDom("ENGLISH")}
-          {getTabContentDom("MARATHI")}
-        </Tabs>
+        <div className="flex flex-col flex-1 space-y-8">
+          <div className="flex gap-12">
+            {getSubjectSelection()}
+            {getTypingModeSelection()}
+          </div>
+          {getContentDom()}
+        </div>
       </div>
     </>
   );
