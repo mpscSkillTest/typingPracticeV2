@@ -6,8 +6,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { Subject, UserDetails } from "../../../types";
 import axios from "../../../config/customAxios";
 import PageHead from "../../shared/page-head";
-import OverView from "./OverView";
-import RecentResults from "./RecentResults";
+import OverView from "./Overview/OverView";
+import RecentResults from "./RecentResults/RecentResults";
 
 const StudentDashboard = () => {
   const [showLoader, setShowLoader] = useState<boolean>(true);
@@ -55,7 +55,7 @@ const StudentDashboard = () => {
   const getTabContentDom = (subject: Subject) => {
     return (
       <TabsContent value={subject} className="h-full space-y-4">
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-8">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-12">
           <OverView subject={subject} />
           <RecentResults subject={subject} />
         </div>

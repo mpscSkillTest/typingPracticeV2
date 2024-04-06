@@ -39,7 +39,7 @@ export const submitResults = async (req, res) => {
     errors_count: totalErrorCount,
     backspaces_count: backspacesCount,
     total_words_count: expectedWords?.length || 0,
-    typed_words_count: expectedWords?.length || 0,
+    typed_words_count: typedWords?.length || 0,
     type: mode,
     accuracy,
     duration,

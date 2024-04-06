@@ -53,7 +53,6 @@ export const getStudentRecentResults = async (req, res) => {
 
     if (resultsError) {
       logger.error("Fetching Recent Results for user Failed");
-      console.log({ resultsError });
       throw new Error(resultsError);
     }
 
@@ -84,8 +83,6 @@ export const getStudentRecentResults = async (req, res) => {
           typedWordsCount: typed_words_count,
         };
       }) || [];
-
-    console.log({ recentResults });
 
     res.status(StatusCodes.OK).send({
       results: recentResults,

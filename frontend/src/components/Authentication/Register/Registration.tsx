@@ -1,4 +1,3 @@
-"use client";
 import { useState } from "react";
 import type { HTMLInputTypeAttribute } from "react";
 import { useForm } from "react-hook-form";

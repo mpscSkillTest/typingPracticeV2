@@ -943,6 +943,18 @@
   resolved "https://registry.yarnpkg.com/@tabler/icons/-/icons-3.1.0.tgz#d69d184eae572db6adb452b511562442133cc26d"
   integrity sha512-CpZGyS1IVJKFcv88yZ2sYZIpWWhQ6oy76BQKQ5SF0fGgOqgyqKdBGG/YGyyMW632on37MX7VqQIMTzN/uQqmFg==
 
+"@tanstack/react-table@^8.15.3":
+  version "8.15.3"
+  resolved "https://registry.yarnpkg.com/@tanstack/react-table/-/react-table-8.15.3.tgz#9933222642d5d5bdaea5a78cf6c5d42aa86a1c22"
+  integrity sha512-aocQ4WpWiAh7R+yxNp+DGQYXeVACh5lv2kk96DjYgFiHDCB0cOFoYMT/pM6eDOzeMXR9AvPoLeumTgq8/0qX+w==
+  dependencies:
+    "@tanstack/table-core" "8.15.3"
+
+"@tanstack/table-core@8.15.3":
+  version "8.15.3"
+  resolved "https://registry.yarnpkg.com/@tanstack/table-core/-/table-core-8.15.3.tgz#1a11cef82a458e90694bedfb40dcff610e69460e"
+  integrity sha512-wOgV0HfEvuMOv8RlqdR9MdNNqq0uyvQtP39QOvGlggHvIObOE4exS+D5LGO8LZ3LUXxId2IlUKcHDHaGujWhUg==
+
 "@types/babel__core@^7.20.5":
   version "7.20.5"
   resolved "https://registry.yarnpkg.com/@types/babel__core/-/babel__core-7.20.5.tgz#3df15f27ba85319caa07ba08d0721889bb39c017"

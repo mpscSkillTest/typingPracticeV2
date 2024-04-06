@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import type { Subject } from "../../../types";
+import type { Subject } from "../../../../types";
 
 type Props = {
   subject: Subject;
