@@ -14,7 +14,7 @@ const StudentDashboard = () => {
   const [showLoader, setShowLoader] = useState<boolean>(true);
   const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
   const [selectedMode, setSelectedMode] = useState<TypingMode>("TEST");
-  const [selectedSubject, setSelectedSubject] = useState<Subject>("ENGLISH");
+  const [selectedSubject, setSelectedSubject] = useState<Subject>("MARATHI");
 
   const { toast } = useToast();
 
@@ -79,16 +79,15 @@ const StudentDashboard = () => {
         >
           <ToggleGroupItem
             className="rounded-none data-[state=on]:bg-primary data-[state=on]:text-white data-[state=on]:rounded-md"
-            value="ENGLISH"
-          >
-            English
-          </ToggleGroupItem>
-          <ToggleGroupItem
-            className="rounded-none data-[state=on]:bg-primary data-[state=on]:text-white data-[state=on]:rounded-md"
-            disabled
             value="MARATHI"
           >
             Marathi
+          </ToggleGroupItem>
+          <ToggleGroupItem
+            className="rounded-none data-[state=on]:bg-primary data-[state=on]:text-white data-[state=on]:rounded-md"
+            value="ENGLISH"
+          >
+            English
           </ToggleGroupItem>
         </ToggleGroup>
       </div>

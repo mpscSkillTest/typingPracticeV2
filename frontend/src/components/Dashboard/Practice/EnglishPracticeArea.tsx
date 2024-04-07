@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/select";
 import { Subject, UserDetails, TypingMode, Passage } from "@/types";
 import { handleEnglishKeyDown } from "./utils/handleEnglishKeydown";
+import { handleMarathiKeyDown } from "./utils/handleMarathiKeydown";
 import axios from "../../../config/customAxios";
 import Result from "./Result";
 import Timer from "../../shared/timer";
@@ -59,6 +60,10 @@ const EnglishPracticeArea = ({ userDetails, subject, mode }: Props) => {
 
   const userResult = useRef<UserResult>({});
 
+  const userInputRef = useRef<HTMLTextAreaElement>(null);
+
+  const englishInputText = useRef<string>("");
+
   const { userId } = userDetails;
 
   const toast = useToast();
@@ -74,19 +79,55 @@ const EnglishPracticeArea = ({ userDetails, subject, mode }: Props) => {
     if (!shouldStartTimer) {
       setShouldStartTimer(true);
     }
-    const { updatedBackspacesCount, updatedKeystrokesCount } =
-      handleEnglishKeyDown({
+    if (subject === "ENGLISH") {
+      const { updatedBackspacesCount, updatedKeystrokesCount } =
+        handleEnglishKeyDown({
+          event,
+          inputText: userInputText,
+          currentBackspacesCount: backspacesCount,
+          currentKeystrokesCount: keystrokesCount,
+        });
+
+      setBackspacesCount(updatedBackspacesCount);
+      setKeystrokesCount(updatedKeystrokesCount);
+    }
+
+    if (subject === "MARATHI") {
+      const marathiTranslationDetails = handleMarathiKeyDown({
         event,
-        inputText: userInputText,
+        userInputRef: userInputRef.current,
+        EnglishTextReal: englishInputText.current,
         currentBackspacesCount: backspacesCount,
         currentKeystrokesCount: keystrokesCount,
+        currentTypedWordsCount: totalTypedWords,
       });
-    setBackspacesCount(updatedBackspacesCount);
-    setKeystrokesCount(updatedKeystrokesCount);
+      const {
+        updatedBackspacesCount,
+        translatedMarathiText,
+        updatedEnglishTextInput,
+        updatedCursorPosition,
+        updatedTypedWordsCount,
+        updatedKeystrokesCount,
+      } = marathiTranslationDetails || {};
+      englishInputText.current = updatedEnglishTextInput;
+      if (userInputRef.current) {
+        userInputRef.current.selectionStart = updatedCursorPosition;
+      }
+      const totalPendingWordsClone =
+        totalWords.current - updatedTypedWordsCount || 0;
+      setTotalPendingWords(totalPendingWordsClone);
+      setKeystrokesCount(updatedKeystrokesCount);
+      setTotalTypedWords(updatedTypedWordsCount);
+      setBackspacesCount(updatedBackspacesCount);
+      setUserInputText(translatedMarathiText);
+    }
   };
 
-  const onUserInputChange: ChangeEventHandler = (event) => {
+  const onUserInputChange: ChangeEventHandler<HTMLTextAreaElement> = (
+    event
+  ) => {
     if (subject === "MARATHI") {
+      event.preventDefault?.();
       return;
     }
     if (subject === "ENGLISH") {
@@ -196,8 +237,8 @@ const EnglishPracticeArea = ({ userDetails, subject, mode }: Props) => {
   const getUserInputPassage = () => {
     return (
       <Textarea
-        unselectable="on"
         spellCheck={false}
+        ref={userInputRef}
         value={userInputText}
         onKeyDown={onUserInputKeyDown}
         onChange={onUserInputChange}

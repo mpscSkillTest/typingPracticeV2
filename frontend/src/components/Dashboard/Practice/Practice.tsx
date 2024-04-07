@@ -72,12 +72,16 @@ const Practice = ({ mode, title }: Props) => {
     <>
       <PageHead title={title} />
       <div className="flex-1 space-y-4 p-4 pt-6 lg:p-8">
-        <Tabs defaultValue="ENGLISH" className=" flex-1 space-y-4">
+        <Tabs defaultValue="MARATHI" className=" flex-1 space-y-4">
           <TabsList className="h-[64px] w-[240px] my-[20px]">
+            <TabsTrigger className="h-full w-[50%]" value="MARATHI">
+              Marathi
+            </TabsTrigger>
             <TabsTrigger className="h-full w-[50%]" value="ENGLISH">
               English
             </TabsTrigger>
           </TabsList>
+          {getTabContentDom("MARATHI")}
           {getTabContentDom("ENGLISH")}
         </Tabs>
       </div>
