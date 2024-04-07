@@ -17,13 +17,19 @@ export default function MobileSidebar({
   return (
     <>
       <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
-        <SheetContent side="left" className="bg-background !px-0">
-          <div className="space-y-4 py-4">
-            <div className="space-y-4 px-3 py-2">
+        <SheetContent
+          side="left"
+          className="bg-primary"
+          closeIconProps={{
+            className: "w-7 h-7 stroke-secondary",
+          }}
+        >
+          <div className="space-y-4 py-4 h-full">
+            <div className="flex flex-col space-y-4 px-3 py-2 h-full">
               <Link to="/" className="py-2 text-2xl font-bold text-white ">
                 Logo
               </Link>
-              <div className="space-y-1 px-2">
+              <div className="flex flex-1 flex-col justify-between space-y-8 px-2">
                 <DashboardNav items={navItems} setOpen={setSidebarOpen} />
                 <Logout />
               </div>

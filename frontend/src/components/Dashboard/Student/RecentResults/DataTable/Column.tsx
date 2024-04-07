@@ -1,7 +1,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUp, ArrowDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { formatToPercent } from "../../../../../utils/formatter";
+import { formatToPercent, formateDate } from "../../../../../utils/formatter";
 import type { Result } from "../../../../../types";
 
 const getFormattedNumber = (value: number | string) => {
@@ -13,7 +13,7 @@ const getColumnHeaderWithSort = (column, headerText: string) => {
   const isSorted = getIsSorted?.();
   return (
     <Button
-      className="pr-0"
+      className="p-0"
       variant="ghost"
       onClick={() => toggleSorting(isSorted === "asc")}
     >
@@ -25,6 +25,12 @@ const getColumnHeaderWithSort = (column, headerText: string) => {
 };
 
 export const Columns: ColumnDef<Result>[] = [
+  {
+    accessorKey: "date",
+    enableSorting: true,
+    cell: ({ row }) => formateDate(row.getValue("date")),
+    header: ({ column }) => getColumnHeaderWithSort(column, "Date"),
+  },
   { accessorKey: "passageTitle", header: "Passage Title" },
   {
     accessorKey: "totalWordsCount",

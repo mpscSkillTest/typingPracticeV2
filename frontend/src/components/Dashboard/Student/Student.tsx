@@ -78,13 +78,13 @@ const StudentDashboard = () => {
           className="border-2 rounded-sm gap-0"
         >
           <ToggleGroupItem
-            className="rounded-none data-[state=on]:bg-[var(--active-bg-color)]"
+            className="rounded-none data-[state=on]:bg-primary data-[state=on]:text-white data-[state=on]:rounded-md"
             value="ENGLISH"
           >
             English
           </ToggleGroupItem>
           <ToggleGroupItem
-            className="rounded-none data-[state=on]:bg-[var(--active-bg-color)]"
+            className="rounded-none data-[state=on]:bg-primary data-[state=on]:text-white data-[state=on]:rounded-md"
             disabled
             value="MARATHI"
           >
@@ -106,13 +106,13 @@ const StudentDashboard = () => {
           className="border-2 rounded-sm gap-0"
         >
           <ToggleGroupItem
-            className="rounded-none data-[state=on]:bg-[var(--active-bg-color)]"
+            className="rounded-none data-[state=on]:bg-primary data-[state=on]:text-white data-[state=on]:rounded-md"
             value="TEST"
           >
             Speed Test
           </ToggleGroupItem>
           <ToggleGroupItem
-            className="rounded-none data-[state=on]:bg-[var(--active-bg-color)]"
+            className="rounded-none data-[state=on]:bg-primary data-[state=on]:text-white data-[state=on]:rounded-md"
             value="PRACTICE"
           >
             Practice

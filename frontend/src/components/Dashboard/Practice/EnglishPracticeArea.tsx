@@ -283,7 +283,7 @@ const EnglishPracticeArea = ({ userDetails, subject, mode }: Props) => {
     <>
       <div className="grid grid-cols-1 gap-[20px] xl:grid-cols-4">
         <div className="col-span-3">
-          <div className="flex items-center justify-center">
+          <div className="flex gap-2 items-center justify-center">
             {getPassageSelectDropdown()}
             <Timer
               interval={1000}
