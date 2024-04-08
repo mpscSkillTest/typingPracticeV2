@@ -64,7 +64,7 @@ const EnglishPracticeArea = ({ userDetails, subject, mode }: Props) => {
 
   const englishInputText = useRef<string>("");
 
-  const { userId } = userDetails;
+  const { userId } = userDetails || {};
 
   const toast = useToast();
 
@@ -290,6 +290,11 @@ const EnglishPracticeArea = ({ userDetails, subject, mode }: Props) => {
   const resetUserActions = (updatedTotalWords: number = 0) => {
     totalWords.current = updatedTotalWords;
     userResult.current = {};
+    englishInputText.current = "";
+    if (userInputRef.current) {
+      userInputRef.current.value = "";
+      userInputRef.current.selectionStart = 0;
+    }
     setKeystrokesCount(0);
     setBackspacesCount(0);
     setTotalTypedWords(0);
