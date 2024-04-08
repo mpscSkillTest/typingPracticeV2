@@ -110,15 +110,6 @@ export function handleMarathiKeyDown({
     } else {
       currentCursorPosition = 0;
     }
-
-    return {
-      updatedBackspacesCount,
-      updatedKeystrokesCount,
-      translatedMarathiText: currentUserInputValue,
-      updatedEnglishTextInput,
-      updatedTypedWordsCount,
-      updatedCursorPosition: currentCursorPosition,
-    };
   }
 
   // if key entered which is does not include mapping return
