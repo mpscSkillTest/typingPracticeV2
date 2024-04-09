@@ -4,7 +4,17 @@ import { AUTH_TOKEN_KEY } from "../utils/constant";
 
 const BASE_URL = "http://localhost:5000/api";
 
-const PROD_BASE_URL = "https://typingpracticev2.onrender.com/api";
+/***
+ * TODO: this was causing issue for wifi connection due to region mismatch between
+ * db hosting and application hosting
+ */
+/* const PROD_BASE_URL_SINGAPORE_VERSION =
+  "https://typingpracticev2.onrender.com/api"; */
+
+/**
+ * Deployed on US-west region
+ */
+const PROD_BASE_URL = "https://typingpracticev2-v5n2.onrender.com/api";
 
 const isLocalEnv = process.env.NODE_ENV === "development";
 

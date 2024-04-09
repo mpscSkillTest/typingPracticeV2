@@ -44,7 +44,7 @@ const remingtonMapping: Record<string, string> = {
   "[": "ख्",
   "]": ",",
   ";": "य",
-  "?": "घ्‍",
+  //  "?": "घ्‍", for now updated as // Need to test for duplicate keys
   ",": "ए",
   ".": "ण्",
   "/": "ध्",
@@ -92,7 +92,7 @@ const remingtonMapping: Record<string, string> = {
   '"': "ष्",
   "<": "ढ",
   ">": "झ",
-  "?": "घ्", // Need to test for duplicate keys
+  "?": "घ्",
   "'": "श्‍",
 };
 
