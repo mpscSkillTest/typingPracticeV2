@@ -97,7 +97,6 @@ export const getStudentRecentResults = async (req, res) => {
     });
     return;
   } catch (error) {
-    console.log(error);
     logger.error(error);
     res.status(StatusCodes.BAD_REQUEST).send({
       results: [],

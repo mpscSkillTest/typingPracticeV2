@@ -5,11 +5,13 @@ import {
   signup,
   logout,
   verify,
+  resetPassword,
 } from "../controllers/index.js";
 import {
   userLoginSchema,
   userRegistrationSchema,
   forgotPasswordSchema,
+  resetPasswordSchema,
 } from "../schema/user.schema.js";
 import { validateFormData } from "../middlewares/index.js";
 
@@ -24,9 +26,15 @@ AuthorizationRouter.post(
 AuthorizationRouter.post("/login", validateFormData(userLoginSchema), login);
 
 AuthorizationRouter.post(
-  "/forgotPassword",
+  "/forgot-password",
   validateFormData(forgotPasswordSchema),
   forgotPassword
+);
+
+AuthorizationRouter.post(
+  "/reset-password",
+  validateFormData(resetPasswordSchema),
+  resetPassword
 );
 
 AuthorizationRouter.post("/verify", verify);

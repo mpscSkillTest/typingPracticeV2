@@ -6,6 +6,11 @@ import UserTypeEnum from "../../enums/UserTypeEnum.js";
 export const signup = async (req, res) => {
   const { emailId, password, contactNumber, userName: name } = req.body || {};
 
+  logger.info(
+    "signing up for new user with following data",
+    JSON.stringify(req?.body || {})
+  );
+
   try {
     const { data, error } = await supabase.auth.signUp({
       email: emailId,
@@ -14,18 +19,21 @@ export const signup = async (req, res) => {
         data: {
           email: emailId,
           name,
-          contactNumber,
+          contactNumber: parseInt(contactNumber),
           type: UserTypeEnum.STUDENT.name,
         },
       },
     });
     if (data?.user) {
+      logger.error(`sign up process successful for ${emailId}`);
       res.status(StatusCodes.OK).send({ user: data.user.id });
       return;
     } else {
       throw new Error(error);
     }
   } catch (error) {
+    logger.error(`sign up process failed for ${emailId}`);
+    logger.error(`stack trace up process failed for ${error?.stack}`);
     logger.error(error);
     res
       .status(StatusCodes.BAD_REQUEST)

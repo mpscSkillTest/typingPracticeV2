@@ -39,7 +39,8 @@ function Registration() {
       if (response.data.user) {
         toast({
           title: "Confirmation Mail Sent",
-          description: "Please verify your email address",
+          description:
+            "Please verify your email address. Please check your spam or junk folder if you don't see the email in your inbox.",
         });
       }
     } catch (error) {

@@ -1,18 +1,22 @@
+import { Navigate } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Toaster } from "@/components/ui/toaster";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 import { getHashParams } from "../utils/utils";
 import Registration from "../components/Authentication/Register/Registration";
 import Login from "../components/Authentication/Login/Login";
+import ResetPassword from "../components/Authentication/ResetPassword/ResetPassword";
 
 type Props = {
-  type: "signin" | "signup" | "confirm-signup";
+  type: "signin" | "signup" | "confirm-signup" | "reset-password";
 };
 
 function Authentication({ type = "signin" }: Props) {
   const hasParams = getHashParams();
 
   const confirmationUrl = hasParams["confirmation_url"] || "";
+  const accessTokenFromUrl = hasParams["accessToken"] || "";
 
   const redirectToDashboard = () => {
     if (confirmationUrl) {
@@ -20,6 +24,10 @@ function Authentication({ type = "signin" }: Props) {
       return;
     }
   };
+
+  if (!accessTokenFromUrl && type === "reset-password") {
+    return <Navigate to="/signin" replace />;
+  }
 
   const getUserDetailsComponent = () => {
     if (type === "signin" || type === "signup") {
@@ -41,13 +49,21 @@ function Authentication({ type = "signin" }: Props) {
         </Tabs>
       );
     }
+    if (type === "reset-password") {
+      return (
+        <div className="h-full flex flex-col gap-5 justify-center items-center">
+          <Label>Reset Password</Label>
+          <ResetPassword accessToken={accessTokenFromUrl} />
+        </div>
+      );
+    }
     return null;
   };
 
   if (type === "confirm-signup") {
     return (
       <Button
-        className="relative top-[50%] left-[50%]"
+        className="relative m-5 top-[50%] left-[50%]"
         onClick={redirectToDashboard}
       >
         Confirm Your Email
