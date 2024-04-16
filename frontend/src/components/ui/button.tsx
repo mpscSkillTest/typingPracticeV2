@@ -49,15 +49,18 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       asChild = false,
       children,
       showLoader = false,
+      disabled = false,
       ...props
     },
     ref
   ) => {
+    const updatedDisabled = showLoader || disabled;
     const Comp = asChild ? Slot : "button";
     return (
       <Comp
         className={cn(buttonVariants({ variant, size, className }))}
         ref={ref}
+        disabled={updatedDisabled}
         {...props}
       >
         <>

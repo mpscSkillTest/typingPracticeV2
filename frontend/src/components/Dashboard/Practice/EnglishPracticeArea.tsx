@@ -17,6 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Icons } from "@/components/ui/icons";
 import { Subject, UserDetails, TypingMode, Passage } from "@/types";
 import { handleEnglishKeyDown } from "./utils/handleEnglishKeydown";
 import { handleMarathiKeyDown } from "./utils/handleMarathiKeydown";
@@ -56,6 +57,8 @@ const EnglishPracticeArea = ({ userDetails, subject, mode }: Props) => {
   const [totalTypedWords, setTotalTypedWords] = useState<number>(0);
   const [totalPendingWords, setTotalPendingWords] = useState<number>(0);
   const [shouldShowLoader, setShouldShowLoader] = useState<boolean>(false);
+  const [detailsLoading, setDetailsLoading] = useState<boolean>(false);
+
   const [duration, setDuration] = useState<number>(0);
 
   const userResult = useRef<UserResult>({});
@@ -212,6 +215,7 @@ const EnglishPracticeArea = ({ userDetails, subject, mode }: Props) => {
 
   const getAvailablePassages = async () => {
     let newPassages = [];
+    setDetailsLoading(true);
     try {
       const response = await axios.post("/student/passages/", {
         mode,
@@ -230,6 +234,8 @@ const EnglishPracticeArea = ({ userDetails, subject, mode }: Props) => {
         description: errorMessage,
         className: "my-[10px]",
       });
+    } finally {
+      setDetailsLoading(false);
     }
     return newPassages;
   };
@@ -325,49 +331,55 @@ const EnglishPracticeArea = ({ userDetails, subject, mode }: Props) => {
     }
   }, [availablePassages, selectedPassageId]);
 
-  return (
-    <>
-      <div className="grid grid-cols-1 gap-[20px] xl:grid-cols-4">
-        <div className="col-span-3">
-          <div className="flex gap-2 items-center justify-center">
-            {getPassageSelectDropdown()}
-            <Timer
-              interval={1000}
-              isCountdown={!!TimerDetails[mode].isCountDown}
-              initialValue={TimerDetails[mode].initialValue}
-              shouldStart={shouldStartTimer}
-              updateDuration={setDuration}
-              shouldResetTimer={selectedPassageId}
-            />
-          </div>
+  if (detailsLoading) {
+    return (
+      <div className="h-full flex items-center justify-center">
+        <Icons.spinner height={48} width={48} className="animate-spin" />
+      </div>
+    );
+  }
 
-          <div className="flex flex-col gap-[20px]">
-            {getUserPassage()}
-            <div className="flex gap-[10px] flex-col">
-              {getUserInputPassage()}
-              <Button
-                disabled={!!shouldDisableUserInputText()}
-                onClick={onSubmitPassage}
-                showLoader={shouldShowLoader}
-              >
-                Submit Passage
-              </Button>
-            </div>
-          </div>
-        </div>
-        <div className="col-span-3 xl:col-span-1">
-          <Result
-            totalWordsCount={totalWords.current}
-            keystrokesCount={keystrokesCount}
-            backspaceCount={backspacesCount}
-            accuracy={userResult.current.accuracy || 0}
-            errorCount={userResult.current.totalErrorCount || 0}
-            typedWordsCount={totalTypedWords}
-            pendingWordsCount={totalPendingWords}
+  return (
+    <div className="grid grid-cols-1 gap-[20px] xl:grid-cols-4">
+      <div className="col-span-3">
+        <div className="flex gap-2 items-center justify-center">
+          {getPassageSelectDropdown()}
+          <Timer
+            interval={1000}
+            isCountdown={!!TimerDetails[mode].isCountDown}
+            initialValue={TimerDetails[mode].initialValue}
+            shouldStart={shouldStartTimer}
+            updateDuration={setDuration}
+            shouldResetTimer={selectedPassageId}
           />
         </div>
+
+        <div className="flex flex-col gap-[20px]">
+          {getUserPassage()}
+          <div className="flex gap-[10px] flex-col">
+            {getUserInputPassage()}
+            <Button
+              disabled={!!shouldDisableUserInputText()}
+              onClick={onSubmitPassage}
+              showLoader={shouldShowLoader}
+            >
+              Submit Passage
+            </Button>
+          </div>
+        </div>
       </div>
-    </>
+      <div className="col-span-3 xl:col-span-1">
+        <Result
+          totalWordsCount={totalWords.current}
+          keystrokesCount={keystrokesCount}
+          backspaceCount={backspacesCount}
+          accuracy={userResult.current.accuracy || 0}
+          errorCount={userResult.current.totalErrorCount || 0}
+          typedWordsCount={totalTypedWords}
+          pendingWordsCount={totalPendingWords}
+        />
+      </div>
+    </div>
   );
 };
 

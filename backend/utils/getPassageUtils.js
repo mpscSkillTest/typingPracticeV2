@@ -125,19 +125,46 @@ export const getUserResults = ({ expectedWords, typedWords }) => {
 
   const totalExpectedWords = expectedWords.length;
   const totalTypedWords = typedWords.length;
+  let hasLastIndexUpdated = false;
 
-  const totalPendingWords =
-    totalExpectedWords - (lastCorrectWordIndexFromPassage + 1);
+  let lastCorrectWordIndexFromPassageClone = lastCorrectWordIndexFromPassage;
 
-  const totalCorrectWords = correctWordsIndicesInPassage.length || 0;
+  /**
+   * This following handling to adjust user last word input which might have been made
+   * incorrectly or due to time constraint might be incomplete. So last word will be consider for
+   * calculating skipped words if difference is less than 10 words between last 2 indices or else
+   * we will consider last typed word as spelling mistake and will increment that count only by 1
+   */
+  if (correctWordsIndicesInPassage?.length > 1) {
+    const secondLastCorrectWordIndex =
+      correctWordsIndicesInPassage[correctWordsIndicesInPassage.length - 2];
+    const lastLastCorrectWordIndex =
+      correctWordsIndicesInPassage[correctWordsIndicesInPassage.length - 1];
+    const skippedWordsBetweenLastIndices =
+      lastLastCorrectWordIndex - secondLastCorrectWordIndex;
+    if (skippedWordsBetweenLastIndices > 10) {
+      lastCorrectWordIndexFromPassageClone = secondLastCorrectWordIndex;
+      hasLastIndexUpdated = true;
+    }
+  }
 
-  const extraIncorrectWordsTyped =
+  const totalSkippedWords =
+    totalExpectedWords - (lastCorrectWordIndexFromPassageClone + 1);
+
+  let totalCorrectWords = correctWordsIndicesInPassage.length || 0;
+
+  let extraIncorrectWordsTyped =
     totalTypedWords - (lastCorrectWordIndexFromTypedWords + 1);
+
+  if (hasLastIndexUpdated) {
+    totalCorrectWords = correctWordsIndicesInPassage.length - 1 || 0;
+    extraIncorrectWordsTyped += 1;
+  }
 
   const totalErrorCount =
     totalExpectedWords +
     extraIncorrectWordsTyped -
-    (totalPendingWords + totalCorrectWords);
+    (totalSkippedWords + totalCorrectWords);
 
   const accuracy =
     (totalCorrectWords / (totalCorrectWords + totalErrorCount)) * 100;
@@ -145,7 +172,7 @@ export const getUserResults = ({ expectedWords, typedWords }) => {
   return {
     totalErrorCount,
     totalCorrectWords,
-    totalPendingWords,
+    totalSkippedWords,
     totalTypedWords,
     accuracy,
     correctWordIndices: correctWordsIndicesInPassage,
