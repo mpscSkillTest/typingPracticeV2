@@ -7,6 +7,7 @@ import { getHashParams } from "../utils/utils";
 import Registration from "../components/Authentication/Register/Registration";
 import Login from "../components/Authentication/Login/Login";
 import ResetPassword from "../components/Authentication/ResetPassword/ResetPassword";
+import Typingsvg from "../assets/typing.svg";
 
 type Props = {
   type: "signin" | "signup" | "confirm-signup" | "reset-password";
@@ -73,7 +74,41 @@ function Authentication({ type = "signin" }: Props) {
 
   return (
     <div className="flex h-dvh w-dvw overflow-hidden">
-      <div className="h-[inherit] bg-primary w-0 md:w-[50%]"></div>
+      <div className="h-[inherit] bg-primary w-0 md:w-[50%] text-white">
+       
+        <div className="flex items-center justify-center h-screen">
+          <div className="left_content px-5 text-xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="container col-span-9 col-span-12 md:col-span-9  w-full md:w-[75%]">
+              <h5 className="text-center text-orange-500">
+                Essential Guidelines for Efficient and Accurate Practice
+              </h5>
+              <ol className="mt-5 text-sm list-decimal">
+                <li className="mb-5">
+                  Start with proper hand placement on the keyboard, using the
+                  home row keys as a reference.
+                </li>
+                <li className="mb-5">
+                  Begin with basic typing exercises to build muscle memory and
+                  improve finger coordination.
+                </li>
+                <li className="mb-5">
+                  Focus on accuracy over speed initially, gradually increasing
+                  your typing speed as you become more comfortable.
+                </li>
+                <li className="mb-5">
+                  Practice regularly, incorporating varied texts and typing
+                  challenges to enhance your proficiency.
+                </li>
+                <li>
+                  Take short breaks to prevent fatigue and maintain
+                  concentration during typing sessions.
+                </li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div className="flex align-middle justify-center w-[100%] md:w-[50%] h-[inherit]">
         {getUserDetailsComponent()}
       </div>
