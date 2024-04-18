@@ -58,6 +58,8 @@ const EnglishPracticeArea = ({ userDetails, subject, mode }: Props) => {
   const [totalPendingWords, setTotalPendingWords] = useState<number>(0);
   const [shouldShowLoader, setShouldShowLoader] = useState<boolean>(false);
   const [detailsLoading, setDetailsLoading] = useState<boolean>(false);
+  const [shouldShowAutoSubmitWarning, setShouldShowAutoSubmitWarning] =
+    useState<boolean>(false);
 
   const [duration, setDuration] = useState<number>(0);
 
@@ -116,8 +118,12 @@ const EnglishPracticeArea = ({ userDetails, subject, mode }: Props) => {
       if (userInputRef.current) {
         userInputRef.current.selectionStart = updatedCursorPosition;
       }
-      const totalPendingWordsClone =
+      let totalPendingWordsClone =
         totalWords.current - updatedTypedWordsCount || 0;
+
+      totalPendingWordsClone =
+        totalPendingWordsClone >= 0 ? totalPendingWordsClone : 0;
+
       setTotalPendingWords(totalPendingWordsClone);
       setKeystrokesCount(updatedKeystrokesCount);
       setTotalTypedWords(updatedTypedWordsCount);
@@ -136,7 +142,9 @@ const EnglishPracticeArea = ({ userDetails, subject, mode }: Props) => {
     if (subject === "ENGLISH") {
       const updatedInputText = event.target.value || "";
       const totalTypedWordsClone = updatedInputText.trim().split(" ").length;
-      const totalPendingWordsClone = totalWords.current - totalTypedWordsClone;
+      let totalPendingWordsClone = totalWords.current - totalTypedWordsClone;
+      totalPendingWordsClone =
+        totalPendingWordsClone >= 0 ? totalPendingWordsClone : 0;
       setTotalTypedWords(totalTypedWordsClone);
       setTotalPendingWords(totalPendingWordsClone);
       setUserInputText(updatedInputText);
@@ -252,6 +260,7 @@ const EnglishPracticeArea = ({ userDetails, subject, mode }: Props) => {
         onPaste={restrictActions}
         onCopy={restrictActions}
         onWheel={restrictActions}
+        disabled={!!userResult.current?.totalTypedWords}
         className={`h-[200px] resize-none font-normal text-md text-black ${classes.userSelect}`}
         placeholder="Type your passage here."
       />
@@ -310,7 +319,10 @@ const EnglishPracticeArea = ({ userDetails, subject, mode }: Props) => {
     setShouldStartTimer(false);
     setShouldShowResult(false);
     setShouldShowLoader(false);
+    setShouldShowAutoSubmitWarning(false);
   };
+
+  const remainingTime = TimerDetails[mode].initialValue - duration || 0;
 
   useEffect(() => {
     fetchDetails();
@@ -330,6 +342,18 @@ const EnglishPracticeArea = ({ userDetails, subject, mode }: Props) => {
       setQuestionPassage(passageText || "");
     }
   }, [availablePassages, selectedPassageId]);
+
+  useEffect(() => {
+    // auto submit on time up
+    if (mode === "TEST") {
+      if (remainingTime && remainingTime < 60 && !shouldShowAutoSubmitWarning) {
+        setShouldShowAutoSubmitWarning(true);
+      } else if (userInputText && remainingTime === 0) {
+        onSubmitPassage();
+        setShouldShowAutoSubmitWarning(false);
+      }
+    }
+  }, [remainingTime]);
 
   if (detailsLoading) {
     return (
@@ -358,6 +382,17 @@ const EnglishPracticeArea = ({ userDetails, subject, mode }: Props) => {
           {getUserPassage()}
           <div className="flex gap-[10px] flex-col">
             {getUserInputPassage()}
+
+            {shouldShowAutoSubmitWarning ? (
+              <h4 className="align-middle text-lg max-w-max m-auto">
+                This passage will be submitted automatically in
+                <span
+                  className={`text-red-400 font-bold ${classes.animateBlink}`}
+                >{` ${
+                  TimerDetails.TEST.initialValue - duration
+                } Seconds`}</span>
+              </h4>
+            ) : null}
             <Button
               disabled={!!shouldDisableUserInputText()}
               onClick={onSubmitPassage}

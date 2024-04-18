@@ -23,9 +23,9 @@ export const getGeneralAccuracyChartData = (
   results: Result[]
 ): ChartDataType[] => {
   return results?.map?.((result: Result, index: number) => {
-    const { accuracy, errorsCount } = result || {};
+    const { accuracy = 0, errorsCount = 0 } = result || {};
     return {
-      accuracy: accuracy.toFixed(2),
+      accuracy: accuracy?.toFixed?.(2) || 0,
       error: errorsCount,
       name: `Test ${index + 1}`,
     };

@@ -57,28 +57,17 @@ export const getCompleteWordDetails = ({
   //indices of correct words in question passage to highlight in green
   const correctWordsIndicesInPassage = [];
 
-  // index of last correct word from question passage to count skipped words
-  let lastCorrectWordIndexFromPassage = -1;
-
-  // index of last correct word from typed words passage to count incorrect words after last correct words
-  let lastCorrectWordIndexFromTypedWords = -1;
-
-  const totalCorrectWordsInSequence = correctWordsInSequence.length;
-  const totalWordsFromPassage = expectedWords.length;
-
-  const lastCorrectWord =
-    correctWordsInSequence[totalCorrectWordsInSequence - 1];
+  const correctWordIndicesFromTypedWords = [];
 
   // Iterate through both arrays
   while (
-    typedWordIndex < totalCorrectWordsInSequence &&
-    expectedWordsIndex < totalWordsFromPassage
+    typedWordIndex < correctWordsInSequence.length &&
+    expectedWordsIndex < expectedWords.length
   ) {
     const currentExpectedWord = expectedWords[expectedWordsIndex];
     const currentCorrectWord = correctWordsInSequence[typedWordIndex];
     // If the words match, move to the next word in both arrays
     if (currentExpectedWord === currentCorrectWord) {
-      lastCorrectWordIndexFromPassage = expectedWordsIndex;
       correctWordsIndicesInPassage.push(expectedWordsIndex);
       typedWordIndex += 1;
     } else if (!expectedWords.includes(currentCorrectWord)) {
@@ -88,21 +77,26 @@ export const getCompleteWordDetails = ({
     expectedWordsIndex += 1;
   }
 
-  if (lastCorrectWord) {
-    for (
-      let index = 0;
-      index < typedWords.length && index <= lastCorrectWordIndexFromPassage;
-      index += 1
-    ) {
-      if (typedWords[index] === lastCorrectWord) {
-        lastCorrectWordIndexFromTypedWords = index;
-      }
+  expectedWordsIndex = 0;
+  typedWordIndex = 0;
+
+  // Iterate through both arrays
+  while (
+    typedWordIndex < typedWords.length &&
+    expectedWordsIndex < correctWordsInSequence.length
+  ) {
+    const currentExpectedWord = correctWordsInSequence[expectedWordsIndex];
+    const currentWord = typedWords[typedWordIndex];
+    // If the words match, move to the next word in both arrays
+    if (currentExpectedWord === currentWord) {
+      correctWordIndicesFromTypedWords.push(typedWordIndex);
+      expectedWordsIndex += 1;
     }
+    typedWordIndex += 1;
   }
 
   return {
-    lastCorrectWordIndexFromPassage,
-    lastCorrectWordIndexFromTypedWords,
+    correctWordIndicesFromTypedWords,
     correctWordsIndicesInPassage,
   };
 };
@@ -113,58 +107,58 @@ export const getUserResults = ({ expectedWords, typedWords }) => {
     typedWords
   );
 
-  const {
-    lastCorrectWordIndexFromPassage,
-    lastCorrectWordIndexFromTypedWords,
-    correctWordsIndicesInPassage,
-  } = getCompleteWordDetails({
-    correctWordsInSequence,
-    expectedWords,
-    typedWords,
-  });
+  const { correctWordIndicesFromTypedWords, correctWordsIndicesInPassage } =
+    getCompleteWordDetails({
+      correctWordsInSequence,
+      expectedWords,
+      typedWords,
+    });
 
-  const totalExpectedWords = expectedWords.length;
+  let totalExpectedWords = expectedWords.length;
   const totalTypedWords = typedWords.length;
-  let hasLastIndexUpdated = false;
+  let totalCorrectWords = correctWordsIndicesInPassage.length;
 
-  let lastCorrectWordIndexFromPassageClone = lastCorrectWordIndexFromPassage;
+  const lastCorrectWordIndexFromTypedWordsIndex =
+    correctWordIndicesFromTypedWords[
+      correctWordIndicesFromTypedWords.length - 1
+    ] || -1;
 
-  /**
-   * This following handling to adjust user last word input which might have been made
-   * incorrectly or due to time constraint might be incomplete. So last word will be consider for
-   * calculating skipped words if difference is less than 10 words between last 2 indices or else
-   * we will consider last typed word as spelling mistake and will increment that count only by 1
-   */
-  if (correctWordsIndicesInPassage?.length > 1) {
+  let totalSkippedOrIncorrectWords = totalExpectedWords;
+
+  let extraIncorrectWordsTyped = 0;
+
+  if (totalCorrectWords > 2) {
     const secondLastCorrectWordIndex =
-      correctWordsIndicesInPassage[correctWordsIndicesInPassage.length - 2];
-    const lastLastCorrectWordIndex =
-      correctWordsIndicesInPassage[correctWordsIndicesInPassage.length - 1];
-    const skippedWordsBetweenLastIndices =
-      lastLastCorrectWordIndex - secondLastCorrectWordIndex;
-    if (skippedWordsBetweenLastIndices > 10) {
-      lastCorrectWordIndexFromPassageClone = secondLastCorrectWordIndex;
-      hasLastIndexUpdated = true;
+      correctWordsIndicesInPassage[totalCorrectWords - 2];
+
+    const lastCorrectWordIndex =
+      correctWordsIndicesInPassage[totalCorrectWords - 1];
+
+    const skippedWordsBetweenLast2Words = Math.abs(
+      lastCorrectWordIndex - secondLastCorrectWordIndex
+    );
+
+    if (skippedWordsBetweenLast2Words < 10) {
+      totalSkippedOrIncorrectWords =
+        totalExpectedWords - (lastCorrectWordIndex + 1);
+    } else {
+      totalSkippedOrIncorrectWords =
+        totalExpectedWords - (secondLastCorrectWordIndex + 1);
+      totalCorrectWords -= 1;
     }
+  } else {
+    totalExpectedWords += totalCorrectWords;
   }
 
-  const totalSkippedWords =
-    totalExpectedWords - (lastCorrectWordIndexFromPassageClone + 1);
-
-  let totalCorrectWords = correctWordsIndicesInPassage.length || 0;
-
-  let extraIncorrectWordsTyped =
-    totalTypedWords - (lastCorrectWordIndexFromTypedWords + 1);
-
-  if (hasLastIndexUpdated) {
-    totalCorrectWords = correctWordsIndicesInPassage.length - 1 || 0;
-    extraIncorrectWordsTyped += 1;
+  if (lastCorrectWordIndexFromTypedWordsIndex != -1) {
+    extraIncorrectWordsTyped =
+      totalTypedWords - (lastCorrectWordIndexFromTypedWordsIndex + 1);
   }
 
   const totalErrorCount =
     totalExpectedWords +
     extraIncorrectWordsTyped -
-    (totalSkippedWords + totalCorrectWords);
+    (totalSkippedOrIncorrectWords + totalCorrectWords);
 
   const accuracy =
     (totalCorrectWords / (totalCorrectWords + totalErrorCount)) * 100;
@@ -172,7 +166,6 @@ export const getUserResults = ({ expectedWords, typedWords }) => {
   return {
     totalErrorCount,
     totalCorrectWords,
-    totalSkippedWords,
     totalTypedWords,
     accuracy,
     correctWordIndices: correctWordsIndicesInPassage,
