@@ -115,7 +115,7 @@ export const getUserResults = ({ expectedWords, typedWords }) => {
     });
 
   let totalExpectedWords = expectedWords.length;
-  const totalTypedWords = typedWords.length;
+  let totalTypedWords = typedWords.length;
   let totalCorrectWords = correctWordsIndicesInPassage.length;
 
   const lastCorrectWordIndexFromTypedWordsIndex =
@@ -144,7 +144,13 @@ export const getUserResults = ({ expectedWords, typedWords }) => {
     } else {
       totalSkippedOrIncorrectWords =
         totalExpectedWords - (secondLastCorrectWordIndex + 1);
+
+      // that last correct word will be considered as incorrect word
+      // since it might be typed in hurry or incomplete
+      // we will remove that word from correct words as well
       totalCorrectWords -= 1;
+      totalTypedWords += 1;
+      correctWordsIndicesInPassage.pop();
     }
   } else {
     totalExpectedWords += totalCorrectWords;
