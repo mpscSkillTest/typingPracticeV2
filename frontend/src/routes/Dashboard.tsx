@@ -2,9 +2,10 @@ import { Toaster } from "@/components/ui/toaster";
 import DashboardLayout from "../components/layout/dashboard-layout";
 import Student from "../components/Dashboard/Student/Student";
 import Practice from "../components/Dashboard/Practice/Practice";
+import Payment from "@/components/payment";
 
 type Props = {
-  page: "dashboard" | "practice" | "speedTest";
+  page: "dashboard" | "practice" | "speedTest" | "payment";
 };
 
 function Dashboard({ page = "dashboard" }: Props) {
@@ -21,6 +22,9 @@ function Dashboard({ page = "dashboard" }: Props) {
       break;
     case "speedTest":
       containerDom = <Practice key="test" mode="TEST" title="Speed Test" />;
+      break;
+    case "payment":
+      containerDom = (<Payment/>);
       break;
     default:
       break;

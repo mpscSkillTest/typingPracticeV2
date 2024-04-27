@@ -21,13 +21,13 @@ export const navItems: NavItem[] = [
     icon: "SpeedTest",
     label: "Speed Test",
   },
-  /*  {
-    title: "Payment",
-    href: "/payment-history",
+   {
+    title: "Subscription",
+    href: "/payment",
     icon: "Payment",
-    label: "Payment History",
+    label: "Payment",
   },
-  {
+  /*{
     title: "Leader Board",
     href: "/leader-board",
     icon: "LeaderBoard",
