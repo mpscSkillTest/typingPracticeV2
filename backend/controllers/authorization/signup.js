@@ -19,7 +19,7 @@ export const signup = async (req, res) => {
         data: {
           email: emailId,
           name,
-          contactNumber: parseInt(contactNumber),
+          contactNumber,
           type: UserTypeEnum.STUDENT.name,
         },
       },
