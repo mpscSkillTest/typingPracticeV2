@@ -21,16 +21,15 @@ export const navItems: NavItem[] = [
     icon: "SpeedTest",
     label: "Speed Test",
   },
-   {
+  {
     title: "Subscription",
     href: "/payment",
     icon: "Payment",
     label: "Payment",
   },
-  /*{
-    title: "Leader Board",
-    href: "/leader-board",
-    icon: "LeaderBoard",
-    label: "Leader Board",
-  }, */
 ];
+
+export const COMPANY_URL =
+  "https://webtouter.com/wp-content/uploads/elementor/thumbs/51-removebg-preview-e1698666812110-qemezppy9czl6ops5j8wvxrcupi8wegb87uwfo6qkg.png";
+
+export const RAZOR_PAY_SDK_URL = "https://checkout.razorpay.com/v1/checkout.js";

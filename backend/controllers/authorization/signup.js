@@ -29,7 +29,7 @@ export const signup = async (req, res) => {
       res.status(StatusCodes.OK).send({ user: data.user.id });
       return;
     } else {
-      throw new Error(error);
+      throw new Error(error?.message);
     }
   } catch (error) {
     logger.error(`sign up process failed for ${emailId}`);

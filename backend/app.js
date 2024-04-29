@@ -2,11 +2,16 @@ import express from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
 import { config } from "dotenv";
-import { USER_AUTHORIZATION_API, STUDENT_DETAILS_API } from "./constant.js";
+import {
+  USER_AUTHORIZATION_API,
+  STUDENT_DETAILS_API,
+  SUBSCRIPTION_DETAILS_API,
+} from "./constant.js";
 import morganMiddleware from "./middlewares/morgan.js";
 import logger from "./utils/logger.js";
 import AuthorizationRouter from "./routes/authorization.js";
 import StudentRouter from "./routes/student.js";
+import SubscriptionRouter from "./routes/subscriptions.js";
 
 const app = express();
 
@@ -28,6 +33,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(USER_AUTHORIZATION_API, AuthorizationRouter);
 
 app.use(STUDENT_DETAILS_API, StudentRouter);
+
+app.use(SUBSCRIPTION_DETAILS_API, SubscriptionRouter);
 
 //when undefined route is called by client then hit following error message
 app.all("*", (req, res, next) => {

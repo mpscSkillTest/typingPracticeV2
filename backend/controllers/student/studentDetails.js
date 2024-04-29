@@ -9,7 +9,7 @@ export const getStudentDetails = async (req, res) => {
   try {
     const { data, error } = await supabase.auth.getUser(accessToken);
     if (error) {
-      throw new Error(error);
+      throw new Error(error?.message);
     }
     const userId = data?.user?.id;
 
@@ -28,7 +28,7 @@ export const getStudentDetails = async (req, res) => {
       .eq("user_id", userId);
 
     if (profileError) {
-      throw new Error(profileError);
+      throw new Error(profileError?.message);
     }
 
     const { name, user_type: type } = profileData?.[0] || {};

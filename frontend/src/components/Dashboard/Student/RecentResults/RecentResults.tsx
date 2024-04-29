@@ -31,7 +31,7 @@ const RecentResults = (props: Props) => {
       updatedStudentResults = results;
     } catch (error) {
       updatedStudentResults = [];
-      console.log(error);
+      console.error(error);
     } finally {
       setShowLoader(false);
     }

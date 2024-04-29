@@ -25,7 +25,7 @@ export const getPassages = async (req, res) => {
       logger.error(
         "Checking the getPassages status: Encountered error in passage details retrieval"
       );
-      throw new Error(error);
+      throw new Error(error?.message);
     }
 
     const parsedPassages = data?.map?.((passageDetails) => {

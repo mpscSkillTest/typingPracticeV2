@@ -16,7 +16,7 @@ export const getStudentRecentResults = async (req, res) => {
       logger.error(
         `Fetching the recent student results status: no user associated with access_token: ${accessToken}`
       );
-      throw new Error(error);
+      throw new Error(error?.message);
     }
     const userId = data?.user?.id;
 
@@ -54,7 +54,7 @@ export const getStudentRecentResults = async (req, res) => {
       .limit(10);
     if (resultsError) {
       logger.error("Fetching Recent Results for user Failed");
-      throw new Error(resultsError);
+      throw new Error(resultsError?.message);
     }
 
     const recentResults =
