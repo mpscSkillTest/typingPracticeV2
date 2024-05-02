@@ -2,6 +2,7 @@ import { StatusCodes } from "http-status-codes";
 import { supabase } from "../../dbClient.js";
 import { getAccessTokenFromHeaders } from "../../utils/utils.js";
 import { RESULTS_DB_NAME } from "../../constant.js";
+import { shouldHaveLimitedAccess } from "../../utils/subscriptionUtils.js";
 import logger from "../../utils/logger.js";
 
 export const getStudentRecentResults = async (req, res) => {
@@ -31,6 +32,13 @@ export const getStudentRecentResults = async (req, res) => {
       `Recent Results for user ${userId} mode:${mode} subject ${subject} Everything is OK`
     );
 
+    const shouldShowLimitedResults = await shouldHaveLimitedAccess(
+      userId,
+      subject
+    );
+
+    const limit = shouldShowLimitedResults ? 10 : null;
+
     const { data: resultsData, error: resultsError } = await supabase
       .from(RESULTS_DB_NAME)
       .select(
@@ -51,7 +59,8 @@ export const getStudentRecentResults = async (req, res) => {
       .eq("subject", subject)
       .eq("type", mode)
       .order("created_at", { ascending: false })
-      .limit(10);
+      .limit(limit);
+
     if (resultsError) {
       logger.error("Fetching Recent Results for user Failed");
       throw new Error(resultsError?.message);
