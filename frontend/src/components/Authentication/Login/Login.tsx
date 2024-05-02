@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { BaseSyntheticEvent, HTMLInputTypeAttribute } from "react";
 import { useNavigate } from "react-router-dom";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -13,7 +14,6 @@ import {
   FormLabel,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { AUTH_TOKEN_KEY } from "../../../utils/constant";
 import { getCookieHandlers } from "../../../utils/utils";
@@ -102,7 +102,6 @@ function Login() {
     fieldType: HTMLInputTypeAttribute
   ) => {
     return (
-      
       <FormField
         control={registrationForm.control}
         name={fieldName}

@@ -18,9 +18,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Icons } from "@/components/ui/icons";
-import { Subject, UserDetails, TypingMode, Passage } from "@/types";
 import { handleEnglishKeyDown } from "./utils/handleEnglishKeydown";
 import { handleMarathiKeyDown } from "./utils/handleMarathiKeydown";
+import type { Subject, UserDetails, TypingMode, Passage } from "../../../types";
 import axios from "../../../config/customAxios";
 import Result from "./Result";
 import Timer from "../../shared/timer";

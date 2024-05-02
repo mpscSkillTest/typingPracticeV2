@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CommonLineChart } from "@/components/ui/lineChart";
 import { Icons } from "@/components/ui/icons";
 import { CHART_CONFIG, type CHART_CONFIG_TYPES } from "./utils";
-import { Result } from "@/types";
+import type { Result } from "../../../../types";
 
 type Props = {
   showLoader: boolean;
