@@ -19,7 +19,7 @@ type RazorpayResponse = {
 
 // on success store user id, product id, start date and end date, next billing date based and number of times subscription updated
 
-const PriceCard = ({ title, price, features, type, productId }: Product) => {
+const ProductCard = ({ title, price, features, type, productId }: Product) => {
   const isFreePlan = type === "FREE";
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -167,4 +167,4 @@ const PriceCard = ({ title, price, features, type, productId }: Product) => {
   );
 };
 
-export default PriceCard;
+export default ProductCard;

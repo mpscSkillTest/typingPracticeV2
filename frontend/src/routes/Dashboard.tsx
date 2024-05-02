@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import DashboardLayout from "../components/layout/dashboard-layout";
 import Student from "../components/Dashboard/Student/Student";
 import Practice from "../components/Dashboard/Practice/Practice";
-import Payment from "../components/payment/Payment";
+import Payment from "../components/Payment/Payment";
 
 type Props = {
   page: "dashboard" | "practice" | "speedTest" | "payment";
