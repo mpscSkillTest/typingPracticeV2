@@ -5,6 +5,7 @@ import axios from "../../config/customAxios";
 import ProductCard from "./ProductCard/ProductCard";
 
 const App = () => {
+  //dummy commit
   const [isDetailsLoading, setIsDetailsLoading] = useState<boolean>(false);
   const [availableProducts, setAvailableProducts] = useState<Product[]>([]);
 
