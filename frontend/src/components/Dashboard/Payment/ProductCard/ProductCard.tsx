@@ -8,10 +8,10 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
-import { COMPANY_URL } from "../../../utils/constant";
-import { loadRazorpayScript } from "../../../utils/razorpay";
-import type { Product } from "../../../types";
-import axios from "../../../config/customAxios";
+import { COMPANY_URL } from "../../../../utils/constant";
+import { loadRazorpayScript } from "../../../../utils/razorpay";
+import type { Product } from "../../../../types";
+import axios from "../../../../config/customAxios";
 
 type RazorpayResponse = {
   razorpay_payment_id: string;

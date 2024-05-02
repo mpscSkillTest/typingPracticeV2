@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { Icons } from "../ui/icons";
-import type { Product } from "../../types";
-import axios from "../../config/customAxios";
+import { Icons } from "@/components/ui/icons";
+import type { Product } from "../../../types";
+import axios from "../../../config/customAxios";
 import ProductCard from "./ProductCard/ProductCard";
 
 const App = () => {
