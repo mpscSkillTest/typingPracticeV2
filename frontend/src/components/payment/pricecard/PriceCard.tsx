@@ -58,6 +58,7 @@ const PriceCard = ({ title, price, features, type, productId }: Product) => {
     } finally {
       setIsLoading(false);
     }
+    //done
   };
 
   // To handle a payment
