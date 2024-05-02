@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Icons } from "../ui/icons";
 import type { Product } from "../../types";
 import axios from "../../config/customAxios";
-import PriceCard from "./priceCard/PriceCard";
+import ProductCard from "./ProductCard/ProductCard";
 
 const App = () => {
   const [isDetailsLoading, setIsDetailsLoading] = useState<boolean>(false);
@@ -52,7 +52,7 @@ const App = () => {
       <div className="flex flex-wrap">
         {availableProducts.map((productDetails, index) => (
           <div key={index} className="p-4 w-full sm:w-1/2 lg:w-1/3 xl:w-1/4">
-            <PriceCard {...productDetails} />
+            <ProductCard {...productDetails} />
           </div>
         ))}
       </div>
