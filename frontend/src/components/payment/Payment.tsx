@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Icons } from "../ui/icons";
 import type { Product } from "../../types";
 import axios from "../../config/customAxios";
-import PriceCard from "./priceCard/PriceCard";
+import PriceCard from "./pricecard/PriceCard";
 
 const App = () => {
   const [isDetailsLoading, setIsDetailsLoading] = useState<boolean>(false);

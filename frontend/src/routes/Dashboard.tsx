@@ -3,9 +3,10 @@ import DashboardLayout from "../components/layout/dashboard-layout";
 import Student from "../components/Dashboard/Student/Student";
 import Practice from "../components/Dashboard/Practice/Practice";
 import Payment from "../components/payment/Payment";
+import Payment_history from "@/components/PaymentHistory/paymentHistory";
 
 type Props = {
-  page: "dashboard" | "practice" | "speedTest" | "payment";
+  page: "dashboard" | "practice" | "speedTest" | "payment" | "payment_history";
 };
 
 function Dashboard({ page = "dashboard" }: Props) {
@@ -25,6 +26,10 @@ function Dashboard({ page = "dashboard" }: Props) {
       break;
     case "payment":
       containerDom = <Payment />;
+      break;
+
+    case "payment_history":
+      containerDom =<Payment_history/>
       break;
     default:
       break;

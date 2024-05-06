@@ -88,7 +88,7 @@ export const addNewSubscriptionDetails = async (req, res) => {
 
     const { id: subscriptionId, next_billing_date: updatedNextBillingDate } =
       existingSubscriptionData?.[0] || {};
-
+console.log("existingSubscriptionData ::::::",existingSubscriptionData);
     logger.info(
       `Adding payment details: for user while inserting/updating subscription details: User => ${userId} and subscription id => ${subscriptionId}`
     );

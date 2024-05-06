@@ -10,3 +10,4 @@ export { forgotPassword } from "./authorization/forgotPassword.js";
 export { resetPassword } from "./authorization/resetPassword.js";
 export { getProducts } from "./subscriptions/productDetails.js";
 export { addNewSubscriptionDetails } from "./subscriptions/newSubscription.js";
+export { getPaymentHistory} from "./student/paymentHistory.js"
