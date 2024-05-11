@@ -118,16 +118,6 @@ function Login() {
               />
             </FormControl>
             <FormMessage className="space-y-[5px]" />
-            {fieldType === "password" ? (
-              <Button
-                onClick={handleForgotPassword}
-                className="justify-end pl-[0px]"
-                variant="link"
-                disabled={shouldDisableForgotPassword}
-              >
-                Forgot password?
-              </Button>
-            ) : null}
           </FormItem>
         )}
       />
@@ -151,6 +141,14 @@ function Login() {
             type="submit"
           >
             Sign in
+          </Button>
+          <Button
+            onClick={handleForgotPassword}
+            className="relative right-0 w-full"
+            variant="link"
+            disabled={shouldDisableForgotPassword}
+          >
+            Forgot password?
           </Button>
         </form>
       </Form>

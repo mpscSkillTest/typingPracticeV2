@@ -52,6 +52,10 @@ export const CHART_CONFIG: Record<string, ChartConfigType> = {
         label: "Backspaces",
       },
     ],
+    xAxisProps: {
+      padding: { left: 0, right: 0 },
+      tick: false,
+    },
     getData: getGeneralStokesChartData,
     xAxisKey: "name",
   },
@@ -68,6 +72,10 @@ export const CHART_CONFIG: Record<string, ChartConfigType> = {
         label: "Error Count",
       },
     ],
+    xAxisProps: {
+      padding: { left: 0, right: 0 },
+      tick: false,
+    },
     getData: getGeneralAccuracyChartData,
     xAxisKey: "name",
   },
