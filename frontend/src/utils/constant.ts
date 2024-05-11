@@ -27,6 +27,12 @@ export const navItems: NavItem[] = [
     icon: "Payment",
     label: "Payment",
   },
+  {
+    title: "Payment History",
+    href: "/payment_history",
+    icon: "IndianRupee",
+    label: "Payment history",
+  },
 ];
 
 export const COMPANY_URL =

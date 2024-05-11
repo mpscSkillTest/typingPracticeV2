@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Icons } from "@/components/ui/icons";
+import { useToast } from "@/components/ui/use-toast";
 import type { Product } from "../../../types";
 import axios from "../../../config/customAxios";
 import ProductCard from "./ProductCard/ProductCard";
@@ -8,6 +9,8 @@ const App = () => {
   //dummy commit
   const [isDetailsLoading, setIsDetailsLoading] = useState<boolean>(false);
   const [availableProducts, setAvailableProducts] = useState<Product[]>([]);
+
+  const { toast } = useToast();
 
   const getAvailableProductDetails = async () => {
     let availableProductsClone = [];
