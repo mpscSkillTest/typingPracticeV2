@@ -1,23 +1,14 @@
 import { StatusCodes } from "http-status-codes";
 import { supabase } from "../../dbClient.js";
-import { getAccessTokenFromHeaders } from "../../utils/utils.js";
+import { getUserIdFromToken } from "../../utils/utils.js";
 import { PAYMENT_DB_NAME } from "../../constant.js";
 import logger from "../../utils/logger.js";
 
 export const getPaymentHistory = async (req, res) => {
   logger.info("Fetching the recent payment history: Everything is OK");
-  const accessToken = getAccessTokenFromHeaders(req);
 
   try {
-    const { data, error } = await supabase.auth.getUser(accessToken);
-    if (error) {
-      logger.error(
-        `Error fetching user with access token: ${accessToken}: ${error.message}`
-      );
-      throw new Error("Authentication failed: " + error.message);
-    }
-    const userId = data?.user?.id;
-
+    const userId = await getUserIdFromToken(req);
     if (!userId) {
       logger.error(`Fetched User Id: ${userId} - User not found`);
       throw new Error("User not found. Please try again");

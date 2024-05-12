@@ -1,14 +1,8 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUp, ArrowDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { formateDate } from "../../../utils/formatter";
 import { formateDateWithoutTime } from "../../../utils/formatter";
-
 import type { PaymentHistory } from "../../../types";
-
-const getFormattedNumber = (value: number | string) => {
-  return <div className="text-right font-medium">{value}</div>;
-};
 
 const getColumnHeaderWithSort = (column, headerText: string) => {
   const { toggleSorting, getIsSorted } = column || {};
@@ -27,14 +21,7 @@ const getColumnHeaderWithSort = (column, headerText: string) => {
 };
 
 export const Columns: ColumnDef<PaymentHistory>[] = [
-  {
-    accessorKey: "paymentId",
-    header: "Payment Id",
-    cell: ({ row }) => getFormattedNumber(row.getValue("paymentId")),
-    meta: {
-      dataType: "number",
-    },
-  },
+  { accessorKey: "productName", header: "Product Name" },
 
   {
     accessorKey: "date",
@@ -44,8 +31,6 @@ export const Columns: ColumnDef<PaymentHistory>[] = [
   },
 
   { accessorKey: "transactionId", header: "Transaction Id" },
-
-  { accessorKey: "productName", header: "Product Name" },
 
   {
     accessorKey: "nextBillingDate",

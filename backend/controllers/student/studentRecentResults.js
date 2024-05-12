@@ -1,27 +1,15 @@
 import { StatusCodes } from "http-status-codes";
 import { supabase } from "../../dbClient.js";
-import { getAccessTokenFromHeaders } from "../../utils/utils.js";
+import { getUserIdFromToken } from "../../utils/utils.js";
 import { RESULTS_DB_NAME } from "../../constant.js";
 import { shouldHaveLimitedAccess } from "../../utils/subscriptionUtils.js";
 import logger from "../../utils/logger.js";
 
 export const getStudentRecentResults = async (req, res) => {
   logger.info("Fetching the recent student results status: Everything is OK");
-  const accessToken = getAccessTokenFromHeaders(req);
-
   const { subject, mode } = req.body || {};
-
   try {
-    const { data, error } = await supabase.auth.getUser(accessToken);
-    if (error) {
-      logger.error(
-        `Fetching the recent student results status: no user associated with access_token: ${accessToken}`
-      );
-      throw new Error(error?.message);
-    }
-    const userId = data?.user?.id;
-
-    logger.info(`Fetched User Id:${userId} Everything is OK`);
+    const userId = await getUserIdFromToken(req);
 
     if (!userId) {
       logger.error(`Fetched User Id:${userId} user not found`);

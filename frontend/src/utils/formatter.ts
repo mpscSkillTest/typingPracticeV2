@@ -7,10 +7,10 @@ export const formatToPercent = (value: number | string) => {
 
 export const formateDate = (value: string) => {
   dayjs.extend(localizedFormat);
-  return dayjs(value).format("DD/MM/YYYY, h:mm A");
+  return dayjs(value).format("LL, h:mm A");
 };
 
 export const formateDateWithoutTime = (value: string) => {
   dayjs.extend(localizedFormat);
-  return dayjs(value).format("DD/MM/YYYY");
+  return dayjs(value).format("LLL");
 };

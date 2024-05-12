@@ -3,7 +3,7 @@ import { StatusCodes } from "http-status-codes";
 import dayjs from "dayjs";
 import localizedFormat from "dayjs/plugin/localizedFormat.js";
 import { supabase } from "../../dbClient.js";
-import { getAccessTokenFromHeaders } from "../../utils/utils.js";
+import { getUserIdFromToken } from "../../utils/utils.js";
 import { getNextBillingDate } from "../../utils/getNextBillingDate.js";
 import { SUBSCRIPTION_DB_NAME, PAYMENT_DB_NAME } from "../../constant.js";
 import logger from "../../utils/logger.js";
@@ -14,26 +14,11 @@ dayjs.extend(localizedFormat);
 
 export const addNewSubscriptionDetails = async (req, res) => {
   logger.info("Adding new subscription for user: Everything is OK");
-  const accessToken = getAccessTokenFromHeaders(req);
 
   const { productId, transactionId, amount } = req.body || {};
 
   try {
-    const { data, error } = await supabase.auth.getUser(accessToken);
-
-    const { user } = data || {};
-
-    if (error) {
-      logger.error(
-        `Adding subscription details: no user associated with access_token: ${accessToken}`
-      );
-      throw new Error(error?.message);
-    }
-    const userId = user?.id;
-
-    logger.info(
-      `Fetched User Id for adding subscription:${userId} Everything is OK`
-    );
+    const userId = await getUserIdFromToken(req);
 
     if (!userId) {
       logger.error(

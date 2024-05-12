@@ -1,18 +1,12 @@
 import { StatusCodes } from "http-status-codes";
 import { supabase } from "../../dbClient.js";
-import logger from "../../utils/logger.js";
 import { PROFILE_DB_NAME } from "../../constant.js";
-import { getAccessTokenFromHeaders } from "../../utils/utils.js";
+import { getUserIdFromToken } from "../../utils/utils.js";
+import logger from "../../utils/logger.js";
 
 export const getStudentDetails = async (req, res) => {
-  const accessToken = getAccessTokenFromHeaders(req);
   try {
-    const { data, error } = await supabase.auth.getUser(accessToken);
-    if (error) {
-      throw new Error(error?.message);
-    }
-    const userId = data?.user?.id;
-
+    const userId = await getUserIdFromToken(req);
     if (!userId) {
       throw new Error("User not found. Please try again");
     }
