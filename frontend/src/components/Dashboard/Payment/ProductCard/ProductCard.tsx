@@ -44,6 +44,7 @@ const ProductCard = ({ title, price, features, type, productId }: Product) => {
         title: "New Subscription Added",
         description: `Your next billing date is ${nextBillingDate}`,
         className: "my-[10px]",
+        duration: 3000,
       });
       return;
     } catch (error: unknown) {
@@ -54,6 +55,7 @@ const ProductCard = ({ title, price, features, type, productId }: Product) => {
         description:
           "Subscription Operation failed. Please retry or contact us",
         className: "my-[10px]",
+        duration: 4000,
       });
     } finally {
       setIsLoading(false);
@@ -76,7 +78,7 @@ const ProductCard = ({ title, price, features, type, productId }: Product) => {
     }
 
     const options = {
-      key: "rzp_test_FTcWVtO6GaHFlO", // Replace with your key_id from Razorpay Dashboard
+      key: import.meta.env.VITE_RAZORPAY_SECRET, // Replace with your key_id from Razorpay Dashboard
       amount: price * 100, // Amount is in smallest currency unit. Here, 50000 paise = 500 INR
       currency: "INR",
       name: "Web Touter",

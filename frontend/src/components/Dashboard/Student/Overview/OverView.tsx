@@ -10,14 +10,20 @@ type Props = {
   title: string;
   type: CHART_CONFIG_TYPES;
   results: Result[];
+  label: string;
 };
 
 const OverView = (props: Props) => {
-  const { showLoader, title, type, results } = props;
+  const { showLoader, title, type, results, label } = props;
 
   const chartDetails = CHART_CONFIG[type];
 
-  const { getData, ...others } = chartDetails || {};
+  const { getData, xAxisProps, ...others } = chartDetails || {};
+
+  const updatedXaxisProps = {
+    ...xAxisProps,
+    label,
+  };
 
   const chartData = typeof getData === "function" ? getData(results) : [];
 
@@ -40,7 +46,11 @@ const OverView = (props: Props) => {
 
     return (
       <ResponsiveContainer minHeight={300} height="100%" width="100%">
-        <CommonLineChart {...others} data={chartData} />
+        <CommonLineChart
+          {...others}
+          xAxisProps={updatedXaxisProps}
+          data={chartData}
+        />
       </ResponsiveContainer>
     );
   };

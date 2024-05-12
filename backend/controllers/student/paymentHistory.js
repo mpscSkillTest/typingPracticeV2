@@ -11,7 +11,9 @@ export const getPaymentHistory = async (req, res) => {
   try {
     const { data, error } = await supabase.auth.getUser(accessToken);
     if (error) {
-      logger.error(`Error fetching user with access token: ${accessToken}: ${error.message}`);
+      logger.error(
+        `Error fetching user with access token: ${accessToken}: ${error.message}`
+      );
       throw new Error("Authentication failed: " + error.message);
     }
     const userId = data?.user?.id;
@@ -23,30 +25,31 @@ export const getPaymentHistory = async (req, res) => {
 
     const { data: paymentData, error: paymentError } = await supabase
       .from(PAYMENT_DB_NAME)
-      .select(`
+      .select(
+        `
         id,
         created_at,
         transaction_id,
         amount,
-        product_id,
         products (
-          id,
           name
         ),
         subscriptions (
-          id,  
           next_billing_date
         )
-      `)
+      `
+      )
       .eq("user_id", userId)
       .order("created_at", { ascending: false });
 
     if (paymentError) {
       logger.error("Fetching Payment History Failed: " + paymentError.message);
-      throw new Error("Fetching Payment History Failed: " + paymentError.message);
+      throw new Error(
+        "Fetching Payment History Failed: " + paymentError.message
+      );
     }
 
-    const formattedPayments = paymentData.map(payment => ({
+    const formattedPayments = paymentData.map((payment) => ({
       paymentId: payment.id,
       paymentDate: payment.created_at,
       transactionId: payment.transaction_id,

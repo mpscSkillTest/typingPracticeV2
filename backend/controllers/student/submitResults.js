@@ -71,6 +71,8 @@ export const submitResults = async (req, res) => {
       return;
     }
   }
-  res.status(StatusCodes.OK).send({ result });
+  res
+    .status(StatusCodes.OK)
+    .send({ result, accessLimitReached: !shouldSaveResultInDb });
   return;
 };

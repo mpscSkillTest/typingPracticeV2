@@ -35,9 +35,18 @@ const OverviewWrapper = (props: Props) => {
     setStudentResults(updatedStudentResults);
   };
 
+  // to capitalize string with first letter as Capital
+  const toProperCase = (txt: string) => {
+    return txt.replace(/\w\S*/g, function (txt) {
+      return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+    });
+  };
+
   useEffect(() => {
     getStudentResults();
   }, [subject, mode]);
+
+  const customLabel = `${toProperCase(subject)} ${toProperCase(mode)}s`;
 
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-12">
@@ -46,12 +55,14 @@ const OverviewWrapper = (props: Props) => {
         type="GENERAL_KEYSTROKES_CONFIG"
         title="Keystrokes Vs Backspaces Count"
         showLoader={showLoader}
+        label={customLabel}
       />
       <OverView
         type="GENERAL_ACCURACY_CONFIG"
         title="Accuracy Percentage Vs Error Count"
         showLoader={showLoader}
         results={studentResults}
+        label={customLabel}
       />
     </div>
   );

@@ -71,7 +71,7 @@ const EnglishPracticeArea = ({ userDetails, subject, mode }: Props) => {
 
   const { userId } = userDetails || {};
 
-  const toast = useToast();
+  const { toast } = useToast();
 
   const totalWords = useRef<number>(0);
 
@@ -180,11 +180,21 @@ const EnglishPracticeArea = ({ userDetails, subject, mode }: Props) => {
         passageId: selectedPassageId,
         duration,
       });
-      const { result } = response?.data || {};
+      const { result, accessLimitReached } = response?.data || {};
       if (!result) {
         throw new Error("No Passages Available");
       }
       userResult.current = result;
+      if (accessLimitReached) {
+        toast({
+          variant: "destructive",
+          title: "You have exhausted your free trial limit",
+          description:
+            "To retain your test and practice results and to use our other exciting features, please consider to subscribe our Premium Package",
+          duration: 6000,
+          className: "absolute",
+        });
+      }
     } catch (error: unknown) {
       userResult.current = {};
       const errorMessage = error?.response?.data?.error || "Something wrong";
@@ -192,7 +202,6 @@ const EnglishPracticeArea = ({ userDetails, subject, mode }: Props) => {
         variant: "destructive",
         title: "Uh oh! Something went wrong",
         description: errorMessage,
-        className: "my-[10px]",
       });
     } finally {
       setShouldShowLoader(false);

@@ -63,6 +63,7 @@ function Login() {
         variant: "destructive",
         title: "Uh oh! Something went wrong",
         description: errorMessage,
+        duration: 3000,
       });
     }
   };
@@ -79,6 +80,7 @@ function Login() {
           title: "Password Reset Link Sent",
           description:
             "Please check your spam or junk folder if you don't see the email in your inbox. ",
+          duration: 6000,
         });
       }
     } catch (error) {
