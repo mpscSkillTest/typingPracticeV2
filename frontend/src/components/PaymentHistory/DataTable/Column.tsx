@@ -24,9 +24,9 @@ export const Columns: ColumnDef<PaymentHistory>[] = [
   { accessorKey: "productName", header: "Product Name" },
 
   {
-    accessorKey: "date",
+    accessorKey: "paymentDate",
     enableSorting: true,
-    cell: ({ row }) => formateDateWithoutTime(row.getValue("date")),
+    cell: ({ row }) => formateDateWithoutTime(row.getValue("paymentDate")),
     header: ({ column }) => getColumnHeaderWithSort(column, "Payment Date"),
   },
 

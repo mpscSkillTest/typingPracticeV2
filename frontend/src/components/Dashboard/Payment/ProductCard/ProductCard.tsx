@@ -97,6 +97,12 @@ const ProductCard = ({ title, price, features, type, productId }: Product) => {
       theme: {
         color: "#3399cc",
       },
+      method: {
+        netbanking: false,
+        card: true,
+        wallet: false,
+        upi: true,
+      },
     };
 
     const paymentObject = new window.Razorpay(options);
