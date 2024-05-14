@@ -16,7 +16,7 @@ export const FEATURE_DETAILS = {
     features: [
       { text: "10 passages of Both languages", correct: true },
       { text: "Daily progress tracking", correct: true },
-      { text: "Keystroke and Accuracy count", correct: false },
+      { text: "Keystroke and Accuracy count", correct: true },
       { text: "Weekly progress tracking", correct: false },
       { text: "Monthly progress tracking", correct: false },
     ],
