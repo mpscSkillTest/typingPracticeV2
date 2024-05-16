@@ -87,7 +87,7 @@ const ProductCard = ({ title, price, features, type, productId }: Product) => {
       handler: (response: RazorpayResponse) => {
         // Payment was successful, you can use the response object to handle the payment confirmation
         console.info(
-          `Payment successful! Payment ID: ${response.razorpay_payment_id}`
+          `Payment successful! Payment ID: ${response?.razorpay_payment_id}`
         );
         addNewSubscription(response?.razorpay_payment_id);
       },
@@ -97,11 +97,20 @@ const ProductCard = ({ title, price, features, type, productId }: Product) => {
       theme: {
         color: "#3399cc",
       },
+      config: {
+        display: {
+          hide: [{ method: "paylater" }, { method: "emi" }],
+          preferences: { show_default_blocks: true },
+        },
+      },
       method: {
         netbanking: false,
         card: true,
         wallet: false,
         upi: true,
+        payLater: false,
+        qr: false,
+        upi_intent: true,
       },
     };
 
