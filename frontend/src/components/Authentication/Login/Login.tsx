@@ -17,6 +17,7 @@ import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { AUTH_TOKEN_KEY } from "../../../utils/constant";
 import { getCookieHandlers } from "../../../utils/utils";
+import { Icons } from "@/components/ui/icons";
 import userLoginSchema, { type UserLoginSchema } from "./LoginSchema";
 import axios from "../../../config/customAxios";
 
@@ -24,6 +25,7 @@ function Login() {
   const [loader, setLoader] = useState<boolean>(false);
   const [shouldDisableForgotPassword, setShouldDisableForgotPassword] =
     useState<boolean>(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const { toast } = useToast();
   const { setCookieValue: setAccessToken } =
@@ -40,6 +42,10 @@ function Login() {
     formState: { isDirty, isValid },
     getValues: getFormFieldValues,
   } = registrationForm;
+
+  const togglePasswordVisibility = () => {
+    setShowPassword((prevShowPassword) => !prevShowPassword);
+  };
 
   const onLoginUser = async (userInput: UserLoginSchema) => {
     try {
@@ -125,8 +131,7 @@ function Login() {
       />
     );
   };
-  
-  const [showPassword, setShowPassword] = useState(false);
+
   return (
     <Card className="rounded-md">
       <Form {...registrationForm}>
@@ -143,35 +148,13 @@ function Login() {
             )}
             <button
               type="button"
-              onClick={() => setShowPassword(!showPassword)}
+              onClick={togglePasswordVisibility}
               className="absolute top-12 transform -translate-y-1/2 right-2 px-2 focus:outline-none"
             >
               {showPassword ? (
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 text-black-400"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M10 2c-3.682 0-6.945 2.037-8.667 5.333C3.055 9.38 4.487 11.51 6.307 13c.697.6 1.5 1 2.367 1 .867 0 1.67-.4 2.367-1 1.82-1.49 3.252-3.62 4.974-5.667C16.945 4.037 13.682 2 10 2zM10 15c-1.56 0-2.997-.7-4-1.834C4.003 11.6 5.44 9.5 7.5 8c1.002-.834 2.44-1.834 4-1.834s2.998.7 4 1.834c2.06 1.5 3.497 3.6 3.5 5.166C16.998 14.3 13.56 15 10 15zM10 6a3 3 0 100 6 3 3 0 000-6z"
-                    clipRule="evenodd"
-                  />
-                </svg>
+                <Icons.Eye height={16} width={16} />
               ) : (
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 text-black-400"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M9.5 6a.5.5 0 01.5.5c0 .177-.04.346-.108.5H11c1.104 0 2 .896 2 2v1a2 2 0 01-2 2H9.392c.068.154.108.323.108.5a.5.5 0 01-.5.5.5.5 0 01-.5-.5c0-.177.04-.346.108-.5H7c-1.104 0-2-.896-2-2V9c0-1.104.896-2 2-2h.5a.5.5 0 110-1h-.5C6.673 6 6 6.673 6 7.5S6.673 9 7.5 9h1c.827 0 1.5-.673 1.5-1.5a.5.5 0 01.5-.5zM10 2c-3.682 0-6.945 2.037-8.667 5.333C3.055 9.38 4.487 11.51 6.307 13c.697.6 1.5 1 2.367 1 .867 0 1.67-.4 2.367-1 1.82-1.49 3.252-3.62 4.974-5.667C16.945 4.037 13.682 2 10 2zm0 11c-1.56 0-2.997-.7-4-1.834C4.003 11.6 5.44 9.5 7.5 8c1.002-.834 2.44-1.834 4-1.834s2.998.7 4 1.834c2.06 1.5 3.497 3.6 3.5 5.166C16.998 14.3 13.56 15 10 15zm0-9a3 3 0 100 6 3 3 0 000-6z"
-                    clipRule="evenodd"
-                  />
-                </svg>
+                <Icons.EyeOff height={16} width={16} />
               )}
             </button>
           </div>

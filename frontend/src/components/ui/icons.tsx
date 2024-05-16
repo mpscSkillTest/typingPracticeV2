@@ -33,6 +33,8 @@ import {
   Trophy,
   AlarmClockCheck,
   IndianRupee,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 
 export type Icon = LucideIcon;
@@ -70,5 +72,7 @@ export const Icons = {
   Payment: Wallet,
   LeaderBoard: Trophy,
   SpeedTest: AlarmClockCheck,
-  IndianRupee : IndianRupee
+  IndianRupee: IndianRupee,
+  Eye,
+  EyeOff,
 };
