@@ -1,10 +1,24 @@
-import { useEffect, useState } from "react";
+import { ReactElement, useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { Icons } from "@/components/ui/icons";
 import { useToast } from "@/components/ui/use-toast";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Label } from "@/components/ui/label";
-import type { Subject, TypingMode, UserDetails } from "../../../types";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import type {
+  Subject,
+  TypingMode,
+  UserDetails,
+  DurationOption,
+} from "../../../types";
+import { Duration } from "../../../enums/Duration";
 import axios from "../../../config/customAxios";
 import PageHead from "../../shared/page-head";
 import OverviewWrapper from "./Overview/OverviewWrapper";
@@ -15,6 +29,8 @@ const StudentDashboard = () => {
   const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
   const [selectedMode, setSelectedMode] = useState<TypingMode>("TEST");
   const [selectedSubject, setSelectedSubject] = useState<Subject>("MARATHI");
+  const [selectedDuration, setSelectedDuration] =
+    useState<DurationOption>("TODAY");
 
   const { toast } = useToast();
 
@@ -39,16 +55,20 @@ const StudentDashboard = () => {
     }
   };
 
-  const updateSelectedMode = (updatedMode: string) => {
+  const updateSelectedMode = (updatedMode: TypingMode) => {
     if (updatedMode && updatedMode !== selectedMode) {
       setSelectedMode(updatedMode);
     }
   };
 
-  const updateSelectedSubject = (updatedSubject: string) => {
+  const updateSelectedSubject = (updatedSubject: Subject) => {
     if (updatedSubject && updatedSubject !== selectedSubject) {
       setSelectedSubject(updatedSubject);
     }
+  };
+
+  const onDurationSelectionChange = (updatedDuration: DurationOption) => {
+    setSelectedDuration(updatedDuration);
   };
 
   useEffect(() => {
@@ -121,10 +141,51 @@ const StudentDashboard = () => {
     );
   };
 
+  const getDurationOptionsDom = () => {
+    const optionsDom: ReactElement<typeof Select>[] = [];
+
+    Object.entries(Duration).forEach(
+      ([currentDuration, currentDurationEnum]) => {
+        optionsDom.push(
+          <SelectItem key={currentDuration} value={currentDuration}>
+            {currentDurationEnum.name}
+          </SelectItem>
+        );
+      }
+    );
+
+    return (
+      <Select
+        value={selectedDuration}
+        onValueChange={onDurationSelectionChange}
+      >
+        <SelectTrigger className="w-[max-content] gap-3">
+          <SelectValue className="p-3" placeholder="Select Question Passage" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectGroup>{optionsDom}</SelectGroup>
+        </SelectContent>
+      </Select>
+    );
+  };
+
+  const getDurationSelection = () => {
+    return (
+      <div className="flex flex-col gap-[10px]">
+        <Label>Duration</Label>
+        {getDurationOptionsDom()}
+      </div>
+    );
+  };
+
   const getContentDom = () => {
     return (
       <div className="h-full space-y-4">
-        <OverviewWrapper mode={selectedMode} subject={selectedSubject} />
+        <OverviewWrapper
+          duration={selectedDuration}
+          mode={selectedMode}
+          subject={selectedSubject}
+        />
         <RecentResults mode={selectedMode} subject={selectedSubject} />
       </div>
     );
@@ -143,6 +204,7 @@ const StudentDashboard = () => {
           <div className="flex gap-12">
             {getSubjectSelection()}
             {getTypingModeSelection()}
+            {getDurationSelection()}
           </div>
           {getContentDom()}
         </div>
