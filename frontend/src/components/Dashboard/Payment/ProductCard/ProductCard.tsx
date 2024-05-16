@@ -79,7 +79,7 @@ const ProductCard = ({ title, price, features, type, productId }: Product) => {
 
     const options = {
       key: import.meta.env.VITE_RAZORPAY_SECRET, // Replace with your key_id from Razorpay Dashboard
-      amount: 1 * 100, // Amount is in smallest currency unit. Here, 50000 paise = 500 INR
+      amount: price * 100, // Amount is in smallest currency unit. Here, 50000 paise = 500 INR
       currency: "INR",
       name: "Web Touter",
       description: "Typing test Payment",

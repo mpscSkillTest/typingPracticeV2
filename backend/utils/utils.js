@@ -26,5 +26,7 @@ export const getUserIdFromToken = async (req) => {
     return null;
   }
 
+  logger.info(`user found with user id:=> ${data?.user?.id}`);
+
   return data?.user?.id;
 };
