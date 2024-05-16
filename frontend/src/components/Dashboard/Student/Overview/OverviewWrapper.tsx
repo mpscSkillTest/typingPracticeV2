@@ -6,8 +6,8 @@ import type {
   DurationOption,
   DurationValue,
 } from "../../../../types";
-import axios from "../../../../config/customAxios";
 import { Duration } from "../../../../enums/Duration";
+import axios from "../../../../config/customAxios";
 import OverView from "./OverView";
 
 type Props = {
@@ -26,10 +26,10 @@ const OverviewWrapper = (props: Props) => {
     const durationDetails: DurationValue = Duration[duration];
     setShowLoader(true);
     try {
-      const { data } = await axios.post("/student/recent-results/", {
+      const { data } = await axios.post("/student/reports/", {
         subject,
         mode,
-        durationDetails: durationDetails.value,
+        duration: durationDetails.value,
       });
       const { results } = data || {};
       if (!results) {
@@ -66,6 +66,7 @@ const OverviewWrapper = (props: Props) => {
         title="Keystrokes Vs Backspaces Count"
         showLoader={showLoader}
         label={customLabel}
+        duration={duration}
       />
       <OverView
         type="GENERAL_ACCURACY_CONFIG"
@@ -73,6 +74,7 @@ const OverviewWrapper = (props: Props) => {
         showLoader={showLoader}
         results={studentResults}
         label={customLabel}
+        duration={duration}
       />
     </div>
   );

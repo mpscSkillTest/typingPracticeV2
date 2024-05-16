@@ -30,3 +30,65 @@ export const getUserIdFromToken = async (req) => {
 
   return data?.user?.id;
 };
+
+export const getDailyAvg = (reportData) => {
+  const uniqueDayDetails = {};
+  reportData.forEach((report) => {
+    const {
+      date,
+      accuracy = 0,
+      backspacesCount = 0,
+      errorsCount = 0,
+      keystrokesCount = 0,
+    } = report || {};
+    if (date) {
+      const previousDayDetails = uniqueDayDetails[date];
+      if (previousDayDetails) {
+        const {
+          accuracy: prevAccuracy = 0,
+          backspacesCount: prevBackspacesCount = 0,
+          errorsCount: prevErrorsCount = 0,
+          keystrokesCount: prevKeystrokesCount = 0,
+          count: prevCount,
+        } = previousDayDetails || {};
+
+        const updatedDayDetails = {
+          accuracy: prevAccuracy + accuracy || 0,
+          backspacesCount: prevBackspacesCount + backspacesCount || 0,
+          errorsCount: prevErrorsCount + errorsCount || 0,
+          keystrokesCount: prevKeystrokesCount + keystrokesCount || 0,
+          count: prevCount + 1,
+          date,
+        };
+        uniqueDayDetails[date] = updatedDayDetails;
+      } else {
+        uniqueDayDetails[date] = {
+          accuracy,
+          backspacesCount,
+          errorsCount,
+          keystrokesCount,
+          count: 1,
+          date,
+        };
+      }
+    }
+  });
+
+  const averageReportDetails = [];
+
+  Object.entries(uniqueDayDetails).forEach(([date, details]) => {
+    const { count, accuracy, backspacesCount, errorsCount, keystrokesCount } =
+      details || {};
+
+    if (count) {
+      averageReportDetails.push({
+        date,
+        accuracy: accuracy / count,
+        backspacesCount: Math.floor(backspacesCount / count),
+        errorsCount: Math.floor(errorsCount / count),
+        keystrokesCount: Math.floor(keystrokesCount / count),
+      });
+    }
+  });
+  return averageReportDetails;
+};
