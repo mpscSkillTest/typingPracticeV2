@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CommonLineChart } from "@/components/ui/lineChart";
 import { Icons } from "@/components/ui/icons";
 import { CHART_CONFIG, type CHART_CONFIG_TYPES } from "./utils";
-import type { Result } from "../../../../types";
+import type { Result, DurationOption } from "../../../../types";
 
 type Props = {
   showLoader: boolean;
@@ -11,10 +11,11 @@ type Props = {
   type: CHART_CONFIG_TYPES;
   results: Result[];
   label: string;
+  duration: DurationOption;
 };
 
 const OverView = (props: Props) => {
-  const { showLoader, title, type, results, label } = props;
+  const { showLoader, title, type, results, label, duration } = props;
 
   const chartDetails = CHART_CONFIG[type];
 
@@ -25,7 +26,8 @@ const OverView = (props: Props) => {
     label,
   };
 
-  const chartData = typeof getData === "function" ? getData(results) : [];
+  const chartData =
+    typeof getData === "function" ? getData(results, duration) : [];
 
   const getChartContentDom = () => {
     if (showLoader) {

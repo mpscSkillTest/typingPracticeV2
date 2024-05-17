@@ -1,25 +1,35 @@
 import { useEffect, useState } from "react";
-import type { Subject, Result, TypingMode } from "../../../../types";
+import type {
+  Subject,
+  Result,
+  TypingMode,
+  DurationOption,
+  DurationValue,
+} from "../../../../types";
+import { Duration } from "../../../../enums/Duration";
 import axios from "../../../../config/customAxios";
 import OverView from "./OverView";
 
 type Props = {
   subject: Subject;
   mode: TypingMode;
+  duration: DurationOption;
 };
 
 const OverviewWrapper = (props: Props) => {
-  const { subject, mode } = props;
+  const { subject, mode, duration } = props;
   const [showLoader, setShowLoader] = useState<boolean>(false);
   const [studentResults, setStudentResults] = useState<Result[]>([]);
 
   const getStudentResults = async () => {
     let updatedStudentResults = [];
+    const durationDetails: DurationValue = Duration[duration];
     setShowLoader(true);
     try {
-      const { data } = await axios.post("/student/recent-results/", {
+      const { data } = await axios.post("/student/reports/", {
         subject,
         mode,
+        duration: durationDetails.value,
       });
       const { results } = data || {};
       if (!results) {
@@ -44,7 +54,7 @@ const OverviewWrapper = (props: Props) => {
 
   useEffect(() => {
     getStudentResults();
-  }, [subject, mode]);
+  }, [subject, mode, duration]);
 
   const customLabel = `${toProperCase(subject)} ${toProperCase(mode)}s`;
 
@@ -56,6 +66,7 @@ const OverviewWrapper = (props: Props) => {
         title="Keystrokes Vs Backspaces Count"
         showLoader={showLoader}
         label={customLabel}
+        duration={duration}
       />
       <OverView
         type="GENERAL_ACCURACY_CONFIG"
@@ -63,6 +74,7 @@ const OverviewWrapper = (props: Props) => {
         showLoader={showLoader}
         results={studentResults}
         label={customLabel}
+        duration={duration}
       />
     </div>
   );

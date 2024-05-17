@@ -1,40 +1,61 @@
+import dayjs from "dayjs";
+import localizedFormat from "dayjs/plugin/localizedFormat.js";
 import {
   LINE_CHART_COLORS,
   type Props as LineChartProps,
 } from "@/components/ui/lineChart";
-import type { Result } from "../../../../types";
+import { Duration } from "../../../../enums/Duration";
+import type { DurationOption, Result } from "../../../../types";
+
+dayjs.extend(localizedFormat);
 
 export type ChartDataType = Record<string, number | string | undefined>;
 
+const isShowingAvgDetails = (duration: DurationOption) =>
+  ![Duration.TODAY, Duration.YESTERDAY].includes(Duration[duration]);
+
 export const getGeneralStokesChartData = (
-  results: Result[]
+  results: Result[],
+  duration: DurationOption
 ): ChartDataType[] => {
   return results?.map?.((result: Result, index: number) => {
-    const { keystrokesCount, backspacesCount } = result || {};
+    const { keystrokesCount, backspacesCount, date } = result || {};
+    let customName = `Test ${index + 1}`;
+
+    if (isShowingAvgDetails(duration)) {
+      customName = `Avg. on ${dayjs(date).format("LL")}`;
+    }
     return {
       keystrokes: keystrokesCount,
       backspaces: backspacesCount,
-      name: `Test ${index + 1}`,
+      name: customName,
     };
   });
 };
 
 export const getGeneralAccuracyChartData = (
-  results: Result[]
+  results: Result[],
+  duration: DurationOption
 ): ChartDataType[] => {
   return results?.map?.((result: Result, index: number) => {
-    const { accuracy = 0, errorsCount = 0 } = result || {};
+    const { accuracy = 0, errorsCount = 0, date } = result || {};
+    let customName = `Test ${index + 1}`;
+
+    if (isShowingAvgDetails(duration)) {
+      customName = `Avg. on ${dayjs(date).format("LL")}`;
+    }
+
     return {
       accuracy: accuracy?.toFixed?.(2) || 0,
       error: errorsCount,
-      name: `Test ${index + 1}`,
+      name: customName,
     };
   });
 };
 
 export type ChartConfigType =
   | (LineChartProps & {
-      getData: (results: Result[]) => ChartDataType[];
+      getData: (results: Result[], duration: DurationOption) => ChartDataType[];
     })
   | undefined;
 

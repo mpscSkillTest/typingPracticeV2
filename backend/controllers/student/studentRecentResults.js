@@ -54,39 +54,36 @@ export const getStudentRecentResults = async (req, res) => {
       throw new Error(resultsError?.message);
     }
 
-    const recentResults =
-      resultsData
-        ?.map?.((result) => {
-          const {
-            accuracy,
-            backspaces_count,
-            created_at,
-            duration,
-            errors_count,
-            keystorkes_count,
-            passage_id,
-            total_words_count,
-            typed_words_count,
-            id,
-            passages,
-          } = result || {};
-          return {
-            accuracy,
-            backspacesCount: backspaces_count,
-            date: created_at,
-            duration,
-            errorsCount: errors_count,
-            keystrokesCount: keystorkes_count,
-            mode,
-            passageId: passage_id,
-            subject,
-            totalWordsCount: total_words_count,
-            typedWordsCount: typed_words_count,
-            resultId: id,
-            passageTitle: passages.passage_title,
-          };
-        })
-        ?.reverse?.() || [];
+    const recentResults = resultsData?.map?.((result) => {
+      const {
+        accuracy,
+        backspaces_count,
+        created_at,
+        duration,
+        errors_count,
+        keystorkes_count,
+        passage_id,
+        total_words_count,
+        typed_words_count,
+        id,
+        passages,
+      } = result || {};
+      return {
+        accuracy,
+        backspacesCount: backspaces_count,
+        date: created_at,
+        duration,
+        errorsCount: errors_count,
+        keystrokesCount: keystorkes_count,
+        mode,
+        passageId: passage_id,
+        subject,
+        totalWordsCount: total_words_count,
+        typedWordsCount: typed_words_count,
+        resultId: id,
+        passageTitle: passages.passage_title,
+      };
+    });
 
     res.status(StatusCodes.OK).send({
       results: recentResults,

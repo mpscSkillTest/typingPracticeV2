@@ -1,3 +1,5 @@
+import { Duration } from "../enums/Duration";
+
 export type Subject = "ENGLISH" | "MARATHI";
 
 export type TypingMode = "PRACTICE" | "TEST";
@@ -17,3 +19,8 @@ export type Result = {
   resultId?: number;
   passageTitle?: string;
 };
+export type Values<T> = { [K in keyof T]: T[K] }[keyof T];
+
+export type DurationOption = keyof typeof Duration;
+
+export type DurationValue = Values<typeof Duration>;
