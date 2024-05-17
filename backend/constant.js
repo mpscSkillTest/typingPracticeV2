@@ -4,6 +4,8 @@ export const STUDENT_DETAILS_API = "/api/student/";
 
 export const SUBSCRIPTION_DETAILS_API = "/api/subscriptions/";
 
+export const MIGRATIONS_API = "/api/migrations/";
+
 export const PROFILE_DB_NAME = "profiles";
 export const RESULTS_DB_NAME = "results";
 export const PASSAGE_DB_NAME = "passages";

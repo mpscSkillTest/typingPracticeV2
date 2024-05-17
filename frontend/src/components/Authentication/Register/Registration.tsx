@@ -124,6 +124,7 @@ function Registration() {
             {getTextFormField("contactNumber", "Contact Number", "text")}
             {getTextFormField("emailId", "Email", "text")}
             {getTextFormField("password", "Password", "password")}
+            {getTextFormField("confirmPassword", "Confirm Password", "text")}
             <Button
               showLoader={loader}
               disabled={shouldDisableSubmit()}

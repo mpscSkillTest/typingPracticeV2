@@ -42,6 +42,9 @@ export const getStudentResultReport = async (req, res) => {
       return;
     }
 
+    const formattedFrom = dayjs(from).startOf("day").format();
+    const formattedTo = dayjs(to).endOf("day").format();
+
     const { data: resultsData, error: resultsError } = await supabase
       .from(RESULTS_DB_NAME)
       .select(
@@ -57,8 +60,8 @@ export const getStudentResultReport = async (req, res) => {
       .eq("user_id", userId)
       .eq("subject", subject)
       .eq("type", mode)
-      .gte("created_at", from)
-      .lte("created_at", to)
+      .gte("created_at", formattedFrom)
+      .lte("created_at", formattedTo)
       .order("created_at", { ascending: true });
 
     if (resultsError) {

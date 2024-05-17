@@ -6,12 +6,14 @@ import {
   USER_AUTHORIZATION_API,
   STUDENT_DETAILS_API,
   SUBSCRIPTION_DETAILS_API,
+  MIGRATIONS_API,
 } from "./constant.js";
 import morganMiddleware from "./middlewares/morgan.js";
 import logger from "./utils/logger.js";
 import AuthorizationRouter from "./routes/authorization.js";
 import StudentRouter from "./routes/student.js";
 import SubscriptionRouter from "./routes/subscriptions.js";
+import MigrationRouter from "./routes/migrations.js";
 
 const app = express();
 
@@ -35,6 +37,8 @@ app.use(USER_AUTHORIZATION_API, AuthorizationRouter);
 app.use(STUDENT_DETAILS_API, StudentRouter);
 
 app.use(SUBSCRIPTION_DETAILS_API, SubscriptionRouter);
+
+app.use(MIGRATIONS_API, MigrationRouter);
 
 //when undefined route is called by client then hit following error message
 app.all("*", (req, res, next) => {

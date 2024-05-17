@@ -12,3 +12,4 @@ export { resetPassword } from "./authorization/resetPassword.js";
 export { getProducts } from "./subscriptions/productDetails.js";
 export { addNewSubscriptionDetails } from "./subscriptions/newSubscription.js";
 export { getPaymentHistory } from "./student/paymentHistory.js";
+export { updateResultDate } from "./migrationTasks/resultMigration.js";
