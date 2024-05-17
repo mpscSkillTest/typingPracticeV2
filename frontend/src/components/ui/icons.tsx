@@ -35,6 +35,7 @@ import {
   IndianRupee,
   Eye,
   EyeOff,
+  BadgeInfo,
 } from "lucide-react";
 
 export type Icon = LucideIcon;
@@ -75,4 +76,5 @@ export const Icons = {
   IndianRupee: IndianRupee,
   Eye,
   EyeOff,
+  BadgeInfo,
 };

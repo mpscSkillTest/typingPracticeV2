@@ -2,6 +2,9 @@ import dayjs from "dayjs";
 import localizedFormat from "dayjs/plugin/localizedFormat";
 
 export const formatToPercent = (value: number | string) => {
+  if (!value) {
+    return "0%";
+  }
   return `${parseFloat(value as string).toFixed(2)}%`;
 };
 

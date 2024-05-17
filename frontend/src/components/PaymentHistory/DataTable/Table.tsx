@@ -8,7 +8,9 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import dayjs from "dayjs";
 import { Button } from "@/components/ui/button";
+import { Icons } from "@/components/ui/icons";
 import {
   Table,
   TableBody,
@@ -66,6 +68,10 @@ export function DataTable<TData, TValue>({
 
   return (
     <div>
+      <div className="flex gap-2 items-center mb-4 text-xs font-medium">
+        <Icons.BadgeInfo height={14} width={14} />
+        Active Subscriptions are highlighted
+      </div>
       <div className="rounded-md border">
         <Table>
           <TableHeader>
@@ -94,21 +100,30 @@ export function DataTable<TData, TValue>({
           </TableHeader>
           <TableBody>
             {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
+              table.getRowModel().rows.map((row) => {
+                const nextBillingDate = row?.original?.nextBillingDate || null;
+                const isActivePayment =
+                  nextBillingDate && dayjs().isBefore(dayjs(nextBillingDate));
+
+                return (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                    className={
+                      isActivePayment ? "bg-[azure] hover:bg-[azure]" : ""
+                    }
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                );
+              })
             ) : (
               <TableRow>
                 <TableCell

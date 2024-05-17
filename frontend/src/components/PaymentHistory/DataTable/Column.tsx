@@ -21,7 +21,13 @@ const getColumnHeaderWithSort = (column, headerText: string) => {
 };
 
 export const Columns: ColumnDef<PaymentHistory>[] = [
-  { accessorKey: "productName", header: "Product Name" },
+  {
+    accessorKey: "productName",
+    header: "Product Name",
+    cell: ({ row }) => (
+      <span className="font-semibold">{row.getValue("productName")}</span>
+    ),
+  },
 
   {
     accessorKey: "paymentDate",
@@ -34,8 +40,11 @@ export const Columns: ColumnDef<PaymentHistory>[] = [
 
   {
     accessorKey: "nextBillingDate",
-
-    cell: ({ row }) => formateDateWithoutTime(row.getValue("nextBillingDate")),
+    cell: ({ row }) => (
+      <span className="font-semibold">
+        {formateDateWithoutTime(row.getValue("nextBillingDate"))}
+      </span>
+    ),
     header: ({ column }) =>
       getColumnHeaderWithSort(column, "Next Billing Date"),
   },
