@@ -6,7 +6,7 @@ import Payment from "../components/Dashboard/Payment/Payment";
 import Payment_history from "../components/PaymentHistory/paymentHistory";
 
 type Props = {
-  page: "dashboard" | "practice" | "speedTest" | "payment" | "payment_history";
+  page: "dashboard" | "practice" | "speedTest" | "subscription" | "transaction";
 };
 
 function Dashboard({ page = "dashboard" }: Props) {
@@ -24,11 +24,11 @@ function Dashboard({ page = "dashboard" }: Props) {
     case "speedTest":
       containerDom = <Practice key="test" mode="TEST" title="Speed Test" />;
       break;
-    case "payment":
+    case "subscription":
       containerDom = <Payment />;
       break;
 
-    case "payment_history":
+    case "transaction":
       containerDom = <Payment_history />;
       break;
     default:

@@ -43,7 +43,6 @@ const PaymentHistory = () => {
   return (
     <Card className="col-span-8">
       <CardHeader>
-        <CardTitle>Recent Payments</CardTitle>
       </CardHeader>
       <CardContent>{getTableDom()}</CardContent>
     </Card>

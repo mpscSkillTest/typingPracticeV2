@@ -22,16 +22,16 @@ export const navItems: NavItem[] = [
     label: "Speed Test",
   },
   {
-    title: "Subscription",
-    href: "/payment",
+    title: "Subscriptions",
+    href: "/subscription",
     icon: "Payment",
-    label: "Payment",
+    label: "Subscription",
   },
   {
-    title: "Payment History",
-    href: "/payment_history",
+    title: "Transactions",
+    href: "/transaction",
     icon: "IndianRupee",
-    label: "Payment history",
+    label: "Transactions",
   },
 ];
 
