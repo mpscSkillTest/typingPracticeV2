@@ -201,7 +201,7 @@ const StudentDashboard = () => {
           </h2>
         </div>
         <div className="flex flex-col flex-1 space-y-8">
-          <div className="flex gap-12">
+          <div className="flex gap-6 flex-wrap">
             {getSubjectSelection()}
             {getTypingModeSelection()}
             {getDurationSelection()}
