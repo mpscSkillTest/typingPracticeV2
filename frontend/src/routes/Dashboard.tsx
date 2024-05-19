@@ -3,7 +3,7 @@ import DashboardLayout from "../components/layout/dashboard-layout";
 import Student from "../components/Dashboard/Student/Student";
 import Practice from "../components/Dashboard/Practice/Practice";
 import Payment from "../components/Dashboard/Payment/Payment";
-import Payment_history from "../components/PaymentHistory/paymentHistory";
+import PaymentHistory from "../components/Dashboard/PaymentHistory/PaymentHistory";
 
 type Props = {
   page:
@@ -38,7 +38,7 @@ function Dashboard({ page = "dashboard" }: Props) {
       break;
 
     case "transaction":
-      containerDom = <Payment_history />;
+      containerDom = <PaymentHistory />;
       break;
     default:
       break;

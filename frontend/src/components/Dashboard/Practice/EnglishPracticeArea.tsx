@@ -18,8 +18,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Icons } from "@/components/ui/icons";
-import { handleEnglishKeyDown } from "./utils/handleEnglishKeydown";
-import { handleMarathiKeyDown } from "./utils/handleMarathiKeydown";
+import { handleEnglishKeyDown } from "../../../utils/passageUtils/handleEnglishKeydown";
+import { handleMarathiKeyDown } from "../../../utils/passageUtils/handleMarathiKeydown";
 import type { Subject, UserDetails, TypingMode, Passage } from "../../../types";
 import axios from "../../../config/customAxios";
 import Result from "./Result";

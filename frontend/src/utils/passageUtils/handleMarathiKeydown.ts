@@ -1,5 +1,5 @@
 import type { KeyboardEvent } from "react";
-import { marathiTranslator } from "../../../../utils/marathiParser";
+import { marathiTranslator } from "../marathiParser";
 import { SKIP_CHECK_KEYDOWN, SPECIAL_CHECK_KEYDOWN } from "./constant";
 
 type FunctionArgs = {

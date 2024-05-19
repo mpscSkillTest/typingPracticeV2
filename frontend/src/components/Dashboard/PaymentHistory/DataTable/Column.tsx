@@ -1,8 +1,8 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUp, ArrowDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { formateDateWithoutTime } from "../../../utils/formatter";
-import type { PaymentHistory } from "../../../types";
+import { formateDateWithoutTime } from "../../../../utils/formatter";
+import type { PaymentHistory } from "../../../../types";
 
 const getColumnHeaderWithSort = (column, headerText: string) => {
   const { toggleSorting, getIsSorted } = column || {};

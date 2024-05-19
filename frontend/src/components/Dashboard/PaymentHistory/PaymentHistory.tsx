@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Icons } from "@/components/ui/icons";
 import { Columns } from "./DataTable/Column";
 import { DataTable } from "./DataTable/Table";
-import type { PaymentHistory } from "../../types";
-import axios from "../../config/customAxios";
+import type { PaymentHistory } from "../../../types";
+import axios from "../../../config/customAxios";
 
 const PaymentHistory = () => {
   const [showLoader, setShowLoader] = useState<boolean>(false);
@@ -42,8 +42,7 @@ const PaymentHistory = () => {
 
   return (
     <Card className="col-span-8">
-      <CardHeader>
-      </CardHeader>
+      <CardHeader></CardHeader>
       <CardContent>{getTableDom()}</CardContent>
     </Card>
   );
