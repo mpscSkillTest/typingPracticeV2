@@ -28,13 +28,18 @@ const router = createBrowserRouter([
     errorElement: <ErrorPage />,
   },
   {
+    path: "/mock-test",
+    element: getProtectedRoute(<Dashboard page="mockTest" />),
+    errorElement: <ErrorPage />,
+  },
+  {
     path: "/subscription",
     element: getProtectedRoute(<Dashboard page="subscription" />),
     errorElement: <ErrorPage />,
   },
   {
     path: "/transaction",
-    element: getProtectedRoute(<Dashboard page="transaction"/>),
+    element: getProtectedRoute(<Dashboard page="transaction" />),
     errorElement: <ErrorPage />,
   },
   {

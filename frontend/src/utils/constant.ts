@@ -22,6 +22,12 @@ export const navItems: NavItem[] = [
     label: "Speed Test",
   },
   {
+    title: "Mock Tests",
+    href: "/mock-test",
+    icon: "MockTest",
+    label: "Mock Tests",
+  },
+  {
     title: "Subscriptions",
     href: "/subscription",
     icon: "Payment",

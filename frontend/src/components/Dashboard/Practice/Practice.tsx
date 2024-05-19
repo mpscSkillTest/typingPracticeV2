@@ -10,7 +10,7 @@ import EnglishPracticeArea from "./EnglishPracticeArea";
 
 type Props = {
   mode: TypingMode;
-  title: "Practice" | "Speed Test";
+  title: "Practice" | "Speed Test" | "Mock Test";
 };
 
 const Practice = ({ mode, title }: Props) => {

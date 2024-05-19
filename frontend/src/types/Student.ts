@@ -2,7 +2,7 @@ import { Duration } from "../enums/Duration";
 
 export type Subject = "ENGLISH" | "MARATHI";
 
-export type TypingMode = "PRACTICE" | "TEST";
+export type TypingMode = "PRACTICE" | "TEST" | "MOCK";
 
 export type Result = {
   accuracy: number;

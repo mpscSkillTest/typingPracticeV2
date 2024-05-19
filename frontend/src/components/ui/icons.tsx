@@ -36,6 +36,7 @@ import {
   Eye,
   EyeOff,
   BadgeInfo,
+  BookOpenText,
 } from "lucide-react";
 
 export type Icon = LucideIcon;
@@ -74,6 +75,7 @@ export const Icons = {
   LeaderBoard: Trophy,
   SpeedTest: AlarmClockCheck,
   IndianRupee: IndianRupee,
+  MockTest: BookOpenText,
   Eye,
   EyeOff,
   BadgeInfo,

@@ -43,6 +43,10 @@ const TimerDetails = {
     initialValue: 600,
     isCountDown: true,
   },
+  MOCK: {
+    initialValue: 300,
+    isCountDown: true,
+  },
 };
 
 const EnglishPracticeArea = ({ userDetails, subject, mode }: Props) => {
