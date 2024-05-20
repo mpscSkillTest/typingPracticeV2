@@ -1,13 +1,5 @@
-import {
-  useState,
-  useRef,
-  useEffect,
-  type BaseSyntheticEvent,
-  KeyboardEvent,
-  ChangeEventHandler,
-} from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import {
   Select,
@@ -18,8 +10,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Icons } from "@/components/ui/icons";
-import { handleEnglishKeyDown } from "../../../utils/passageUtils/handleEnglishKeydown";
-import { handleMarathiKeyDown } from "../../../utils/passageUtils/handleMarathiKeydown";
+import { QuestionPassage, AnswerPassage, HighlightedPassage } from "../shared";
+import type { OnChangeArgs, OnKeyDownArgs } from "../shared/AnswerPassage";
 import type { Subject, UserDetails, TypingMode, Passage } from "../../../types";
 import axios from "../../../config/customAxios";
 import Result from "./Result";
@@ -32,7 +24,12 @@ type Props = {
   mode: TypingMode;
 };
 
-type UserResult = Record<string, number | number[]>;
+type UserResult = {
+  accuracy?: number;
+  totalErrorCount?: number;
+  totalTypedWords?: number;
+  correctWordIndices?: number[];
+};
 
 const TimerDetails = {
   PRACTICE: {
@@ -79,79 +76,44 @@ const EnglishPracticeArea = ({ userDetails, subject, mode }: Props) => {
 
   const totalWords = useRef<number>(0);
 
-  const restrictActions = (event: BaseSyntheticEvent) => {
-    event?.preventDefault?.();
-    return false;
-  };
-
-  const onUserInputKeyDown = (event: KeyboardEvent) => {
+  const onUserInputKeyDown = ({
+    updatedBackspacesCount = 0,
+    updatedTypedWordsCount = 0,
+    updatedKeystrokesCount = 0,
+    updatedUserInputText = "",
+  }: OnKeyDownArgs) => {
     if (!shouldStartTimer) {
       setShouldStartTimer(true);
     }
     if (subject === "ENGLISH") {
-      const { updatedBackspacesCount, updatedKeystrokesCount } =
-        handleEnglishKeyDown({
-          event,
-          inputText: userInputText,
-          currentBackspacesCount: backspacesCount,
-          currentKeystrokesCount: keystrokesCount,
-        });
-
       setBackspacesCount(updatedBackspacesCount);
       setKeystrokesCount(updatedKeystrokesCount);
     }
 
     if (subject === "MARATHI") {
-      const marathiTranslationDetails = handleMarathiKeyDown({
-        event,
-        userInputRef: userInputRef.current,
-        EnglishTextReal: englishInputText.current,
-        currentBackspacesCount: backspacesCount,
-        currentKeystrokesCount: keystrokesCount,
-        currentTypedWordsCount: totalTypedWords,
-      });
-      const {
-        updatedBackspacesCount,
-        translatedMarathiText,
-        updatedEnglishTextInput,
-        updatedCursorPosition,
-        updatedTypedWordsCount,
-        updatedKeystrokesCount,
-      } = marathiTranslationDetails || {};
-      englishInputText.current = updatedEnglishTextInput;
-      if (userInputRef.current) {
-        userInputRef.current.selectionStart = updatedCursorPosition;
-      }
       let totalPendingWordsClone =
         totalWords.current - updatedTypedWordsCount || 0;
-
       totalPendingWordsClone =
         totalPendingWordsClone >= 0 ? totalPendingWordsClone : 0;
-
       setTotalPendingWords(totalPendingWordsClone);
       setKeystrokesCount(updatedKeystrokesCount);
       setTotalTypedWords(updatedTypedWordsCount);
       setBackspacesCount(updatedBackspacesCount);
-      setUserInputText(translatedMarathiText);
+      setUserInputText(updatedUserInputText);
     }
   };
 
-  const onUserInputChange: ChangeEventHandler<HTMLTextAreaElement> = (
-    event
-  ) => {
-    if (subject === "MARATHI") {
-      event.preventDefault?.();
-      return;
-    }
+  const onUserInputChange = ({
+    updatedTypedWordsCount = 0,
+    updatedUserInputText = "",
+  }: OnChangeArgs) => {
     if (subject === "ENGLISH") {
-      const updatedInputText = event.target.value || "";
-      const totalTypedWordsClone = updatedInputText.trim().split(" ").length;
-      let totalPendingWordsClone = totalWords.current - totalTypedWordsClone;
+      let totalPendingWordsClone = totalWords.current - updatedTypedWordsCount;
       totalPendingWordsClone =
         totalPendingWordsClone >= 0 ? totalPendingWordsClone : 0;
-      setTotalTypedWords(totalTypedWordsClone);
+      setTotalTypedWords(updatedTypedWordsCount);
       setTotalPendingWords(totalPendingWordsClone);
-      setUserInputText(updatedInputText);
+      setUserInputText(updatedUserInputText);
     }
   };
 
@@ -263,19 +225,15 @@ const EnglishPracticeArea = ({ userDetails, subject, mode }: Props) => {
 
   const getUserInputPassage = () => {
     return (
-      <Textarea
-        spellCheck={false}
-        ref={userInputRef}
-        value={userInputText}
+      <AnswerPassage
+        subject={subject}
+        shouldDisable={!!userResult.current?.totalTypedWords}
         onKeyDown={onUserInputKeyDown}
         onChange={onUserInputChange}
-        onCut={restrictActions}
-        onPaste={restrictActions}
-        onCopy={restrictActions}
-        onWheel={restrictActions}
-        disabled={!!userResult.current?.totalTypedWords}
-        className={`h-[200px] resize-none font-normal text-md text-black ${classes.userSelect}`}
-        placeholder="Type your passage here."
+        totalTypedWords={totalTypedWords}
+        keystrokesCount={keystrokesCount}
+        backspacesCount={backspacesCount}
+        userInputText={userInputText}
       />
     );
   };
@@ -283,30 +241,19 @@ const EnglishPracticeArea = ({ userDetails, subject, mode }: Props) => {
   const getUserPassage = () => {
     if (!shouldShowResult) {
       return (
-        <Textarea
-          readOnly
-          className={`resize-none h-[200px] font-medium text-md text-black ${classes.passageText} ${classes.userSelect}`}
-          disabled
-          onChange={restrictActions}
-          onPaste={restrictActions}
-          onCopy={restrictActions}
-          value={questionPassage}
+        <QuestionPassage
+          selectedPassageId={selectedPassageId}
+          questionPassage={questionPassage}
         />
       );
     }
-    const expectedWords = questionPassage?.trim?.()?.split(" ").filter(Boolean);
 
     return (
-      <div
-        className={` w-full border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50  overflow-y-auto flex flex-wrap gap-1 rounded-md focus-visible:ring-offset-2 h-[200px] font-medium text-md text-black ${classes.passageText}`}
-      >
-        {expectedWords.map((word, index) => {
-          if (userResult.current?.correctWordIndices?.includes(index)) {
-            return <span className="text-[16px]  text-green-500">{word}</span>;
-          }
-          return <span className="text-[16px] text-red-500">{word}</span>;
-        })}
-      </div>
+      <HighlightedPassage
+        correctWordIndices={userResult.current?.correctWordIndices || []}
+        selectedPassageId={selectedPassageId}
+        questionPassage={questionPassage}
+      />
     );
   };
 
@@ -390,7 +337,6 @@ const EnglishPracticeArea = ({ userDetails, subject, mode }: Props) => {
             shouldResetTimer={selectedPassageId}
           />
         </div>
-
         <div className="flex flex-col gap-[20px]">
           {getUserPassage()}
           <div className="flex gap-[10px] flex-col">
