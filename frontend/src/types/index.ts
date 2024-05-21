@@ -8,6 +8,7 @@ export type {
   TypingMode,
   DurationOption,
   DurationValue,
+  MockTestDetails,
 } from "./Student";
 export type { Product, Feature } from "./Subscriptions";
 export type { PaymentHistory } from "./PaymentHistory";

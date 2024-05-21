@@ -130,6 +130,7 @@ const AnswerPassage = ({
       spellCheck={false}
       ref={userInputRef}
       value={userInputText}
+      autoFocus
       onKeyDown={onUserInputKeyDown}
       onChange={onUserInputChange}
       onCut={restrictActions}

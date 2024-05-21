@@ -1,4 +1,5 @@
 import { Duration } from "../enums/Duration";
+import type { Passage } from "./User";
 
 export type Subject = "ENGLISH" | "MARATHI";
 
@@ -19,6 +20,13 @@ export type Result = {
   resultId?: number;
   passageTitle?: string;
 };
+
+export type MockTestDetails = {
+  keyboardTestPassageDetails?: Passage;
+  practicePassageDetails?: Passage;
+  testPassageDetails?: Passage;
+};
+
 export type Values<T> = { [K in keyof T]: T[K] }[keyof T];
 
 export type DurationOption = keyof typeof Duration;

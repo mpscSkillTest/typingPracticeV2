@@ -1,8 +1,8 @@
 import classes from "./commonStyles.module.scss";
 
 type Props = {
-  selectedPassageId: string;
-  questionPassage: string;
+  selectedPassageId?: string;
+  questionPassage?: string;
   correctWordIndices: number[];
 };
 

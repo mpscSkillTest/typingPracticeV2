@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { Icons } from "@/components/ui/icons";
 import { useToast } from "@/components/ui/use-toast";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import type { Subject, UserDetails } from "../../../types";
+import { Instructions } from "./Instructions";
+import type { Subject, UserDetails, MockTestDetails } from "../../../types";
 import axios from "../../../config/customAxios";
 import PageHead from "../../shared/page-head";
 import MockTests from "./MockTests";
@@ -15,6 +15,13 @@ type Props = {
 const Practice = ({ title }: Props) => {
   const [showLoader, setShowLoader] = useState<boolean>(true);
   const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
+  const [hasExamStarted, setHasExamStarted] = useState<boolean>(false);
+
+  const [selectedSubject, setSelectedSubject] = useState<Subject | undefined>(
+    undefined
+  );
+
+  const [mockTestDetails, setMockTestDetails] = useState<MockTestDetails>({});
 
   const { toast } = useToast();
 
@@ -39,6 +46,49 @@ const Practice = ({ title }: Props) => {
     }
   };
 
+  const getMockTestDetails = async (subject: Subject) => {
+    setShowLoader(true);
+    try {
+      const { data } = await axios.post("/student/mock-tests/", {
+        subject,
+      });
+      const { passageDetails, accessLimitReached, error } = data || {};
+
+      if (accessLimitReached) {
+        toast({
+          variant: "destructive",
+          title: "You have exhausted your free trial limit",
+          description:
+            "To give unlimited mock tests and to use our other exciting features, please consider to subscribe our Premium Package",
+          duration: 4000,
+          className: "absolute",
+        });
+        return;
+      }
+
+      if (error || !passageDetails) {
+        throw new Error("No Mock Tests Available");
+      }
+      setMockTestDetails(passageDetails);
+    } catch (error: unknown) {
+      const errorMessage = error?.response?.data?.error || "Something wrong";
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong",
+        description: errorMessage,
+        className: "my-[10px]",
+      });
+    } finally {
+      setShowLoader(false);
+    }
+  };
+
+  const toggleMockTestView = async (subject: Subject) => {
+    await getMockTestDetails(subject);
+    setSelectedSubject(subject);
+    setHasExamStarted((prevExamStarted) => !prevExamStarted);
+  };
+
   useEffect(() => {
     getStudentDetails();
   }, []);
@@ -55,30 +105,23 @@ const Practice = ({ title }: Props) => {
     return <Navigate to="/signin" replace />;
   }
 
-  const getTabContentDom = (subject: Subject) => {
+  if (!hasExamStarted) {
     return (
-      <TabsContent value={subject} className="h-full space-y-4">
-        <MockTests userDetails={userDetails} subject={subject} />
-      </TabsContent>
+      <div className="flex-1 h-full space-y-4 p-4 pt-6 lg:p-8">
+        <Instructions onStartTest={toggleMockTestView} />
+      </div>
     );
-  };
+  }
 
   return (
     <>
       <PageHead title={title} />
-      <div className="flex-1 space-y-4 p-4 pt-6 lg:p-8">
-        <Tabs defaultValue="MARATHI" className=" flex-1 space-y-4">
-          <TabsList className="h-[64px] w-[240px] my-[20px]">
-            <TabsTrigger className="h-full w-[50%]" value="MARATHI">
-              Marathi
-            </TabsTrigger>
-            <TabsTrigger className="h-full w-[50%]" value="ENGLISH">
-              English
-            </TabsTrigger>
-          </TabsList>
-          {getTabContentDom("MARATHI")}
-          {getTabContentDom("ENGLISH")}
-        </Tabs>
+      <div className="flex-1 h-full space-y-4 p-4 pt-6 lg:p-8">
+        <MockTests
+          userDetails={userDetails}
+          subject={selectedSubject}
+          mockTestDetails={mockTestDetails}
+        />
       </div>
     </>
   );

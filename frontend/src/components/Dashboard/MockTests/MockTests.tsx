@@ -1,17 +1,28 @@
 import { useState, useRef, useEffect } from "react";
 import { useToast } from "@/components/ui/use-toast";
-import { Icons } from "@/components/ui/icons";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { QuestionPassage, AnswerPassage, HighlightedPassage } from "../shared";
 import type { OnChangeArgs, OnKeyDownArgs } from "../shared/AnswerPassage";
-import type { Subject, Passage, UserDetails } from "../../../types";
+import type {
+  Subject,
+  UserDetails,
+  MockTestDetails,
+  Passage,
+} from "../../../types";
 import axios from "../../../config/customAxios";
 import Timer from "../../shared/timer";
-
 import classes from "./styles.module.scss";
 
 type Props = {
-  subject: Subject;
+  subject?: Subject;
   userDetails: UserDetails;
+  mockTestDetails?: MockTestDetails;
 };
 
 type UserResult = {
@@ -21,27 +32,70 @@ type UserResult = {
   correctWordIndices?: number[];
 };
 
+type TestStage =
+  | "KEYBOARD"
+  | "KEYBOARD_BREAK"
+  | "PRACTICE"
+  | "PRACTICE_BREAK"
+  | "TEST";
+
 const TimerDetails = {
-  MOCK: {
+  KEYBOARD: {
     initialValue: 300,
+    isCountDown: true,
+  },
+  KEYBOARD_BREAK: {
+    initialValue: 300,
+    isCountDown: true,
+  },
+  PRACTICE: {
+    initialValue: 600,
+    isCountDown: true,
+  },
+  PRACTICE_BREAK: {
+    initialValue: 120,
+    isCountDown: true,
+  },
+  TEST: {
+    initialValue: 600,
     isCountDown: true,
   },
 };
 
-const MockTests = ({ subject }: Props) => {
+const PASSAGE_KEY_TO_MODE = {
+  KEYBOARD: "keyboardTestPassageDetails",
+  PRACTICE: "practicePassageDetails",
+  TEST: "testPassageDetails",
+};
+
+const BREAK_SESSIONS = ["KEYBOARD_BREAK", "PRACTICE_BREAK"];
+
+const TEST_STAGES: TestStage[] = [
+  "KEYBOARD_BREAK",
+  "PRACTICE",
+  "PRACTICE_BREAK",
+  "TEST",
+];
+
+const MockTests = ({ subject, mockTestDetails }: Props) => {
   const [keystrokesCount, setKeystrokesCount] = useState<number>(0);
   const [backspacesCount, setBackspacesCount] = useState<number>(0);
   const [userInputText, setUserInputText] = useState<string>("");
-  const [availablePassages, setAvailablePassages] = useState<Passage[]>([]);
-  const [questionPassage, setQuestionPassage] = useState<string>("");
-  const [selectedPassageId, setSelectedPassageId] = useState<string>("");
-  const [shouldStartTimer, setShouldStartTimer] = useState<boolean>(false);
   const [shouldShowResult, setShouldShowResult] = useState<boolean>(false);
   const [totalTypedWords, setTotalTypedWords] = useState<number>(0);
-  const [shouldShowLoader, setShouldShowLoader] = useState<boolean>(false);
-  const [detailsLoading, setDetailsLoading] = useState<boolean>(false);
   const [shouldShowAutoSubmitWarning, setShouldShowAutoSubmitWarning] =
     useState<boolean>(false);
+  const [shouldStartTimer, setShouldStartTimer] = useState<boolean>(false);
+
+  const [currenTestStage, setCurrentTestStage] =
+    useState<TestStage>("KEYBOARD");
+
+  const [shouldShowWarningDom, setShouldShowWarningDom] =
+    useState<boolean>(false);
+
+  const currentPassageKey: string = PASSAGE_KEY_TO_MODE[currenTestStage] || "";
+
+  const currentPassageDetails: Passage = mockTestDetails?.[currentPassageKey];
 
   const [duration, setDuration] = useState<number>(0);
 
@@ -53,7 +107,61 @@ const MockTests = ({ subject }: Props) => {
 
   const { toast } = useToast();
 
-  const totalWords = useRef<number>(0);
+  const resetUserActions = () => {
+    userResult.current = {};
+    englishInputText.current = "";
+    if (userInputRef.current) {
+      userInputRef.current.value = "";
+      userInputRef.current.selectionStart = 0;
+    }
+    setKeystrokesCount(0);
+    setBackspacesCount(0);
+    setTotalTypedWords(0);
+    setDuration(0);
+    setUserInputText("");
+    setShouldShowResult(false);
+    setShouldStartTimer(false);
+    setShouldShowAutoSubmitWarning(false);
+  };
+
+  const isBreakSession = BREAK_SESSIONS.includes(currenTestStage);
+
+  const toggleWarningDom = () => {
+    setShouldShowWarningDom(true);
+    setTimeout(() => {
+      window.location.reload();
+    }, 5000);
+  };
+
+  const getWarningDom = () => {
+    if (shouldShowWarningDom) {
+      return (
+        <div className="flex max-h-max items-center flex-col">
+          <DialogHeader>
+            <DialogTitle>Mock Test will be ending soon as...</DialogTitle>
+            <DialogDescription>
+              we have detected an interruption for one or more of the following
+              actions:
+            </DialogDescription>
+          </DialogHeader>
+          <ul className="my-6 ml-6 list-disc [&>li]:mt-2">
+            <li>
+              Attempting to minimize or switch away from the Assessment Console
+            </li>
+            <li>
+              Pressing restricted special keys on your keyboard during the
+              Assessment
+            </li>
+            <li>
+              Navigating away from the Assessment Console, which is not allowed
+            </li>
+            <li>Attempting to refresh the page</li>
+          </ul>
+        </div>
+      );
+    }
+    return null;
+  };
 
   const onUserInputKeyDown = ({
     updatedBackspacesCount = 0,
@@ -61,9 +169,6 @@ const MockTests = ({ subject }: Props) => {
     updatedKeystrokesCount = 0,
     updatedUserInputText = "",
   }: OnKeyDownArgs) => {
-    if (!shouldStartTimer) {
-      setShouldStartTimer(true);
-    }
     if (subject === "ENGLISH") {
       setBackspacesCount(updatedBackspacesCount);
       setKeystrokesCount(updatedKeystrokesCount);
@@ -88,19 +193,15 @@ const MockTests = ({ subject }: Props) => {
   };
 
   const onSubmitPassage = async () => {
-    if (shouldStartTimer) {
-      setShouldStartTimer(false);
-    }
-    setShouldShowLoader(true);
     try {
       const response = await axios.post("/student/submit-result/", {
         mode: "MOCK",
         subject,
         inputText: userInputText,
-        passageText: questionPassage,
+        passageText: currentPassageDetails?.passageText,
         keystrokesCount,
         backspacesCount,
-        passageId: selectedPassageId,
+        passageId: currentPassageDetails?.passageId,
         duration,
       });
       const { result, accessLimitReached } = response?.data || {};
@@ -126,40 +227,26 @@ const MockTests = ({ subject }: Props) => {
         title: "Uh oh! Something went wrong",
         description: errorMessage,
       });
-    } finally {
-      setShouldShowLoader(false);
     }
     setShouldShowResult(true);
   };
 
-  const getAvailablePassages = async () => {
-    let newPassages = [];
-    setDetailsLoading(true);
-    try {
-      const response = await axios.post("/student/passages/", {
-        mode: "MOCK",
-        subject,
-      });
-      if (!response?.data?.passages) {
-        throw new Error("No Passages Available");
-      }
-      newPassages = response?.data?.passages || [];
-    } catch (error: unknown) {
-      newPassages = [];
-      const errorMessage = error?.response?.data?.error || "Something wrong";
-      toast({
-        variant: "destructive",
-        title: "Uh oh! Something went wrong",
-        description: errorMessage,
-        className: "my-[10px]",
-      });
-    } finally {
-      setDetailsLoading(false);
+  const getAutoSubmitWarningDom = () => {
+    if (currenTestStage !== "TEST" || !shouldShowAutoSubmitWarning) {
+      return null;
     }
-    return newPassages;
+
+    return (
+      <h4 className="align-middle text-lg max-w-max m-auto">
+        This passage will be submitted automatically in
+        <span className={`text-red-400 font-bold ${classes.animateBlink}`}>{` ${
+          TimerDetails.TEST.initialValue - duration
+        } Seconds`}</span>
+      </h4>
+    );
   };
 
-  const getUserInputPassage = () => {
+  const getAnswerPassageDom = () => {
     return (
       <AnswerPassage
         subject={subject}
@@ -174,12 +261,12 @@ const MockTests = ({ subject }: Props) => {
     );
   };
 
-  const getUserPassage = () => {
+  const getQuestionPassageDom = () => {
     if (!shouldShowResult) {
       return (
         <QuestionPassage
-          selectedPassageId={selectedPassageId}
-          questionPassage={questionPassage}
+          selectedPassageId={currentPassageDetails?.passageId}
+          questionPassage={currentPassageDetails?.passageText}
         />
       );
     }
@@ -187,101 +274,147 @@ const MockTests = ({ subject }: Props) => {
     return (
       <HighlightedPassage
         correctWordIndices={userResult.current?.correctWordIndices || []}
-        selectedPassageId={selectedPassageId}
-        questionPassage={questionPassage}
+        selectedPassageId={currentPassageDetails?.passageId}
+        questionPassage={currentPassageDetails?.passageText}
       />
     );
   };
 
-  const fetchDetails = async () => {
-    const updatedPassages = await getAvailablePassages();
-    setAvailablePassages(updatedPassages);
-  };
-
-  const resetUserActions = (updatedTotalWords: number = 0) => {
-    totalWords.current = updatedTotalWords;
-    userResult.current = {};
-    englishInputText.current = "";
-    if (userInputRef.current) {
-      userInputRef.current.value = "";
-      userInputRef.current.selectionStart = 0;
+  const getPassageWrapperDom = () => {
+    if (isBreakSession || !currentPassageDetails?.passageId) {
+      return null;
     }
-    setKeystrokesCount(0);
-    setBackspacesCount(0);
-    setTotalTypedWords(0);
-    setDuration(0);
-    setUserInputText("");
-    setShouldStartTimer(false);
-    setShouldShowResult(false);
-    setShouldShowLoader(false);
-    setShouldShowAutoSubmitWarning(false);
+    return (
+      <div className="flex flex-col gap-5">
+        {getQuestionPassageDom()}
+        <div className="flex gap-[10px] flex-col">
+          {getAnswerPassageDom()}
+          {getAutoSubmitWarningDom()}
+        </div>
+      </div>
+    );
   };
 
-  const remainingTime = TimerDetails.MOCK.initialValue - duration || 0;
+  const getContentDom = () => {
+    if (shouldShowWarningDom) {
+      return null;
+    }
+    let currentStageTitle = "";
+    let currentDescription = "";
+    switch (currenTestStage) {
+      case "PRACTICE":
+      case "KEYBOARD":
+        currentStageTitle = `Passage for ${currenTestStage.toLocaleLowerCase()}`;
+        currentDescription =
+          "You will have trial passages to make yourself familiar with keyboard and exam pattern. These passages won't be consider for result";
+        break;
+      case "KEYBOARD_BREAK":
+      case "PRACTICE_BREAK":
+        currentStageTitle = "Break Session";
+        currentDescription =
+          "You will have short break in between different sessions before attempting final test";
+        break;
+      case "TEST":
+        currentStageTitle = "Passage for final exam test";
+        currentDescription =
+          "This passage will be considered for final result. Best of luck 👍";
+        break;
+      default:
+        break;
+    }
+
+    const headerDom = (
+      <DialogHeader>
+        <DialogTitle>{currentStageTitle}</DialogTitle>
+        <DialogDescription>{currentDescription}</DialogDescription>
+      </DialogHeader>
+    );
+
+    if (isBreakSession) {
+      return (
+        <div className="flex flex-col gap-5 h-full items-center justify-center">
+          {headerDom}
+          <Timer
+            interval={1000}
+            initialValue={timerInitialValue}
+            shouldResetTimer={currentPassageDetails?.passageId || "test"}
+            isCountdown
+            shouldStart={shouldStartTimer}
+            updateDuration={setDuration}
+          />
+        </div>
+      );
+    }
+
+    return (
+      <div>
+        {headerDom}
+        <div className="flex gap-5 items-center justify-center">
+          <Timer
+            interval={1000}
+            initialValue={timerInitialValue}
+            shouldResetTimer={currentPassageDetails?.passageId || "test"}
+            isCountdown
+            shouldStart={shouldStartTimer}
+            updateDuration={setDuration}
+          />
+        </div>
+        {getPassageWrapperDom()}
+      </div>
+    );
+  };
+
+  const timerInitialValue = TimerDetails?.[currenTestStage]?.initialValue || 0;
+
+  const remainingTime = timerInitialValue - duration || 0;
 
   useEffect(() => {
-    fetchDetails();
-  }, []);
+    if (currenTestStage === "TEST") {
+      // auto submit on time up
+      if (remainingTime && remainingTime < 60 && !shouldShowAutoSubmitWarning) {
+        setShouldShowAutoSubmitWarning(true);
+      } else if (userInputText && remainingTime === 0) {
+        onSubmitPassage();
+        setShouldShowAutoSubmitWarning(false);
+      }
+      return;
+    }
 
-  useEffect(() => {
-    const selectedQuestionPassage: Passage | undefined = availablePassages[0];
-    const { passageText = "", passageId } = selectedQuestionPassage || {};
-    const updatedTotalWords = passageText?.split(" ")?.length || 0;
-    resetUserActions(updatedTotalWords);
-    setQuestionPassage(passageText || "");
-    setSelectedPassageId(passageId);
-  }, [availablePassages, selectedPassageId]);
-
-  useEffect(() => {
-    // auto submit on time up
-    if (remainingTime && remainingTime < 60 && !shouldShowAutoSubmitWarning) {
-      setShouldShowAutoSubmitWarning(true);
-    } else if (userInputText && remainingTime === 0) {
-      onSubmitPassage();
-      setShouldShowAutoSubmitWarning(false);
+    if (remainingTime === 0) {
+      const nextTestStage = TEST_STAGES.shift();
+      if (nextTestStage) {
+        setCurrentTestStage(nextTestStage);
+      }
+      resetUserActions();
     }
   }, [remainingTime]);
 
-  if (detailsLoading) {
-    return (
-      <div className="h-full flex items-center justify-center">
-        <Icons.spinner height={48} width={48} className="animate-spin" />
-      </div>
-    );
-  }
+  useEffect(() => {
+    setShouldStartTimer(true);
+  }, [currenTestStage]);
+
+  useEffect(() => {
+    window.addEventListener("beforeunload", toggleWarningDom);
+    document.addEventListener("visibilitychange", toggleWarningDom);
+    window.addEventListener("resize", toggleWarningDom);
+
+    return () => {
+      window.removeEventListener("beforeunload", toggleWarningDom);
+      document.removeEventListener("visibilitychange", toggleWarningDom);
+      window.removeEventListener("resize", toggleWarningDom);
+    };
+  }, []);
 
   return (
-    <div className="grid grid-cols-1 gap-[20px] xl:grid-cols-4 mx-5">
-      <div className="col-span-4">
-        <div className="flex gap-2 items-center justify-center">
-          <Timer
-            interval={1000}
-            isCountdown={!!TimerDetails.MOCK.isCountDown}
-            initialValue={TimerDetails.MOCK.initialValue}
-            shouldStart={shouldStartTimer}
-            updateDuration={setDuration}
-            shouldResetTimer={selectedPassageId}
-          />
-        </div>
-        <div className="flex flex-col gap-[20px]">
-          {getUserPassage()}
-          <div className="flex gap-[10px] flex-col">
-            {getUserInputPassage()}
-
-            {shouldShowAutoSubmitWarning ? (
-              <h4 className="align-middle text-lg max-w-max m-auto">
-                This passage will be submitted automatically in
-                <span
-                  className={`text-red-400 font-bold ${classes.animateBlink}`}
-                >{` ${
-                  TimerDetails.TEST.initialValue - duration
-                } Seconds`}</span>
-              </h4>
-            ) : null}
-          </div>
-        </div>
-      </div>
-    </div>
+    <Dialog open>
+      <DialogContent
+        shouldShowCloseOption={false}
+        className="min-w-[calc(100dvw-30%)] h-[calc(100dvh-25%)]"
+      >
+        {getContentDom()}
+        {getWarningDom()}
+      </DialogContent>
+    </Dialog>
   );
 };
 

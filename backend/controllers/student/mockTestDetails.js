@@ -50,9 +50,7 @@ export const getMockTestDetails = async (req, res) => {
 
     if (shouldShowLimitedResults && mockTestsData?.length >= 3) {
       res.status(StatusCodes.OK).send({
-        keyboardTestPassageDetails: null,
-        practicePassageDetails: null,
-        testPassageDetails: null,
+        passageDetails: null,
         accessLimitReached: true,
         error: null,
       });
@@ -111,9 +109,11 @@ export const getMockTestDetails = async (req, res) => {
       testPassages[Math.floor(Math.random() * testPassages.length)];
 
     res.status(StatusCodes.OK).send({
-      keyboardTestPassageDetails,
-      practicePassageDetails,
-      testPassageDetails,
+      passageDetails: {
+        keyboardTestPassageDetails,
+        practicePassageDetails,
+        testPassageDetails,
+      },
       accessLimitReached: false,
       error: null,
     });
@@ -121,9 +121,7 @@ export const getMockTestDetails = async (req, res) => {
   } catch (error) {
     logger.error(error);
     res.status(StatusCodes.BAD_REQUEST).send({
-      keyboardTestPassageDetails: null,
-      practicePassageDetails: null,
-      testPassageDetails: null,
+      passageDetails: null,
       accessLimitReached: false,
       error: "No passages available",
     });

@@ -20,7 +20,7 @@ const QuestionPassage = ({ selectedPassageId, questionPassage }: Props) => {
     <Textarea
       key={selectedPassageId}
       readOnly
-      className={`resize-none h-[200px] font-medium text-md text-black ${classes.passageText} ${classes.userSelect}`}
+      className={`resize-none h-[200px] border-2 font-medium text-md text-black ${classes.passageText} ${classes.userSelect}`}
       disabled
       onChange={restrictActions}
       onPaste={restrictActions}

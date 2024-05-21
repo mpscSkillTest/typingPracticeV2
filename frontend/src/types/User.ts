@@ -9,5 +9,5 @@ export type UserDetails = {
 export type Passage = {
   passageId: string;
   passageText: string;
-  passageTitle: string;
+  passageTitle?: string;
 };
