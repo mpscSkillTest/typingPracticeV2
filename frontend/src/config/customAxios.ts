@@ -11,7 +11,7 @@ const BASE_URL = "http://localhost:5000/api";
  */
 const PROD_BASE_URL = "https://typingpracticev2-v5n2.onrender.com/api";
 
-const DEV_BASE_URL = "https://dev-typing-practice-api.onrender.com";
+const DEV_BASE_URL = "https://dev-typing-practice-api.onrender.com/api";
 
 let baseURL = "";
 
