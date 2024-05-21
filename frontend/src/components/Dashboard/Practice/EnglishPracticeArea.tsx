@@ -10,11 +10,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Icons } from "@/components/ui/icons";
-import { QuestionPassage, AnswerPassage, HighlightedPassage } from "../shared";
+import {
+  QuestionPassage,
+  AnswerPassage,
+  HighlightedPassage,
+  Result,
+} from "../shared";
 import type { OnChangeArgs, OnKeyDownArgs } from "../shared/AnswerPassage";
 import type { Subject, UserDetails, TypingMode, Passage } from "../../../types";
 import axios from "../../../config/customAxios";
-import Result from "./Result";
 import Timer from "../../shared/timer";
 import classes from "./styles.module.scss";
 

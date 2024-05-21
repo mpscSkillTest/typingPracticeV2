@@ -21,7 +21,9 @@ const Practice = ({ title }: Props) => {
     undefined
   );
 
-  const [mockTestDetails, setMockTestDetails] = useState<MockTestDetails>({});
+  const [mockTestDetails, setMockTestDetails] = useState<
+    MockTestDetails | undefined
+  >(undefined);
 
   const { toast } = useToast();
 
@@ -60,7 +62,7 @@ const Practice = ({ title }: Props) => {
           title: "You have exhausted your free trial limit",
           description:
             "To give unlimited mock tests and to use our other exciting features, please consider to subscribe our Premium Package",
-          duration: 4000,
+          duration: 5000,
           className: "absolute",
         });
         return;
@@ -86,12 +88,17 @@ const Practice = ({ title }: Props) => {
   const toggleMockTestView = async (subject: Subject) => {
     await getMockTestDetails(subject);
     setSelectedSubject(subject);
-    setHasExamStarted((prevExamStarted) => !prevExamStarted);
   };
 
   useEffect(() => {
     getStudentDetails();
   }, []);
+
+  useEffect(() => {
+    if (mockTestDetails) {
+      setHasExamStarted((prevExamStarted) => !prevExamStarted);
+    }
+  }, [mockTestDetails]);
 
   if (showLoader) {
     return (

@@ -7,7 +7,12 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { QuestionPassage, AnswerPassage, HighlightedPassage } from "../shared";
+import {
+  QuestionPassage,
+  AnswerPassage,
+  HighlightedPassage,
+  Result,
+} from "../shared";
 import type { OnChangeArgs, OnKeyDownArgs } from "../shared/AnswerPassage";
 import type {
   Subject,
@@ -127,6 +132,9 @@ const MockTests = ({ subject, mockTestDetails }: Props) => {
   const isBreakSession = BREAK_SESSIONS.includes(currenTestStage);
 
   const toggleWarningDom = () => {
+    if (userResult.current?.totalTypedWords) {
+      return;
+    }
     setShouldShowWarningDom(true);
     setTimeout(() => {
       window.location.reload();
@@ -206,9 +214,11 @@ const MockTests = ({ subject, mockTestDetails }: Props) => {
       });
       const { result, accessLimitReached } = response?.data || {};
       if (!result) {
-        throw new Error("No Passages Available");
+        throw new Error("Error occurred while saving result data");
       }
       userResult.current = result;
+      console.log({ userResult, result, accessLimitReached });
+
       if (accessLimitReached) {
         toast({
           variant: "destructive",
@@ -280,19 +290,56 @@ const MockTests = ({ subject, mockTestDetails }: Props) => {
     );
   };
 
+  const getResultDom = () => {
+    if (!shouldShowResult) {
+      return null;
+    }
+
+    const updatedTotalWords =
+      currentPassageDetails?.passageText?.split(" ")?.length || 0;
+
+    let totalPendingWordsClone = updatedTotalWords - totalTypedWords || 0;
+    totalPendingWordsClone =
+      totalPendingWordsClone >= 0 ? totalPendingWordsClone : 0;
+
+    return (
+      <div className="col-span-3 xl:col-span-1">
+        <Result
+          totalWordsCount={updatedTotalWords}
+          keystrokesCount={keystrokesCount}
+          backspaceCount={backspacesCount}
+          accuracy={userResult.current.accuracy || 0}
+          errorCount={userResult.current.totalErrorCount || 0}
+          typedWordsCount={totalTypedWords}
+          pendingWordsCount={totalPendingWordsClone}
+        />
+      </div>
+    );
+  };
+
   const getPassageWrapperDom = () => {
     if (isBreakSession || !currentPassageDetails?.passageId) {
       return null;
     }
+
     return (
-      <div className="flex flex-col gap-5">
-        {getQuestionPassageDom()}
-        <div className="flex gap-[10px] flex-col">
-          {getAnswerPassageDom()}
-          {getAutoSubmitWarningDom()}
+      <div className="grid grid-cols-1 gap-[20px] xl:grid-cols-4">
+        <div className="col-span-3">
+          <div className="flex flex-col gap-5">
+            {getQuestionPassageDom()}
+            <div className="flex gap-[10px] flex-col">
+              {getAnswerPassageDom()}
+              {getAutoSubmitWarningDom()}
+            </div>
+          </div>
         </div>
+        {getResultDom()}
       </div>
     );
+  };
+
+  const toggleMockTestWindow = () => {
+    window.location.reload();
   };
 
   const getContentDom = () => {
@@ -406,10 +453,10 @@ const MockTests = ({ subject, mockTestDetails }: Props) => {
   }, []);
 
   return (
-    <Dialog open>
+    <Dialog onOpenChange={toggleMockTestWindow} open>
       <DialogContent
-        shouldShowCloseOption={false}
-        className="min-w-[calc(100dvw-30%)] h-[calc(100dvh-25%)]"
+        shouldShowCloseOption={!!userResult.current?.totalTypedWords}
+        className="min-w-[calc(100dvw-15%)] h-[calc(100dvh-18%)]"
       >
         {getContentDom()}
         {getWarningDom()}

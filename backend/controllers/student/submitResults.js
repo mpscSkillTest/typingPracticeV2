@@ -1,11 +1,19 @@
 import { StatusCodes } from "http-status-codes";
 import { supabase } from "../../dbClient.js";
 import { getUserResults } from "../../utils/getPassageUtils.js";
+import { getUserIdFromToken } from "../../utils/utils.js";
 import { shouldHaveLimitedAccess } from "../../utils/subscriptionUtils.js";
 import { RESULTS_DB_NAME } from "../../constant.js";
 import logger from "../../utils/logger.js";
 
 export const submitResults = async (req, res) => {
+  const userId = await getUserIdFromToken(req);
+
+  if (!userId) {
+    logger.error(`submit results for User Id:${userId} user not found`);
+    throw new Error("User not found. Please try again");
+  }
+
   const {
     inputText,
     passageText,
@@ -13,12 +21,15 @@ export const submitResults = async (req, res) => {
     mode,
     backspacesCount,
     keystrokesCount,
-    userId,
     duration,
     passageId,
   } = req.body || {};
   const expectedWords = passageText.trim().split(" ").filter(Boolean);
   const typedWords = inputText.trim().split(" ").filter(Boolean);
+
+  logger.info(
+    `submitting results for user ${userId} mode:${mode} subject ${subject} Everything is OK`
+  );
 
   const result = getUserResults({
     expectedWords,
@@ -42,10 +53,15 @@ export const submitResults = async (req, res) => {
 
   const isAccessLimited = await shouldHaveLimitedAccess(userId, subject);
 
+  let resultsLimit = 10;
+  if (mode === "MOCK") {
+    resultsLimit = 3;
+  }
   /**
    * For Free users we wont retain data beyond 10 tests in db for each subject for each mode
    */
-  const shouldSaveResultInDb = !isAccessLimited || recentResults?.length < 10;
+  const shouldSaveResultInDb =
+    !isAccessLimited || recentResults?.length < resultsLimit;
 
   if (shouldSaveResultInDb) {
     const { error } = await supabase.from(RESULTS_DB_NAME).insert({
