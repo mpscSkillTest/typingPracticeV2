@@ -337,10 +337,6 @@ const MockTests = ({ subject, mockTestDetails }: Props) => {
     );
   };
 
-  const toggleMockTestWindow = () => {
-    window.location.reload();
-  };
-
   const getContentDom = () => {
     if (shouldShowWarningDom) {
       return null;
@@ -452,10 +448,10 @@ const MockTests = ({ subject, mockTestDetails }: Props) => {
   }, []);
 
   return (
-    <Dialog onOpenChange={toggleMockTestWindow} open>
+    <Dialog open>
       <DialogContent
-        shouldShowCloseOption={!!userResult.current?.totalTypedWords}
-        className="min-w-[calc(100dvw-15%)] h-[calc(100dvh-18%)]"
+        shouldShowCloseOption={false}
+        className="min-w-[calc(100dvw-30px)] h-[calc(100dvh-30px)]"
       >
         {getContentDom()}
         {getWarningDom()}
