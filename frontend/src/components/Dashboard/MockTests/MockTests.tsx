@@ -217,7 +217,6 @@ const MockTests = ({ subject, mockTestDetails }: Props) => {
         throw new Error("Error occurred while saving result data");
       }
       userResult.current = result;
-      console.log({ userResult, result, accessLimitReached });
 
       if (accessLimitReached) {
         toast({
