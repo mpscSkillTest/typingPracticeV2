@@ -92,3 +92,16 @@ export const getDailyAvg = (reportData) => {
   });
   return averageReportDetails;
 };
+
+export const getParsedPassagesDetails = (passages) => {
+  if (!passages?.length) {
+    return [];
+  }
+  return passages?.map?.((passageDetails) => {
+    return {
+      passageId: passageDetails?.id,
+      passageText: passageDetails?.passage_text,
+      passageTitle: passageDetails?.passage_title,
+    };
+  });
+};

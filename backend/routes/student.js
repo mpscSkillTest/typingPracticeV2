@@ -6,6 +6,7 @@ import {
   getStudentRecentResults,
   getStudentResultReport,
   getPaymentHistory,
+  getMockTestDetails,
 } from "../controllers/index.js";
 import { validateUser } from "../middlewares/index.js";
 
@@ -17,5 +18,6 @@ StudentDetailsRouter.post("/submit-result", submitResults);
 StudentDetailsRouter.post("/recent-results", getStudentRecentResults);
 StudentDetailsRouter.get("/payment-history", validateUser(), getPaymentHistory);
 StudentDetailsRouter.post("/reports", getStudentResultReport);
+StudentDetailsRouter.post("/mock-tests", getMockTestDetails);
 
 export default StudentDetailsRouter;

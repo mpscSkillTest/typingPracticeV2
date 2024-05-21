@@ -2,7 +2,10 @@ import { StatusCodes } from "http-status-codes";
 import { supabase } from "../../dbClient.js";
 import { PASSAGE_DB_NAME } from "../../constant.js";
 import { shouldHaveLimitedAccess } from "../../utils/subscriptionUtils.js";
-import { getAccessTokenFromHeaders } from "../../utils/utils.js";
+import {
+  getAccessTokenFromHeaders,
+  getParsedPassagesDetails,
+} from "../../utils/utils.js";
 import logger from "../../utils/logger.js";
 
 export const getPassages = async (req, res) => {
@@ -49,17 +52,9 @@ export const getPassages = async (req, res) => {
       throw new Error(error?.message);
     }
 
-    const parsedPassages = data?.map?.((passageDetails) => {
-      return {
-        passageId: passageDetails?.id,
-        passageText: passageDetails?.passage_text,
-        passageTitle: passageDetails.passage_title,
-      };
-    });
-
     logger.info("Checking the getPassages status: Fetched passage details");
     res.status(StatusCodes.OK).send({
-      passages: parsedPassages || [],
+      passages: getParsedPassagesDetails(data),
       error: null,
     });
     return;
