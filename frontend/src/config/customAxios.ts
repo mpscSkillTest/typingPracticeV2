@@ -2,6 +2,8 @@ import axios from "axios";
 import { getCookie } from "../utils/utils";
 import { AUTH_TOKEN_KEY } from "../utils/constant";
 
+const customEnv = import.meta.env.VITE_CUSTOM_ENV;
+
 const BASE_URL = "http://localhost:5000/api";
 
 /**
@@ -9,11 +11,25 @@ const BASE_URL = "http://localhost:5000/api";
  */
 const PROD_BASE_URL = "https://typingpracticev2-v5n2.onrender.com/api";
 
-const isLocalEnv = process.env.NODE_ENV === "development";
+const DEV_BASE_URL = "https://dev-typing-practice-api.onrender.com";
+
+let baseURL = "";
+
+switch (customEnv) {
+  case "development":
+    baseURL = DEV_BASE_URL;
+    break;
+  case "production":
+    baseURL = PROD_BASE_URL;
+    break;
+  default:
+    baseURL = BASE_URL;
+    break;
+}
 
 // Set config defaults when creating the instance
 const instance = axios.create({
-  baseURL: isLocalEnv ? BASE_URL : PROD_BASE_URL,
+  baseURL,
 });
 
 // Add a request interceptor
