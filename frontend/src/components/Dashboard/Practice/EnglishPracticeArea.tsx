@@ -20,7 +20,6 @@ import type { OnChangeArgs, OnKeyDownArgs } from "../shared/AnswerPassage";
 import type { Subject, UserDetails, TypingMode, Passage } from "../../../types";
 import axios from "../../../config/customAxios";
 import Timer from "../../shared/timer";
-import classes from "./styles.module.scss";
 
 type Props = {
   userDetails: UserDetails;
@@ -347,11 +346,9 @@ const EnglishPracticeArea = ({ userDetails, subject, mode }: Props) => {
             {getUserInputPassage()}
 
             {shouldShowAutoSubmitWarning ? (
-              <h4 className="align-middle text-lg max-w-max m-auto">
+              <h4 className="align-middle text-lg max-w-max m-auto my-3">
                 This passage will be submitted automatically in
-                <span
-                  className={`text-red-400 font-bold ${classes.animateBlink}`}
-                >{` ${
+                <span className={`text-red-400 font-bold`}>{` ${
                   TimerDetails.TEST.initialValue - duration
                 } Seconds`}</span>
               </h4>

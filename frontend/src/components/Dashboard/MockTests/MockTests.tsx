@@ -1,5 +1,8 @@
 import { useState, useRef, useEffect } from "react";
+import { useOnClickOutside } from "usehooks-ts";
 import { useToast } from "@/components/ui/use-toast";
+import { Icons } from "@/components/ui/icons";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -22,7 +25,6 @@ import type {
 } from "../../../types";
 import axios from "../../../config/customAxios";
 import Timer from "../../shared/timer";
-import classes from "./styles.module.scss";
 
 type Props = {
   subject?: Subject;
@@ -98,6 +100,8 @@ const MockTests = ({ subject, mockTestDetails }: Props) => {
   const [shouldShowWarningDom, setShouldShowWarningDom] =
     useState<boolean>(false);
 
+  const [showLoader, setShowLoader] = useState<boolean>(false);
+
   const currentPassageKey: string = PASSAGE_KEY_TO_MODE[currenTestStage] || "";
 
   const currentPassageDetails: Passage = mockTestDetails?.[currentPassageKey];
@@ -109,6 +113,8 @@ const MockTests = ({ subject, mockTestDetails }: Props) => {
   const userInputRef = useRef<HTMLTextAreaElement>(null);
 
   const englishInputText = useRef<string>("");
+
+  const testWindowRef = useRef(null);
 
   const { toast } = useToast();
 
@@ -131,15 +137,22 @@ const MockTests = ({ subject, mockTestDetails }: Props) => {
 
   const isBreakSession = BREAK_SESSIONS.includes(currenTestStage);
 
+  const reloadPage = () => window.location.reload();
+
+  const handleClickOutside = () => {
+    setShouldShowWarningDom(true);
+    setTimeout(reloadPage, 5000);
+  };
+
   const toggleWarningDom = () => {
     if (userResult.current?.totalTypedWords) {
       return;
     }
     setShouldShowWarningDom(true);
-    setTimeout(() => {
-      window.location.reload();
-    }, 5000);
+    setTimeout(reloadPage, 5000);
   };
+
+  useOnClickOutside(testWindowRef, handleClickOutside);
 
   const getWarningDom = () => {
     if (shouldShowWarningDom) {
@@ -201,6 +214,7 @@ const MockTests = ({ subject, mockTestDetails }: Props) => {
   };
 
   const onSubmitPassage = async () => {
+    setShowLoader(true);
     try {
       const response = await axios.post("/student/submit-result/", {
         mode: "MOCK",
@@ -236,19 +250,26 @@ const MockTests = ({ subject, mockTestDetails }: Props) => {
         title: "Uh oh! Something went wrong",
         description: errorMessage,
       });
+    } finally {
+      setShowLoader(false);
+      setShouldShowResult(true);
+      setShouldShowAutoSubmitWarning(false);
     }
-    setShouldShowResult(true);
   };
 
   const getAutoSubmitWarningDom = () => {
-    if (currenTestStage !== "TEST" || !shouldShowAutoSubmitWarning) {
+    if (
+      currenTestStage !== "TEST" ||
+      !shouldShowAutoSubmitWarning ||
+      shouldShowResult
+    ) {
       return null;
     }
 
     return (
-      <h4 className="align-middle text-lg max-w-max m-auto">
+      <h4 className="align-middle text-lg max-w-max m-auto my-3">
         This passage will be submitted automatically in
-        <span className={`text-red-400 font-bold ${classes.animateBlink}`}>{` ${
+        <span className={`text-red-400 font-bold`}>{` ${
           TimerDetails.TEST.initialValue - duration
         } Seconds`}</span>
       </h4>
@@ -326,9 +347,17 @@ const MockTests = ({ subject, mockTestDetails }: Props) => {
         <div className="col-span-3">
           <div className="flex flex-col gap-5">
             {getQuestionPassageDom()}
-            <div className="flex gap-[10px] flex-col">
+            <div className="flex gap-[10px] flex-col items-center gap-3">
               {getAnswerPassageDom()}
               {getAutoSubmitWarningDom()}
+              {shouldShowResult ? (
+                <Button
+                  className="flex w-max items-center my-4"
+                  onClick={reloadPage}
+                >
+                  Close and give another test
+                </Button>
+              ) : null}
             </div>
           </div>
         </div>
@@ -341,6 +370,15 @@ const MockTests = ({ subject, mockTestDetails }: Props) => {
     if (shouldShowWarningDom) {
       return null;
     }
+
+    if (showLoader) {
+      return (
+        <div className="h-full flex items-center justify-center">
+          <Icons.spinner height={48} width={48} className="animate-spin" />
+        </div>
+      );
+    }
+
     let currentStageTitle = "";
     let currentDescription = "";
     switch (currenTestStage) {
@@ -450,6 +488,7 @@ const MockTests = ({ subject, mockTestDetails }: Props) => {
   return (
     <Dialog open>
       <DialogContent
+        ref={testWindowRef}
         shouldShowCloseOption={false}
         className="min-w-[calc(100dvw-30px)] h-[calc(100dvh-30px)]"
       >

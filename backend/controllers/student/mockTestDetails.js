@@ -34,7 +34,8 @@ export const getMockTestDetails = async (req, res) => {
       .from(RESULTS_DB_NAME)
       .select(
         `
-      id
+      id,
+      passage_id
 `
       )
       .eq("user_id", userId)
@@ -95,9 +96,23 @@ export const getMockTestDetails = async (req, res) => {
       throw new Error(testPassagesError?.message);
     }
 
+    const attemptedPassagesId = new Set();
+
     const practicePassages = getParsedPassagesDetails(practicePassagesData);
 
     const testPassages = getParsedPassagesDetails(testPassagesData);
+
+    testPassages.forEach((passage) => {
+      attemptedPassagesId.add(passage?.passageId);
+    });
+
+    let filteredPassages = testPassages.filter(
+      (passage) => !attemptedPassagesId.has(passage?.passageId)
+    );
+
+    if (!filteredPassages?.length) {
+      filteredPassages = testPassages;
+    }
 
     const keyboardTestPassageDetails =
       practicePassages[Math.floor(Math.random() * practicePassages.length)];
@@ -106,7 +121,7 @@ export const getMockTestDetails = async (req, res) => {
       practicePassages[Math.floor(Math.random() * practicePassages.length)];
 
     const testPassageDetails =
-      testPassages[Math.floor(Math.random() * testPassages.length)];
+      filteredPassages[Math.floor(Math.random() * filteredPassages.length)];
 
     res.status(StatusCodes.OK).send({
       passageDetails: {

@@ -73,7 +73,7 @@ export const submitResults = async (req, res) => {
       total_words_count: expectedWords?.length || 0,
       typed_words_count: typedWords?.length || 0,
       type: mode,
-      accuracy,
+      accuracy: accuracy || 0,
       duration,
       passage_id: passageId,
       input_text: inputText,
