@@ -58,6 +58,11 @@ const OverviewWrapper = (props: Props) => {
 
   const customLabel = `${toProperCase(subject)} ${toProperCase(mode)}s`;
 
+  let keystrokesCount = 1500;
+  if (subject === "ENGLISH") {
+    keystrokesCount = 2000;
+  }
+
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-12">
       <OverView
@@ -78,7 +83,7 @@ const OverviewWrapper = (props: Props) => {
       />
       <OverView
         type="MPSC_ACCURACY_CONFIG"
-        title="Accuracy % Vs Error (1500 Keystrokes)"
+        title={`Accuracy % Vs Error (${keystrokesCount} Keystrokes)`}
         showLoader={showLoader}
         results={studentResults}
         label={customLabel}

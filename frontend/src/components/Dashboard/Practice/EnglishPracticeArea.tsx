@@ -332,7 +332,11 @@ const EnglishPracticeArea = ({ userDetails, subject, mode }: Props) => {
   }, [remainingTime]);
 
   useEffect(() => {
-    if (keystrokesCount <= 1500) {
+    let validKeystrokesCount = 1500;
+    if (subject === "ENGLISH") {
+      validKeystrokesCount = 2000;
+    }
+    if (keystrokesCount <= validKeystrokesCount) {
       validUserInput.current = userInputText;
     }
   }, [keystrokesCount]);
@@ -384,6 +388,8 @@ const EnglishPracticeArea = ({ userDetails, subject, mode }: Props) => {
       </div>
       <div className="col-span-3 xl:col-span-1">
         <Result
+          subject={subject}
+          showResult={shouldShowResult}
           totalWordsCount={totalWords.current}
           keystrokesCount={keystrokesCount}
           backspaceCount={backspacesCount}

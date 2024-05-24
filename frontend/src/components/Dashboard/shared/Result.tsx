@@ -1,5 +1,6 @@
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
+import type { Subject } from "../../../types";
 
 type Props = {
   keystrokesCount?: number;
@@ -11,6 +12,8 @@ type Props = {
   accuracy?: number;
   mpscAccuracy?: number;
   mpscErrorCount?: number;
+  subject: Subject;
+  showResult: boolean;
 };
 
 const Result = ({
@@ -23,6 +26,8 @@ const Result = ({
   accuracy = 0,
   mpscAccuracy = 0,
   mpscErrorCount = 0,
+  subject,
+  showResult,
 }: Props) => {
   const getResultInputDom = (
     label: string,
@@ -59,6 +64,23 @@ const Result = ({
       </Card>
     );
   };
+
+  let resultForOpen = null;
+  let resultForCategory = null;
+
+  switch (subject) {
+    case "ENGLISH":
+      resultForOpen = keystrokesCount >= 2000 && accuracy >= 93;
+      resultForCategory = keystrokesCount >= 2000 && accuracy >= 90;
+      break;
+    case "MARATHI":
+      resultForOpen = keystrokesCount >= 1500 && accuracy >= 93;
+      resultForCategory = keystrokesCount >= 1500 && accuracy >= 90;
+      break;
+    default:
+      break;
+  }
+
   return (
     <div className="flex h-full w-full flex-col gap-[20px]">
       <div className="flex flex-col p-[20px] gap-[10px] rounded-lg border-2 justify-between flex-1">
@@ -67,18 +89,37 @@ const Result = ({
         {getResultInputDom("Pending Words", pendingWordsCount)}
         {getResultInputDom("Keystrokes", keystrokesCount)}
         {getResultInputDom("Backspaces", backspaceCount)}
-        {getResultInputDom("Errors", errorCount, "destructive")}
-        {getResultInputDom(
-          "Accuracy",
-          `${accuracy?.toFixed(2) || 0}%`,
-          "success"
-        )}
-        {getResultInputDom("Errors As Per MPSC", mpscErrorCount, "destructive")}
-        {getResultInputDom(
-          "Accuracy As Per MPSC",
-          `${mpscAccuracy?.toFixed(2) || 0}%`,
-          "success"
-        )}
+
+        {showResult ? (
+          <>
+            {getResultInputDom("Errors", errorCount, "destructive")}
+            {getResultInputDom(
+              "Accuracy",
+              `${accuracy?.toFixed(2) || 0}%`,
+              "success"
+            )}
+            {getResultInputDom(
+              "Errors As Per MPSC",
+              mpscErrorCount,
+              "destructive"
+            )}
+            {getResultInputDom(
+              "Accuracy As Per MPSC",
+              `${mpscAccuracy?.toFixed(2) || 0}%`,
+              "success"
+            )}
+            {getResultInputDom(
+              "For Open Category",
+              `${resultForOpen ? "Pass" : "Fail"}`,
+              `${resultForOpen ? "success" : "destructive"}`
+            )}
+            {getResultInputDom(
+              "For Reserved Category",
+              `${resultForCategory ? "Pass" : "Fail"}`,
+              `${resultForCategory ? "success" : "destructive"}`
+            )}
+          </>
+        ) : null}
       </div>
     </div>
   );

@@ -498,7 +498,11 @@ const MockTests = ({ subject, mockTestDetails }: Props) => {
   }, []);
 
   useEffect(() => {
-    if (keystrokesCount <= 1500) {
+    let validKeystrokesCount = 1500;
+    if (subject === "ENGLISH") {
+      validKeystrokesCount = 2000;
+    }
+    if (keystrokesCount <= validKeystrokesCount) {
       validUserInput.current = userInputText;
     }
   }, [keystrokesCount]);

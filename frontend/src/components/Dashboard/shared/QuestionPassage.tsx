@@ -22,6 +22,7 @@ const QuestionPassage = ({ selectedPassageId, questionPassage }: Props) => {
       readOnly
       className={`resize-none h-[200px] border-2 font-medium text-md text-black ${classes.passageText} ${classes.userSelect} ${classes.textArea}`}
       disabled
+      onClick={restrictActions}
       onChange={restrictActions}
       onPaste={restrictActions}
       onCopy={restrictActions}
