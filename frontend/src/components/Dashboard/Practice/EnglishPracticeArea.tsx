@@ -258,6 +258,8 @@ const EnglishPracticeArea = ({ userDetails, subject, mode }: Props) => {
         <QuestionPassage
           selectedPassageId={selectedPassageId}
           questionPassage={questionPassage}
+          subject={subject}
+          shouldShowInfo
         />
       );
     }

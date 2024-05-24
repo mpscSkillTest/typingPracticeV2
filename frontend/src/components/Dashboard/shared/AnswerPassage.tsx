@@ -26,7 +26,7 @@ type Props = {
   onKeyDown: (args: OnKeyDownArgs) => void;
   onChange: (args: OnChangeArgs) => void;
   shouldDisable: boolean;
-  subject: Subject;
+  subject?: Subject;
   totalTypedWords: number;
   keystrokesCount: number;
   backspacesCount: number;
@@ -92,6 +92,7 @@ const AnswerPassage = ({
 
       if (userInputRef.current) {
         userInputRef.current.selectionStart = updatedCursorPosition;
+        userInputRef.current.scrollTop = updatedCursorPosition;
       }
 
       if (typeof onKeyDown === "function") {

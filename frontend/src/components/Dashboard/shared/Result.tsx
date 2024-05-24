@@ -12,7 +12,7 @@ type Props = {
   accuracy?: number;
   mpscAccuracy?: number;
   mpscErrorCount?: number;
-  subject: Subject;
+  subject?: Subject;
   showResult: boolean;
 };
 
@@ -89,7 +89,6 @@ const Result = ({
         {getResultInputDom("Pending Words", pendingWordsCount)}
         {getResultInputDom("Keystrokes", keystrokesCount)}
         {getResultInputDom("Backspaces", backspaceCount)}
-
         {showResult ? (
           <>
             {getResultInputDom("Errors", errorCount, "destructive")}

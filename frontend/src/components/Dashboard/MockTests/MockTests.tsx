@@ -307,6 +307,8 @@ const MockTests = ({ subject, mockTestDetails }: Props) => {
         <QuestionPassage
           selectedPassageId={currentPassageDetails?.passageId}
           questionPassage={currentPassageDetails?.passageText}
+          subject={subject}
+          shouldShowInfo={currenTestStage === "TEST"}
         />
       );
     }
@@ -335,6 +337,8 @@ const MockTests = ({ subject, mockTestDetails }: Props) => {
     return (
       <div className="col-span-3 xl:col-span-1">
         <Result
+          subject={subject}
+          showResult={shouldShowResult}
           totalWordsCount={updatedTotalWords}
           keystrokesCount={keystrokesCount}
           backspaceCount={backspacesCount}
