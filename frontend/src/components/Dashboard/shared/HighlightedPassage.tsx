@@ -11,7 +11,7 @@ const HighlightedPassage = ({
   questionPassage,
   correctWordIndices,
 }: Props) => {
-  if (!selectedPassageId || !questionPassage || !correctWordIndices?.length) {
+  if (!selectedPassageId || !questionPassage) {
     return null;
   }
 
@@ -25,7 +25,7 @@ const HighlightedPassage = ({
   return (
     <div
       key={`highlighted-passage-${selectedPassageId}`}
-      className={` w-full border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50  overflow-y-auto flex flex-wrap gap-1 rounded-md focus-visible:ring-offset-2 h-[200px] font-medium text-md text-black ${classes.passageText}`}
+      className={` w-full border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50  overflow-y-auto flex flex-wrap gap-1 rounded-md focus-visible:ring-offset-2 h-[200px] font-medium text-md text-black ${classes.passageText} ${classes.textArea}`}
     >
       {expectedWords.map((word, index) => {
         if (correctWordIndices?.includes(index)) {

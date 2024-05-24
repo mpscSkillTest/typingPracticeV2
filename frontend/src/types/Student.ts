@@ -19,6 +19,8 @@ export type Result = {
   typedWordsCount: number;
   resultId?: number;
   passageTitle?: string;
+  mpscAccuracy: number;
+  mpscErrorsCount: number;
 };
 
 export type MockTestDetails = {

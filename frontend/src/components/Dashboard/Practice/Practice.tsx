@@ -71,7 +71,7 @@ const Practice = ({ mode, title }: Props) => {
   return (
     <>
       <PageHead title={title} />
-      <div className="flex-1 space-y-4 p-4 pt-6 lg:p-8">
+      <div className="flex-1 space-y-4 px-4 py-2">
         <Tabs defaultValue="MARATHI" className=" flex-1 space-y-4">
           <TabsList className="h-[64px] w-[240px] my-[20px]">
             <TabsTrigger className="h-full w-[50%]" value="MARATHI">

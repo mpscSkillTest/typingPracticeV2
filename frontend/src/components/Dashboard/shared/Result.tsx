@@ -9,6 +9,8 @@ type Props = {
   typedWordsCount?: number;
   pendingWordsCount?: number;
   accuracy?: number;
+  mpscAccuracy?: number;
+  mpscErrorCount?: number;
 };
 
 const Result = ({
@@ -19,6 +21,8 @@ const Result = ({
   typedWordsCount = 0,
   pendingWordsCount = 0,
   accuracy = 0,
+  mpscAccuracy = 0,
+  mpscErrorCount = 0,
 }: Props) => {
   const getResultInputDom = (
     label: string,
@@ -67,6 +71,12 @@ const Result = ({
         {getResultInputDom(
           "Accuracy",
           `${accuracy?.toFixed(2) || 0}%`,
+          "success"
+        )}
+        {getResultInputDom("Errors As Per MPSC", mpscErrorCount, "destructive")}
+        {getResultInputDom(
+          "Accuracy As Per MPSC",
+          `${mpscAccuracy?.toFixed(2) || 0}%`,
           "success"
         )}
       </div>

@@ -34,15 +34,30 @@ export const getGeneralStokesChartData = (
 };
 
 export const getGeneralAccuracyChartData = (
+  type: "normal" | "mpsc" = "normal",
   results: Result[],
   duration: DurationOption
 ): ChartDataType[] => {
   return results?.map?.((result: Result, index: number) => {
-    const { accuracy = 0, errorsCount = 0, date } = result || {};
+    const {
+      accuracy = 0,
+      errorsCount = 0,
+      date,
+      mpscAccuracy,
+      mpscErrorsCount,
+    } = result || {};
     let customName = `Test ${index + 1}`;
 
     if (isShowingAvgDetails(duration)) {
       customName = `Avg. on ${dayjs(date).format("LL")}`;
+    }
+
+    if (type === "mpsc") {
+      return {
+        mpscAccuracy: mpscAccuracy?.toFixed?.(2) || 0,
+        mpscError: mpscErrorsCount,
+        name: customName,
+      };
     }
 
     return {
@@ -85,19 +100,39 @@ export const CHART_CONFIG: Record<string, ChartConfigType> = {
       {
         dataKey: "accuracy",
         stroke: LINE_CHART_COLORS.chartColor1,
-        label: "Accuracy Percentage",
+        label: "Accuracy %",
       },
       {
         dataKey: "error",
         stroke: LINE_CHART_COLORS.chartColor3,
-        label: "Error Count",
+        label: "Errors",
       },
     ],
     xAxisProps: {
       padding: { left: 0, right: 0 },
       tick: false,
     },
-    getData: getGeneralAccuracyChartData,
+    getData: getGeneralAccuracyChartData.bind(this, "normal"),
+    xAxisKey: "name",
+  },
+  MPSC_ACCURACY_CONFIG: {
+    lineChartsConfig: [
+      {
+        dataKey: "mpscAccuracy",
+        stroke: LINE_CHART_COLORS.chartColor1,
+        label: "Accuracy %",
+      },
+      {
+        dataKey: "mpscError",
+        stroke: LINE_CHART_COLORS.chartColor3,
+        label: "Errors",
+      },
+    ],
+    xAxisProps: {
+      padding: { left: 0, right: 0 },
+      tick: false,
+    },
+    getData: getGeneralAccuracyChartData.bind(this, "mpsc"),
     xAxisKey: "name",
   },
 };

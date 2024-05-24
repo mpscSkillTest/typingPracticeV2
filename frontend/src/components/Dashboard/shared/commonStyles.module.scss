@@ -2,7 +2,6 @@
   opacity: 1 !important;
   cursor: default !important;
   user-select: none !important;
-  line-height: 24px !important;
 }
 
 .userSelect {
@@ -10,4 +9,9 @@
   -webkit-user-select: none;
   -khtml-user-select: none;
   user-select: none;
+}
+
+.textArea {
+  line-height: 1.75 !important;
+  font-size: 22px;
 }

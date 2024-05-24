@@ -23,9 +23,12 @@ export const submitResults = async (req, res) => {
     keystrokesCount,
     duration,
     passageId,
+    validUserInput,
   } = req.body || {};
   const expectedWords = passageText.trim().split(" ").filter(Boolean);
   const typedWords = inputText.trim().split(" ").filter(Boolean);
+  // words typed till 1500 keystrokes
+  const validTypedWords = validUserInput.trim().split(" ").filter(Boolean);
 
   logger.info(
     `submitting results for user ${userId} mode:${mode} subject ${subject} Everything is OK`
@@ -36,13 +39,20 @@ export const submitResults = async (req, res) => {
     typedWords,
   });
 
-  if (!result) {
+  const resultAsPerMPSC = getUserResults({
+    expectedWords,
+    typedWords: validTypedWords,
+  });
+
+  if (!result || !resultAsPerMPSC) {
     res
       .status(StatusCodes.BAD_REQUEST)
-      .send({ result: null, error: "Incorrect Input" });
+      .send({ result: null, resultAsPerMPSC: null, error: "Incorrect Input" });
     return;
   }
   const { totalErrorCount, accuracy } = result;
+  const { totalErrorCount: totalErrorCountForMPSC, accuracy: accuracyForMPSC } =
+    resultAsPerMPSC;
 
   const { data: recentResults } = await supabase
     .from(RESULTS_DB_NAME)
@@ -77,18 +87,23 @@ export const submitResults = async (req, res) => {
       duration,
       passage_id: passageId,
       input_text: inputText,
+      mpsc_errors_count: totalErrorCountForMPSC,
+      mpsc_accuracy: accuracyForMPSC,
+      mpsc_input_text: validUserInput,
     });
 
     if (error) {
       logger.error(error);
       res
         .status(StatusCodes.BAD_REQUEST)
-        .send({ result: null, error: error.message });
+        .send({ result: null, resultAsPerMPSC: null, error: error.message });
       return;
     }
   }
-  res
-    .status(StatusCodes.OK)
-    .send({ result, accessLimitReached: !shouldSaveResultInDb });
+  res.status(StatusCodes.OK).send({
+    result,
+    resultAsPerMPSC,
+    accessLimitReached: !shouldSaveResultInDb,
+  });
   return;
 };

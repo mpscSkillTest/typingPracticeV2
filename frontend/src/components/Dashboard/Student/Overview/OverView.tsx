@@ -58,7 +58,7 @@ const OverView = (props: Props) => {
   };
 
   return (
-    <Card className="col-span-6">
+    <Card className="col-span-4">
       <CardHeader>
         <CardTitle>{title}</CardTitle>
       </CardHeader>

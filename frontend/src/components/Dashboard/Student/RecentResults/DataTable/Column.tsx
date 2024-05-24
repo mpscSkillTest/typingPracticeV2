@@ -83,4 +83,23 @@ export const Columns: ColumnDef<Result>[] = [
       dataType: "number",
     },
   },
+  {
+    accessorKey: "mpscAccuracy",
+    enableSorting: true,
+    header: ({ column }) => getColumnHeaderWithSort(column, "MPSC Accuracy"),
+    cell: ({ row }) =>
+      getFormattedNumber(formatToPercent(row.getValue("mpscAccuracy"))),
+    meta: {
+      dataType: "number",
+    },
+  },
+  {
+    accessorKey: "mpscErrorsCount",
+    enableSorting: true,
+    header: ({ column }) => getColumnHeaderWithSort(column, "MPSC Errors"),
+    cell: ({ row }) => getFormattedNumber(row.getValue("mpscErrorsCount")),
+    meta: {
+      dataType: "number",
+    },
+  },
 ];

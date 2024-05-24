@@ -36,7 +36,9 @@ export const getStudentRecentResults = async (req, res) => {
       errors_count,
       backspaces_count,
       total_words_count,
-      typed_words_count,
+      typed_words_count,      
+      mpsc_accuracy,
+      mpsc_errors_count,
       accuracy,
       duration,
       passage_id,
@@ -67,13 +69,15 @@ export const getStudentRecentResults = async (req, res) => {
         typed_words_count,
         id,
         passages,
+        mpsc_accuracy,
+        mpsc_errors_count,
       } = result || {};
       return {
-        accuracy,
+        accuracy: accuracy || 0,
         backspacesCount: backspaces_count,
         date: created_at,
         duration,
-        errorsCount: errors_count,
+        errorsCount: errors_count || 0,
         keystrokesCount: keystorkes_count,
         mode,
         passageId: passage_id,
@@ -82,6 +86,8 @@ export const getStudentRecentResults = async (req, res) => {
         typedWordsCount: typed_words_count,
         resultId: id,
         passageTitle: passages.passage_title,
+        mpscAccuracy: mpsc_accuracy || 0,
+        mpscErrorsCount: mpsc_errors_count || 0,
       };
     });
 

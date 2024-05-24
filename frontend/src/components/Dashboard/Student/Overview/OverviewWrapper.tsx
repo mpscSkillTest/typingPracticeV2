@@ -70,7 +70,15 @@ const OverviewWrapper = (props: Props) => {
       />
       <OverView
         type="GENERAL_ACCURACY_CONFIG"
-        title="Accuracy Percentage Vs Error Count"
+        title="Accuracy % Vs Error"
+        showLoader={showLoader}
+        results={studentResults}
+        label={customLabel}
+        duration={duration}
+      />
+      <OverView
+        type="MPSC_ACCURACY_CONFIG"
+        title="Accuracy % Vs Error (1500 Keystrokes)"
         showLoader={showLoader}
         results={studentResults}
         label={customLabel}

@@ -69,6 +69,8 @@ const EnglishPracticeArea = ({ userDetails, subject, mode }: Props) => {
 
   const userResult = useRef<UserResult>({});
 
+  const userResultAsPerMPSC = useRef<UserResult>({});
+
   const userInputRef = useRef<HTMLTextAreaElement>(null);
 
   const englishInputText = useRef<string>("");
@@ -76,6 +78,11 @@ const EnglishPracticeArea = ({ userDetails, subject, mode }: Props) => {
   const { userId } = userDetails || {};
 
   const { toast } = useToast();
+
+  /**
+   * User input till first 1500 keystrokes is only valid for speed test
+   */
+  const validUserInput = useRef<string>("");
 
   const totalWords = useRef<number>(0);
 
@@ -147,13 +154,16 @@ const EnglishPracticeArea = ({ userDetails, subject, mode }: Props) => {
         backspacesCount,
         userId,
         passageId: selectedPassageId,
+        validUserInput: validUserInput.current,
         duration,
       });
-      const { result, accessLimitReached } = response?.data || {};
+      const { result, accessLimitReached, resultAsPerMPSC } =
+        response?.data || {};
       if (!result) {
         throw new Error("No Passages Available");
       }
       userResult.current = result;
+      userResultAsPerMPSC.current = resultAsPerMPSC;
       if (accessLimitReached) {
         toast({
           variant: "destructive",
@@ -166,6 +176,7 @@ const EnglishPracticeArea = ({ userDetails, subject, mode }: Props) => {
       }
     } catch (error: unknown) {
       userResult.current = {};
+      userResultAsPerMPSC.current = {};
       const errorMessage = error?.response?.data?.error || "Something wrong";
       toast({
         variant: "destructive",
@@ -174,8 +185,8 @@ const EnglishPracticeArea = ({ userDetails, subject, mode }: Props) => {
       });
     } finally {
       setShouldShowLoader(false);
+      setShouldShowResult(true);
     }
-    setShouldShowResult(true);
   };
 
   const getPassageSelectDropdown = () => {
@@ -268,7 +279,9 @@ const EnglishPracticeArea = ({ userDetails, subject, mode }: Props) => {
   const resetUserActions = (updatedTotalWords: number = 0) => {
     totalWords.current = updatedTotalWords;
     userResult.current = {};
+    userResultAsPerMPSC.current = {};
     englishInputText.current = "";
+    validUserInput.current = "";
     if (userInputRef.current) {
       userInputRef.current.value = "";
       userInputRef.current.selectionStart = 0;
@@ -317,6 +330,12 @@ const EnglishPracticeArea = ({ userDetails, subject, mode }: Props) => {
       }
     }
   }, [remainingTime]);
+
+  useEffect(() => {
+    if (keystrokesCount <= 1500) {
+      validUserInput.current = userInputText;
+    }
+  }, [keystrokesCount]);
 
   if (detailsLoading) {
     return (
@@ -370,6 +389,8 @@ const EnglishPracticeArea = ({ userDetails, subject, mode }: Props) => {
           backspaceCount={backspacesCount}
           accuracy={userResult.current.accuracy || 0}
           errorCount={userResult.current.totalErrorCount || 0}
+          mpscAccuracy={userResultAsPerMPSC.current.accuracy || 0}
+          mpscErrorCount={userResultAsPerMPSC.current.totalErrorCount || 0}
           typedWordsCount={totalTypedWords}
           pendingWordsCount={totalPendingWords}
         />

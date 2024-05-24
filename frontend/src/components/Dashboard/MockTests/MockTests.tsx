@@ -110,6 +110,10 @@ const MockTests = ({ subject, mockTestDetails }: Props) => {
 
   const userResult = useRef<UserResult>({});
 
+  const userResultAsPerMPSC = useRef<UserResult>({});
+
+  const validUserInput = useRef<string>("");
+
   const userInputRef = useRef<HTMLTextAreaElement>(null);
 
   const englishInputText = useRef<string>("");
@@ -120,7 +124,9 @@ const MockTests = ({ subject, mockTestDetails }: Props) => {
 
   const resetUserActions = () => {
     userResult.current = {};
+    userResultAsPerMPSC.current = {};
     englishInputText.current = "";
+    validUserInput.current = "";
     if (userInputRef.current) {
       userInputRef.current.value = "";
       userInputRef.current.selectionStart = 0;
@@ -224,13 +230,16 @@ const MockTests = ({ subject, mockTestDetails }: Props) => {
         keystrokesCount,
         backspacesCount,
         passageId: currentPassageDetails?.passageId,
+        validUserInput: validUserInput.current,
         duration,
       });
-      const { result, accessLimitReached } = response?.data || {};
+      const { result, accessLimitReached, resultAsPerMPSC } =
+        response?.data || {};
       if (!result) {
         throw new Error("Error occurred while saving result data");
       }
       userResult.current = result;
+      userResultAsPerMPSC.current = resultAsPerMPSC;
 
       if (accessLimitReached) {
         toast({
@@ -243,6 +252,7 @@ const MockTests = ({ subject, mockTestDetails }: Props) => {
         });
       }
     } catch (error: unknown) {
+      userResultAsPerMPSC.current = {};
       userResult.current = {};
       const errorMessage = error?.response?.data?.error || "Something wrong";
       toast({
@@ -330,6 +340,8 @@ const MockTests = ({ subject, mockTestDetails }: Props) => {
           backspaceCount={backspacesCount}
           accuracy={userResult.current.accuracy || 0}
           errorCount={userResult.current.totalErrorCount || 0}
+          mpscAccuracy={userResultAsPerMPSC.current.accuracy || 0}
+          mpscErrorCount={userResultAsPerMPSC.current.totalErrorCount || 0}
           typedWordsCount={totalTypedWords}
           pendingWordsCount={totalPendingWordsClone}
         />
@@ -484,6 +496,12 @@ const MockTests = ({ subject, mockTestDetails }: Props) => {
       window.removeEventListener("resize", toggleWarningDom);
     };
   }, []);
+
+  useEffect(() => {
+    if (keystrokesCount <= 1500) {
+      validUserInput.current = userInputText;
+    }
+  }, [keystrokesCount]);
 
   return (
     <Dialog open>

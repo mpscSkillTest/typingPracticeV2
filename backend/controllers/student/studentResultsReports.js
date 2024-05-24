@@ -54,6 +54,8 @@ export const getStudentResultReport = async (req, res) => {
       errors_count,
       backspaces_count,
       accuracy,
+      mpsc_accuracy,
+      mpsc_errors_count,
       id
     `
       )
@@ -76,6 +78,8 @@ export const getStudentResultReport = async (req, res) => {
         created_at,
         errors_count,
         keystorkes_count,
+        mpsc_accuracy,
+        mpsc_errors_count,
         id,
       } = result || {};
       return {
@@ -85,6 +89,8 @@ export const getStudentResultReport = async (req, res) => {
         errorsCount: errors_count || 0,
         keystrokesCount: keystorkes_count || 0,
         resultId: id,
+        mpscAccuracy: mpsc_accuracy || 0,
+        mpscErrorsCount: mpsc_errors_count || 0,
       };
     });
 
