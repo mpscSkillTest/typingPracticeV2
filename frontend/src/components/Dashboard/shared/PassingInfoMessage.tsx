@@ -25,11 +25,15 @@ const PassingInfoMessage = ({ subject, shouldShowInfo }: Props) => {
       <div className="flex flex-col gap-2">
         <span>
           <b>Open Category</b>: Minimum {minimumKeystrokes} Keystrokes and
-          Accuracy greater than or equal to 93%
+          Accuracy greater than or equal to 93% for first
+          {` ${minimumKeystrokes} `}
+          Keystrokes
         </span>
         <span>
           <b>Reserved Category</b>: Minimum {minimumKeystrokes} Keystrokes and
-          Accuracy greater than or equal to 90%
+          Accuracy greater than or equal to 90% for first
+          {` ${minimumKeystrokes} `}
+          Keystrokes
         </span>
       </div>
     </div>

@@ -70,12 +70,12 @@ const Result = ({
 
   switch (subject) {
     case "ENGLISH":
-      resultForOpen = keystrokesCount >= 2000 && accuracy >= 93;
-      resultForCategory = keystrokesCount >= 2000 && accuracy >= 90;
+      resultForOpen = keystrokesCount >= 2000 && mpscAccuracy >= 93;
+      resultForCategory = keystrokesCount >= 2000 && mpscAccuracy >= 90;
       break;
     case "MARATHI":
-      resultForOpen = keystrokesCount >= 1500 && accuracy >= 93;
-      resultForCategory = keystrokesCount >= 1500 && accuracy >= 90;
+      resultForOpen = keystrokesCount >= 1500 && mpscAccuracy >= 93;
+      resultForCategory = keystrokesCount >= 1500 && mpscAccuracy >= 90;
       break;
     default:
       break;
