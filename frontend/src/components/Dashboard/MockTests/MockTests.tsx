@@ -15,6 +15,7 @@ import {
   AnswerPassage,
   HighlightedPassage,
   Result,
+  PassingInfoMessage,
 } from "../shared";
 import type { OnChangeArgs, OnKeyDownArgs } from "../shared/AnswerPassage";
 import type {
@@ -366,6 +367,10 @@ const MockTests = ({ subject, mockTestDetails }: Props) => {
             <div className="flex gap-[10px] flex-col items-center gap-3">
               {getAnswerPassageDom()}
               {getAutoSubmitWarningDom()}
+              <PassingInfoMessage
+                subject={subject}
+                shouldShowInfo={currenTestStage === "TEST"}
+              />
               {shouldShowResult ? (
                 <Button
                   className="flex w-max items-center my-4"

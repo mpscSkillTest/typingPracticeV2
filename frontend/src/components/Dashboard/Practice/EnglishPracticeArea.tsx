@@ -15,6 +15,7 @@ import {
   AnswerPassage,
   HighlightedPassage,
   Result,
+  PassingInfoMessage,
 } from "../shared";
 import type { OnChangeArgs, OnKeyDownArgs } from "../shared/AnswerPassage";
 import type { Subject, UserDetails, TypingMode, Passage } from "../../../types";
@@ -385,6 +386,7 @@ const EnglishPracticeArea = ({ userDetails, subject, mode }: Props) => {
             >
               Submit Passage
             </Button>
+            <PassingInfoMessage subject={subject} shouldShowInfo />
           </div>
         </div>
       </div>
