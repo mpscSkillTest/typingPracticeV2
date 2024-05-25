@@ -441,7 +441,10 @@ const MockTests = ({ subject, mockTestDetails }: Props) => {
         <DialogTitle className="flex justify-between">
           {currentStageTitle}
           <Button
-            disabled={shouldShowResult}
+            disabled={
+              shouldShowResult ||
+              (currenTestStage === "TEST" && !userInputText.length)
+            }
             className={`w-max ${isFinalTest ? "bg-primary" : "bg-destructive"}`}
             onClick={skipSession}
           >
