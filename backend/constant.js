@@ -20,7 +20,6 @@ export const FEATURE_DETAILS = {
       { text: "Daily progress tracking", correct: true },
       { text: "Result based on first 1500 keystroke", correct: true},
       { text: "Keystroke and Accuracy count", correct: true },
-      { text: "3 mock test of both languages", correct: true},
       { text: "Weekly progress tracking", correct: false },
       { text: "Monthly progress tracking", correct: false},
 
