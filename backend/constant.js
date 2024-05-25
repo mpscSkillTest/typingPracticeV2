@@ -29,7 +29,7 @@ export const FEATURE_DETAILS = {
   STANDARD_MARATHI: {
     features: [
       { text: "100+ passages of Marathi", correct: true },
-      { text: "25 + mock test of both Marathi", correct: true},
+      { text: "25 + mock test of Marathi", correct: true},
       { text: "Result based on first 1500 keystroke", correct: true},
       { text: "Daily progress tracking", correct: true },
       { text: "Keystroke and Accuracy count", correct: true },
@@ -40,7 +40,7 @@ export const FEATURE_DETAILS = {
   STANDARD_ENGLISH: {
     features: [
       { text: "100+ passages of English", correct: true },
-      { text: "25 + mock test of both English", correct: true},
+      { text: "25 + mock test of English", correct: true},
       { text: "Result based on first 1500 keystroke", correct: true},
       { text: "Daily progress tracking", correct: true },
       { text: "Keystroke and Accuracy count", correct: true },
