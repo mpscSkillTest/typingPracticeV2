@@ -268,6 +268,18 @@ const MockTests = ({ subject, mockTestDetails }: Props) => {
     }
   };
 
+  const skipSession = () => {
+    const nextTestStage = TEST_STAGES.shift();
+    if (nextTestStage) {
+      setCurrentTestStage(nextTestStage);
+    }
+    if (currenTestStage === "TEST") {
+      onSubmitPassage();
+      return;
+    }
+    resetUserActions();
+  };
+
   const getAutoSubmitWarningDom = () => {
     if (
       currenTestStage !== "TEST" ||
@@ -308,8 +320,6 @@ const MockTests = ({ subject, mockTestDetails }: Props) => {
         <QuestionPassage
           selectedPassageId={currentPassageDetails?.passageId}
           questionPassage={currentPassageDetails?.passageText}
-          subject={subject}
-          shouldShowInfo={currenTestStage === "TEST"}
         />
       );
     }
@@ -424,9 +434,20 @@ const MockTests = ({ subject, mockTestDetails }: Props) => {
         break;
     }
 
+    const isFinalTest = currenTestStage === "TEST";
+
     const headerDom = (
       <DialogHeader>
-        <DialogTitle>{currentStageTitle}</DialogTitle>
+        <DialogTitle className="flex justify-between">
+          {currentStageTitle}
+          <Button
+            disabled={shouldShowResult}
+            className={`w-max ${isFinalTest ? "bg-primary" : "bg-destructive"}`}
+            onClick={skipSession}
+          >
+            {!isFinalTest ? " Skip This Session" : "Submit"}
+          </Button>
+        </DialogTitle>
         <DialogDescription>{currentDescription}</DialogDescription>
       </DialogHeader>
     );
@@ -482,11 +503,7 @@ const MockTests = ({ subject, mockTestDetails }: Props) => {
     }
 
     if (remainingTime === 0) {
-      const nextTestStage = TEST_STAGES.shift();
-      if (nextTestStage) {
-        setCurrentTestStage(nextTestStage);
-      }
-      resetUserActions();
+      skipSession();
     }
   }, [remainingTime]);
 
@@ -521,7 +538,7 @@ const MockTests = ({ subject, mockTestDetails }: Props) => {
       <DialogContent
         ref={testWindowRef}
         shouldShowCloseOption={false}
-        className="min-w-[calc(100dvw-30px)] h-[calc(100dvh-30px)]"
+        className="min-w-[calc(100dvw-30px)] h-[calc(100dvh-30px)] overflow-y-auto"
       >
         {getContentDom()}
         {getWarningDom()}
