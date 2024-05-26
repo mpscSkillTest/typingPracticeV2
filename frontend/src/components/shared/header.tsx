@@ -10,6 +10,7 @@ import { navItems } from "../../utils/constant";
 import { usePathname } from "../../utils/hooks";
 import type { NavItem } from "../../types";
 import Heading from "./heading";
+import ContactForm from "./contact-form";
 
 const getMatchedPath = (pathname: string) => {
   const matchedPath =
@@ -35,7 +36,12 @@ export default function Header() {
     if (!shouldShowContactUsModal) {
       return null;
     }
-    return <div>Hello</div>;
+    return (
+      <ContactForm
+        shouldOpen={shouldShowContactUsModal}
+        toggleOpen={toggleContactUsDom}
+      />
+    );
   };
 
   const getHelpIconDom = () => {
