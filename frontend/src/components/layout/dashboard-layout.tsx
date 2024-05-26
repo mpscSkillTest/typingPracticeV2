@@ -1,11 +1,11 @@
-import { useState } from 'react';
-import Sidebar from '../shared/sidebar';
-import Header from '../shared/header';
-import MobileSidebar from '../shared/mobile-sidebar';
-import { MenuIcon } from 'lucide-react';
+import { useState } from "react";
+import { Icons } from "@/components/ui/icons";
+import Sidebar from "../shared/sidebar";
+import Header from "../shared/header";
+import MobileSidebar from "../shared/mobile-sidebar";
 
 export default function DashboardLayout({
-  children
+  children,
 }: {
   children: React.ReactNode;
 }) {
@@ -25,7 +25,7 @@ export default function DashboardLayout({
             onClick={() => setSidebarOpen(true)}
           >
             <span className="sr-only">Open sidebar</span>
-            <MenuIcon className="h-6 w-6" aria-hidden="true" />
+            <Icons.MenuIcon className="h-6 w-6" aria-hidden="true" />
           </button>
           <Header />
         </div>

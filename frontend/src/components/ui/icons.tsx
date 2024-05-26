@@ -37,6 +37,8 @@ import {
   EyeOff,
   BadgeInfo,
   BookOpenText,
+  MenuIcon,
+  CircleHelp,
 } from "lucide-react";
 
 export type Icon = LucideIcon;
@@ -79,4 +81,6 @@ export const Icons = {
   Eye,
   EyeOff,
   BadgeInfo,
+  HelpIcon: CircleHelp,
+  MenuIcon,
 };
