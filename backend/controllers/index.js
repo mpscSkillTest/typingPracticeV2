@@ -5,6 +5,7 @@ export { verify } from "./authorization/verify.js";
 export { getStudentDetails } from "./student/studentDetails.js";
 export { getPassages } from "./student/passageDetails.js";
 export { submitResults } from "./student/submitResults.js";
+export { submitUserFeedback } from "./student/submitFeedback.js";
 export { getStudentRecentResults } from "./student/studentRecentResults.js";
 export { getStudentResultReport } from "./student/studentResultsReports.js";
 export { forgotPassword } from "./authorization/forgotPassword.js";
