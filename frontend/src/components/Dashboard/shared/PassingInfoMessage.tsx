@@ -1,4 +1,12 @@
 import { Icons } from "@/components/ui/icons";
+import {
+  MPSC_ACCURACY_FOR_OPEN,
+  MPSC_ACCURACY_FOR_RESERVED,
+  MPSC_ENGLISH_KEYSTROKES_FOR_OPEN,
+  MPSC_ENGLISH_KEYSTROKES_FOR_RESERVED,
+  MPSC_MARATHI_KEYSTROKES_FOR_OPEN,
+  MPSC_MARATHI_KEYSTROKES_FOR_RESERVED,
+} from "../../../utils/constant";
 import type { Subject } from "../../../types";
 
 type Props = {
@@ -11,9 +19,12 @@ const PassingInfoMessage = ({ subject, shouldShowInfo }: Props) => {
     return null;
   }
 
-  let minimumKeystrokes = 1500;
+  let keystrokesForOpen = MPSC_MARATHI_KEYSTROKES_FOR_OPEN;
+  let keystrokesForReserved = MPSC_MARATHI_KEYSTROKES_FOR_RESERVED;
+
   if (subject === "ENGLISH") {
-    minimumKeystrokes = 2000;
+    keystrokesForOpen = MPSC_ENGLISH_KEYSTROKES_FOR_OPEN;
+    keystrokesForReserved = MPSC_ENGLISH_KEYSTROKES_FOR_RESERVED;
   }
 
   return (
@@ -24,15 +35,17 @@ const PassingInfoMessage = ({ subject, shouldShowInfo }: Props) => {
       </div>
       <div className="flex flex-col gap-2">
         <span>
-          <b>Open Category</b>: Minimum {minimumKeystrokes} Keystrokes and
-          Accuracy greater than or equal to 93% for first
-          {` ${minimumKeystrokes} `}
+          <b>Open Category</b>: Minimum {`${keystrokesForOpen} `}
+          Keystrokes and Accuracy greater than or equal to
+          {` ${MPSC_ACCURACY_FOR_OPEN}`}% for first
+          {` ${keystrokesForOpen} `}
           Keystrokes
         </span>
         <span>
-          <b>Reserved Category</b>: Minimum {minimumKeystrokes} Keystrokes and
-          Accuracy greater than or equal to 90% for first
-          {` ${minimumKeystrokes} `}
+          <b>Reserved Category</b>: Minimum {`${keystrokesForReserved} `}{" "}
+          Keystrokes and Accuracy greater than or equal to
+          {` ${MPSC_ACCURACY_FOR_RESERVED}`}% for first
+          {` ${keystrokesForReserved} `}
           Keystrokes
         </span>
       </div>

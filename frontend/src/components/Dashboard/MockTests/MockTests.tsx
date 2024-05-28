@@ -17,6 +17,10 @@ import {
   Result,
   PassingInfoMessage,
 } from "../shared";
+import {
+  DEFAULT_ENGLISH_KEYSTROKES_COUNT,
+  DEFAULT_MARATHI_KEYSTROKES_COUNT,
+} from "../../../utils/constant";
 import type { OnChangeArgs, OnKeyDownArgs } from "../shared/AnswerPassage";
 import type {
   Subject,
@@ -527,9 +531,9 @@ const MockTests = ({ subject, mockTestDetails }: Props) => {
   }, []);
 
   useEffect(() => {
-    let validKeystrokesCount = 1500;
+    let validKeystrokesCount = DEFAULT_MARATHI_KEYSTROKES_COUNT;
     if (subject === "ENGLISH") {
-      validKeystrokesCount = 2000;
+      validKeystrokesCount = DEFAULT_ENGLISH_KEYSTROKES_COUNT;
     }
     if (keystrokesCount <= validKeystrokesCount) {
       validUserInput.current = userInputText;

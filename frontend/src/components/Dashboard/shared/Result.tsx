@@ -1,5 +1,13 @@
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
+import {
+  MPSC_ACCURACY_FOR_OPEN,
+  MPSC_ACCURACY_FOR_RESERVED,
+  MPSC_ENGLISH_KEYSTROKES_FOR_OPEN,
+  MPSC_ENGLISH_KEYSTROKES_FOR_RESERVED,
+  MPSC_MARATHI_KEYSTROKES_FOR_OPEN,
+  MPSC_MARATHI_KEYSTROKES_FOR_RESERVED,
+} from "../../../utils/constant";
 import type { Subject } from "../../../types";
 
 type Props = {
@@ -70,12 +78,20 @@ const Result = ({
 
   switch (subject) {
     case "ENGLISH":
-      resultForOpen = keystrokesCount >= 2000 && mpscAccuracy >= 93;
-      resultForCategory = keystrokesCount >= 2000 && mpscAccuracy >= 90;
+      resultForOpen =
+        keystrokesCount >= MPSC_ENGLISH_KEYSTROKES_FOR_OPEN &&
+        mpscAccuracy >= MPSC_ACCURACY_FOR_OPEN;
+      resultForCategory =
+        keystrokesCount >= MPSC_ENGLISH_KEYSTROKES_FOR_RESERVED &&
+        mpscAccuracy >= MPSC_ACCURACY_FOR_RESERVED;
       break;
     case "MARATHI":
-      resultForOpen = keystrokesCount >= 1500 && mpscAccuracy >= 93;
-      resultForCategory = keystrokesCount >= 1500 && mpscAccuracy >= 90;
+      resultForOpen =
+        keystrokesCount >= MPSC_MARATHI_KEYSTROKES_FOR_OPEN &&
+        mpscAccuracy >= MPSC_ACCURACY_FOR_OPEN;
+      resultForCategory =
+        keystrokesCount >= MPSC_MARATHI_KEYSTROKES_FOR_RESERVED &&
+        mpscAccuracy >= MPSC_ACCURACY_FOR_RESERVED;
       break;
     default:
       break;

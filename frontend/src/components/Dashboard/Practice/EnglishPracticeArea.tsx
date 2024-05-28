@@ -17,6 +17,10 @@ import {
   Result,
   PassingInfoMessage,
 } from "../shared";
+import {
+  DEFAULT_ENGLISH_KEYSTROKES_COUNT,
+  DEFAULT_MARATHI_KEYSTROKES_COUNT,
+} from "../../../utils/constant";
 import type { OnChangeArgs, OnKeyDownArgs } from "../shared/AnswerPassage";
 import type { Subject, UserDetails, TypingMode, Passage } from "../../../types";
 import axios from "../../../config/customAxios";
@@ -259,8 +263,6 @@ const EnglishPracticeArea = ({ userDetails, subject, mode }: Props) => {
         <QuestionPassage
           selectedPassageId={selectedPassageId}
           questionPassage={questionPassage}
-          subject={subject}
-          shouldShowInfo
         />
       );
     }
@@ -335,9 +337,9 @@ const EnglishPracticeArea = ({ userDetails, subject, mode }: Props) => {
   }, [remainingTime]);
 
   useEffect(() => {
-    let validKeystrokesCount = 1500;
+    let validKeystrokesCount = DEFAULT_MARATHI_KEYSTROKES_COUNT;
     if (subject === "ENGLISH") {
-      validKeystrokesCount = 2000;
+      validKeystrokesCount = DEFAULT_ENGLISH_KEYSTROKES_COUNT;
     }
     if (keystrokesCount <= validKeystrokesCount) {
       validUserInput.current = userInputText;

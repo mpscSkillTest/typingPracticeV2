@@ -45,3 +45,15 @@ export const COMPANY_URL =
   "https://webtouter.com/wp-content/uploads/elementor/thumbs/51-removebg-preview-e1698666812110-qemezppy9czl6ops5j8wvxrcupi8wegb87uwfo6qkg.png";
 
 export const RAZOR_PAY_SDK_URL = "https://checkout.razorpay.com/v1/checkout.js";
+
+export const DEFAULT_MARATHI_KEYSTROKES_COUNT = 1395;
+export const DEFAULT_ENGLISH_KEYSTROKES_COUNT = 1860;
+
+export const MPSC_MARATHI_KEYSTROKES_FOR_OPEN = 1395;
+export const MPSC_ENGLISH_KEYSTROKES_FOR_OPEN = 1860;
+
+export const MPSC_MARATHI_KEYSTROKES_FOR_RESERVED = 1350;
+export const MPSC_ENGLISH_KEYSTROKES_FOR_RESERVED = 1800;
+
+export const MPSC_ACCURACY_FOR_OPEN = 93;
+export const MPSC_ACCURACY_FOR_RESERVED = 90;
