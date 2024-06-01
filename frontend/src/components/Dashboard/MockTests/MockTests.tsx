@@ -444,7 +444,7 @@ const MockTests = ({ subject, mockTestDetails }: Props) => {
       <DialogHeader>
         <DialogTitle className="flex justify-between">
           {currentStageTitle}
-          <Button
+          {/*           <Button
             disabled={
               shouldShowResult ||
               (currenTestStage === "TEST" && !userInputText.length)
@@ -453,7 +453,7 @@ const MockTests = ({ subject, mockTestDetails }: Props) => {
             onClick={skipSession}
           >
             {!isFinalTest ? " Skip This Session" : "Submit"}
-          </Button>
+          </Button> */}
         </DialogTitle>
         <DialogDescription>{currentDescription}</DialogDescription>
       </DialogHeader>
