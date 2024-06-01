@@ -102,8 +102,8 @@ export const getMockTestDetails = async (req, res) => {
 
     const testPassages = getParsedPassagesDetails(testPassagesData);
 
-    testPassages.forEach((passage) => {
-      attemptedPassagesId.add(passage?.passageId);
+    mockTestsData.forEach((passage) => {
+      attemptedPassagesId.add(passage?.passage_id);
     });
 
     let filteredPassages = testPassages.filter(
