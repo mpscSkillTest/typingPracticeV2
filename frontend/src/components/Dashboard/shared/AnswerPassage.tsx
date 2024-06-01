@@ -3,6 +3,7 @@ import {
   type BaseSyntheticEvent,
   KeyboardEvent,
   ChangeEventHandler,
+  useEffect,
 } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { handleEnglishKeyDown } from "../../../utils/passageUtils/handleEnglishKeydown";
@@ -31,6 +32,9 @@ type Props = {
   keystrokesCount: number;
   backspacesCount: number;
   userInputText: string;
+  userInputRef :  React.RefObject<HTMLTextAreaElement>
+  onScrollFocus: () => void;
+
 };
 
 const AnswerPassage = ({
@@ -42,8 +46,9 @@ const AnswerPassage = ({
   keystrokesCount = 0,
   backspacesCount = 0,
   userInputText = "",
+  userInputRef
+
 }: Props) => {
-  const userInputRef = useRef<HTMLTextAreaElement>(null);
 
   const englishInputText = useRef<string>("");
 
@@ -105,7 +110,7 @@ const AnswerPassage = ({
       }
     }
   };
-
+ 
   const onUserInputChange: ChangeEventHandler<HTMLTextAreaElement> = (
     event
   ) => {
@@ -125,6 +130,8 @@ const AnswerPassage = ({
       }
     }
   };
+
+
 
   return (
     <Textarea
