@@ -41,6 +41,7 @@ instance.interceptors.request.use(
     if (accessToken) {
       config.headers.Authorization = accessToken;
     }
+    config.headers["Access-Control-Allow-Origin"] = "*";
     return config;
   },
   function (error) {
