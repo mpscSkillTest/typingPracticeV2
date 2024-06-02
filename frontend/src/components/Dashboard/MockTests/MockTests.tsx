@@ -284,6 +284,10 @@ const MockTests = ({ subject, mockTestDetails }: Props) => {
     resetUserActions();
   };
 
+  const focusOnAnswerPassage = () => {
+    userInputRef.current?.focus();
+  };
+
   const getAutoSubmitWarningDom = () => {
     if (
       currenTestStage !== "TEST" ||
@@ -314,6 +318,7 @@ const MockTests = ({ subject, mockTestDetails }: Props) => {
         keystrokesCount={keystrokesCount}
         backspacesCount={backspacesCount}
         userInputText={userInputText}
+        userInputRef={userInputRef}
       />
     );
   };
@@ -324,6 +329,7 @@ const MockTests = ({ subject, mockTestDetails }: Props) => {
         <QuestionPassage
           selectedPassageId={currentPassageDetails?.passageId}
           questionPassage={currentPassageDetails?.passageText}
+          onScrollFocus={focusOnAnswerPassage}
         />
       );
     }
