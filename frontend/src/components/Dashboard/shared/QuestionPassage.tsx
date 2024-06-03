@@ -5,12 +5,18 @@ import classes from "./commonStyles.module.scss";
 type Props = {
   selectedPassageId: string;
   questionPassage: string;
+  onScrollFocus: () => void;
 };
 
-const QuestionPassage = ({ selectedPassageId, questionPassage }: Props) => {
+const QuestionPassage = ({
+  selectedPassageId,
+  questionPassage,
+  onScrollFocus,
+}: Props) => {
   if (!selectedPassageId || !questionPassage) {
     return null;
   }
+
   const restrictActions = (event: BaseSyntheticEvent) => {
     event?.preventDefault?.();
     return false;
@@ -27,6 +33,7 @@ const QuestionPassage = ({ selectedPassageId, questionPassage }: Props) => {
       onPaste={restrictActions}
       onCopy={restrictActions}
       value={questionPassage}
+      onScroll={onScrollFocus}
     />
   );
 };

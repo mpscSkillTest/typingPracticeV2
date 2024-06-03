@@ -12,6 +12,19 @@
   </head>
   <body>
     <div id="root"></div>
+    <!-- Google tag (gtag.js) -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-EE92CWQ5FX"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-EE92CWQ5FX");
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
