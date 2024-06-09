@@ -243,6 +243,8 @@ const MockTests = ({ subject, mockTestDetails }: Props) => {
         typedWords: validTypedWords,
         expectedWords,
       });
+      userResult.current = result;
+      userResultAsPerMPSC.current = resultAsPerMPSC;
 
       const response = await axios.post("/student/submit-result/", {
         mode: "MOCK",
@@ -255,9 +257,6 @@ const MockTests = ({ subject, mockTestDetails }: Props) => {
         validUserInput: validUserInput.current,
         duration,
       });
-
-      userResult.current = result;
-      userResultAsPerMPSC.current = resultAsPerMPSC;
 
       const { accessLimitReached } = response?.data || {};
 
