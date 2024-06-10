@@ -118,6 +118,10 @@ const EnglishPracticeArea = ({ userDetails, subject, mode }: Props) => {
     }
   };
 
+  const focusOnAnswerPassage = () => {
+    userInputRef.current?.focus();
+  };
+
   const onUserInputChange = ({
     updatedTypedWordsCount = 0,
     updatedUserInputText = "",
@@ -245,6 +249,7 @@ const EnglishPracticeArea = ({ userDetails, subject, mode }: Props) => {
   const getUserInputPassage = () => {
     return (
       <AnswerPassage
+        userInputRef={userInputRef}
         subject={subject}
         shouldDisable={!!userResult.current?.totalTypedWords}
         onKeyDown={onUserInputKeyDown}
@@ -263,6 +268,7 @@ const EnglishPracticeArea = ({ userDetails, subject, mode }: Props) => {
         <QuestionPassage
           selectedPassageId={selectedPassageId}
           questionPassage={questionPassage}
+          onScrollFocus={focusOnAnswerPassage}
         />
       );
     }

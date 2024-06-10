@@ -28,6 +28,7 @@ import type {
   MockTestDetails,
   Passage,
 } from "../../../types";
+import { getUserResults } from "../../../utils/utils/passageUtils/getPassageUtils";
 import axios from "../../../config/customAxios";
 import Timer from "../../shared/timer";
 
@@ -227,6 +228,24 @@ const MockTests = ({ subject, mockTestDetails }: Props) => {
   const onSubmitPassage = async () => {
     setShowLoader(true);
     try {
+      const expectedWords = currentPassageDetails?.passageText
+        .trim()
+        .split(" ")
+        .filter(Boolean);
+      const typedWords = userInputText.trim().split(" ").filter(Boolean);
+      const validTypedWords = validUserInput.current
+        ?.trim()
+        .split(" ")
+        .filter(Boolean);
+
+      const result = getUserResults({ typedWords, expectedWords });
+      const resultAsPerMPSC = getUserResults({
+        typedWords: validTypedWords,
+        expectedWords,
+      });
+      userResult.current = result;
+      userResultAsPerMPSC.current = resultAsPerMPSC;
+
       const response = await axios.post("/student/submit-result/", {
         mode: "MOCK",
         subject,
@@ -238,13 +257,8 @@ const MockTests = ({ subject, mockTestDetails }: Props) => {
         validUserInput: validUserInput.current,
         duration,
       });
-      const { result, accessLimitReached, resultAsPerMPSC } =
-        response?.data || {};
-      if (!result) {
-        throw new Error("Error occurred while saving result data");
-      }
-      userResult.current = result;
-      userResultAsPerMPSC.current = resultAsPerMPSC;
+
+      const { accessLimitReached } = response?.data || {};
 
       if (accessLimitReached) {
         toast({
@@ -256,9 +270,11 @@ const MockTests = ({ subject, mockTestDetails }: Props) => {
           className: "absolute",
         });
       }
+
+      if (!result || !resultAsPerMPSC) {
+        throw new Error("Error occurred while saving result data");
+      }
     } catch (error: unknown) {
-      userResultAsPerMPSC.current = {};
-      userResult.current = {};
       const errorMessage = error?.response?.data?.error || "Something wrong";
       toast({
         variant: "destructive",
@@ -282,6 +298,10 @@ const MockTests = ({ subject, mockTestDetails }: Props) => {
       return;
     }
     resetUserActions();
+  };
+
+  const focusOnAnswerPassage = () => {
+    userInputRef.current?.focus();
   };
 
   const getAutoSubmitWarningDom = () => {
@@ -314,6 +334,7 @@ const MockTests = ({ subject, mockTestDetails }: Props) => {
         keystrokesCount={keystrokesCount}
         backspacesCount={backspacesCount}
         userInputText={userInputText}
+        userInputRef={userInputRef}
       />
     );
   };
@@ -324,6 +345,7 @@ const MockTests = ({ subject, mockTestDetails }: Props) => {
         <QuestionPassage
           selectedPassageId={currentPassageDetails?.passageId}
           questionPassage={currentPassageDetails?.passageText}
+          onScrollFocus={focusOnAnswerPassage}
         />
       );
     }
