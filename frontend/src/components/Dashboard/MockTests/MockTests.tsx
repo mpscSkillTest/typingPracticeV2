@@ -387,6 +387,7 @@ const MockTests = ({ subject, mockTestDetails }: Props) => {
           pendingWordsCount={totalPendingWordsClone}
           togglePassage={togglePassage}
           viewResultInPopup={viewResultInPopup}
+          passageTitle={currentPassageDetails?.passageTitle}
         />
       </div>
     );
@@ -410,12 +411,20 @@ const MockTests = ({ subject, mockTestDetails }: Props) => {
                 shouldShowInfo={currenTestStage === "TEST"}
               />
               {shouldShowResult ? (
-                <Button
-                  className="flex w-max items-center my-4"
-                  onClick={reloadPage}
-                >
-                  Close and give another test
-                </Button>
+                <div className="flex items-center gap-3">
+                  <Button
+                    className="flex w-max items-center my-4"
+                    onClick={reloadPage}
+                  >
+                    Close and give another test
+                  </Button>
+                  <Button
+                    className="flex w-max items-center my-4"
+                    onClick={togglePassage}
+                  >
+                    View & Download Result
+                  </Button>
+                </div>
               ) : null}
             </div>
           </div>

@@ -28,6 +28,7 @@ type Props = {
   showResult: boolean;
   togglePassage?: () => void;
   viewResultInPopup?: boolean;
+  passageTitle?: string;
 };
 
 const Result = ({
@@ -44,12 +45,14 @@ const Result = ({
   showResult,
   togglePassage,
   viewResultInPopup,
+  passageTitle,
 }: Props) => {
   const resultRef = useRef<HTMLDivElement>(null);
 
   const downloadResultSnapShot = () => {
     if (resultRef.current) {
-      exportAsImage(resultRef.current);
+      console.log({ passageTitle });
+      exportAsImage(resultRef.current, passageTitle);
     }
   };
 

@@ -82,7 +82,8 @@ export const getMockTestDetails = async (req, res) => {
       .select(
         `
           id,
-          passage_text
+          passage_text,
+          passage_title
           
   `
       )
