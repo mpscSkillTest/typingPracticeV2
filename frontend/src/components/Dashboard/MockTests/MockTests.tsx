@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect } from "react";
-import { useOnClickOutside } from "usehooks-ts";
 import { useToast } from "@/components/ui/use-toast";
 import { Icons } from "@/components/ui/icons";
 import { Button } from "@/components/ui/button";
@@ -108,6 +107,8 @@ const MockTests = ({ subject, mockTestDetails }: Props) => {
 
   const [showLoader, setShowLoader] = useState<boolean>(false);
 
+  const [viewResultInPopup, setViewResultInPopup] = useState<boolean>(false);
+
   const currentPassageKey: string = PASSAGE_KEY_TO_MODE[currenTestStage] || "";
 
   const currentPassageDetails: Passage = mockTestDetails?.[currentPassageKey];
@@ -151,9 +152,8 @@ const MockTests = ({ subject, mockTestDetails }: Props) => {
 
   const reloadPage = () => window.location.reload();
 
-  const handleClickOutside = () => {
-    setShouldShowWarningDom(true);
-    setTimeout(reloadPage, 5000);
+  const togglePassage = () => {
+    setViewResultInPopup((prevViewResult) => !prevViewResult);
   };
 
   const toggleWarningDom = () => {
@@ -163,8 +163,6 @@ const MockTests = ({ subject, mockTestDetails }: Props) => {
     setShouldShowWarningDom(true);
     setTimeout(reloadPage, 5000);
   };
-
-  useOnClickOutside(testWindowRef, handleClickOutside);
 
   const getWarningDom = () => {
     if (shouldShowWarningDom) {
@@ -245,6 +243,8 @@ const MockTests = ({ subject, mockTestDetails }: Props) => {
       });
       userResult.current = result;
       userResultAsPerMPSC.current = resultAsPerMPSC;
+
+      togglePassage();
 
       const response = await axios.post("/student/submit-result/", {
         mode: "MOCK",
@@ -385,6 +385,8 @@ const MockTests = ({ subject, mockTestDetails }: Props) => {
           mpscErrorCount={userResultAsPerMPSC.current.totalErrorCount || 0}
           typedWordsCount={totalTypedWords}
           pendingWordsCount={totalPendingWordsClone}
+          togglePassage={togglePassage}
+          viewResultInPopup={viewResultInPopup}
         />
       </div>
     );
@@ -541,14 +543,10 @@ const MockTests = ({ subject, mockTestDetails }: Props) => {
   }, [currenTestStage]);
 
   useEffect(() => {
-    window.addEventListener("beforeunload", toggleWarningDom);
     document.addEventListener("visibilitychange", toggleWarningDom);
-    window.addEventListener("resize", toggleWarningDom);
 
     return () => {
-      window.removeEventListener("beforeunload", toggleWarningDom);
       document.removeEventListener("visibilitychange", toggleWarningDom);
-      window.removeEventListener("resize", toggleWarningDom);
     };
   }, []);
 

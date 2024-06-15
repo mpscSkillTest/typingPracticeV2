@@ -15,3 +15,4 @@ export { addNewSubscriptionDetails } from "./subscriptions/newSubscription.js";
 export { getPaymentHistory } from "./student/paymentHistory.js";
 export { getMockTestDetails } from "./student/mockTestDetails.js";
 export { updateResultDate } from "./migrationTasks/resultMigration.js";
+export { addUserWithMonthlySubscriptions } from "./migrationTasks/manualUserAddition.js";

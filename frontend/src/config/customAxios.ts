@@ -4,7 +4,7 @@ import { AUTH_TOKEN_KEY } from "../utils/constant";
 
 const customEnv = import.meta.env.VITE_CUSTOM_ENV;
 
-const BASE_URL = "http://localhost:5000/api";
+const BASE_URL = "http://localhost:5001/api";
 
 /**
  * Deployed on US-west region

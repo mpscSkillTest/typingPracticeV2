@@ -1,8 +1,12 @@
 import { Router } from "express";
-import { updateResultDate } from "../controllers/index.js";
+import {
+  updateResultDate,
+  addUserWithMonthlySubscriptions,
+} from "../controllers/index.js";
 
 const MigrationRouter = Router();
 
 MigrationRouter.post("/update-result-date", updateResultDate);
+MigrationRouter.post("/create-new-user", addUserWithMonthlySubscriptions);
 
 export default MigrationRouter;
