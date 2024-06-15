@@ -169,7 +169,7 @@ const Result = ({
       >
         <div className="flex flex-col gap-3 max-h-full">
           <div className="flex flex-col gap-3" ref={resultRef}>
-            <div className="text-lg text-center font-bold">Results</div>
+            <div className="text-lg text-center font-bold">Result</div>
             <div className="grid grid-cols-2 gap-2 p-[20px] gap-[10px] rounded-lg border-2 justify-between flex-1">
               {getResultDom()}
             </div>
