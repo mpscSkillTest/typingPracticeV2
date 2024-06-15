@@ -51,7 +51,6 @@ const Result = ({
 
   const downloadResultSnapShot = () => {
     if (resultRef.current) {
-      console.log({ passageTitle });
       exportAsImage(resultRef.current, passageTitle);
     }
   };
