@@ -25,6 +25,7 @@ import type { OnChangeArgs, OnKeyDownArgs } from "../shared/AnswerPassage";
 import type { Subject, UserDetails, TypingMode, Passage } from "../../../types";
 import axios from "../../../config/customAxios";
 import Timer from "../../shared/timer";
+import { getUserResults } from "@/utils/utils/passageUtils/getPassageUtils";
 
 type Props = {
   userDetails: UserDetails;
@@ -153,7 +154,19 @@ const EnglishPracticeArea = ({ userDetails, subject, mode }: Props) => {
       setShouldStartTimer(false);
     }
     setShouldShowLoader(true);
+  
     try {
+      const expectedWords = questionPassage.trim().split(" ").filter(Boolean);
+      const typedWords = userInputText.trim().split(" ").filter(Boolean);
+      const validTypedWords = validUserInput.current?.trim().split(" ").filter(Boolean);
+  
+      const result = getUserResults({ typedWords, expectedWords });
+      const resultAsPerMPSC = getUserResults({
+        typedWords: validTypedWords,
+        expectedWords,
+      });
+      userResult.current = result;
+      userResultAsPerMPSC.current = resultAsPerMPSC;
       const response = await axios.post("/student/submit-result/", {
         mode,
         subject,
@@ -166,27 +179,22 @@ const EnglishPracticeArea = ({ userDetails, subject, mode }: Props) => {
         validUserInput: validUserInput.current,
         duration,
       });
-      const { result, accessLimitReached, resultAsPerMPSC } =
-        response?.data || {};
-      if (!result) {
-        throw new Error("No Passages Available");
-      }
-      userResult.current = result;
-      userResultAsPerMPSC.current = resultAsPerMPSC;
+  
+    
+      const { accessLimitReached } = response?.data || {};
+
       if (accessLimitReached) {
         toast({
           variant: "destructive",
           title: "You have exhausted your free trial limit",
-          description:
-            "To retain your test and practice results and to use our other exciting features, please consider to subscribe our Premium Package",
+          description: "To retain your test and practice results and to use our other exciting features, please consider to subscribe our Premium Package",
           duration: 6000,
           className: "absolute",
         });
       }
-    } catch (error: unknown) {
-      userResult.current = {};
-      userResultAsPerMPSC.current = {};
-      const errorMessage = error?.response?.data?.error || "Something wrong";
+    } catch (error) {
+      console.error("Error submitting passage:", error);
+      const errorMessage = error?.response?.data?.error || "Something went wrong";
       toast({
         variant: "destructive",
         title: "Uh oh! Something went wrong",
@@ -197,7 +205,6 @@ const EnglishPracticeArea = ({ userDetails, subject, mode }: Props) => {
       setShouldShowResult(true);
     }
   };
-
   const getPassageSelectDropdown = () => {
     return (
       <Select value={selectedPassageId} onValueChange={onQuestionPassageSelect}>
