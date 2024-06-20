@@ -21,11 +21,11 @@ import {
   DEFAULT_ENGLISH_KEYSTROKES_COUNT,
   DEFAULT_MARATHI_KEYSTROKES_COUNT,
 } from "../../../utils/constant";
+import { getUserResults } from "../../../utils/utils/passageUtils/getPassageUtils";
 import type { OnChangeArgs, OnKeyDownArgs } from "../shared/AnswerPassage";
 import type { Subject, UserDetails, TypingMode, Passage } from "../../../types";
 import axios from "../../../config/customAxios";
 import Timer from "../../shared/timer";
-import { getUserResults } from "../../../utils/utils/passageUtils/getPassageUtils";
 
 type Props = {
   userDetails: UserDetails;
