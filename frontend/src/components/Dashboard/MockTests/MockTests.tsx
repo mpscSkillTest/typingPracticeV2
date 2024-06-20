@@ -477,7 +477,7 @@ const MockTests = ({ subject, mockTestDetails }: Props) => {
       <DialogHeader>
         <DialogTitle className="flex justify-between">
           {currentStageTitle}
-          {/*          <Button
+                   {/* <Button
             disabled={
               shouldShowResult ||
               (currenTestStage === "TEST" && !userInputText.length)
