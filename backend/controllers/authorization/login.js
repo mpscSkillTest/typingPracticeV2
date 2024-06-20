@@ -12,6 +12,7 @@ export const login = async (req, res) => {
     password: password,
   });
 
+
   if (data?.user?.user_metadata && data?.session?.access_token) {
     logger.info(`signing in successful for user: ${emailId}`);
     res.status(200).send({
