@@ -104,4 +104,5 @@ export const getStudentRecentResults = async (req, res) => {
     });
     return;
   }
+  return;
 };

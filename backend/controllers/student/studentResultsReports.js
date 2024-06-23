@@ -120,4 +120,5 @@ export const getStudentResultReport = async (req, res) => {
     });
     return;
   }
+  return;
 };

@@ -59,4 +59,5 @@ export const getPaymentHistory = async (req, res) => {
       error: "Fetching Payment History Failed: " + error.message,
     });
   }
+  return;
 };
