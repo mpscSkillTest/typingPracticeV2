@@ -13,11 +13,16 @@ const PROD_BASE_URL = "https://typingpracticev2-v5n2.onrender.com/api";
 
 const DEV_BASE_URL = "https://dev-typing-practice-api.onrender.com/api";
 
+const STAGING_BASE_URL = "https://staging-ezpp.onrender.com/api";
+
 let baseURL = "";
 
 switch (customEnv) {
   case "development":
     baseURL = DEV_BASE_URL;
+    break;
+  case "staging":
+    baseURL = STAGING_BASE_URL;
     break;
   case "production":
     baseURL = PROD_BASE_URL;
