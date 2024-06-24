@@ -7,12 +7,13 @@ import {
 } from "../../constant.js";
 import { getNextBillingDate } from "../../utils/getNextBillingDate.js";
 import UserTypeEnum from "../../enums/UserTypeEnum.js";
-//import users from "./Institute-Data/MPSC CANDIDATE Nagpur 2.js";
-//import users from "./Institute-Data/Amravati-inst-04.js";
+// import users from "./Institute-Data/Nashik-institute-list.js";
+// import users from "./Institute-Data/MPSC CANDIDATE Nagpur 2.js";
+// import users from "./Institute-Data/Amravati-inst-04.js";
 // import users from "./Institute-Data/amravati-istitute-2nd-list.js";
 
 const users = [];
-const transactionId = "pay_amravatiInstitute_secondList";
+const transactionId = "";
 const institute_id = null;
 
 export const addUserWithMonthlySubscriptions = async (req, res) => {
@@ -36,45 +37,47 @@ export const addUserWithMonthlySubscriptions = async (req, res) => {
       continue;
     }
 
-    /*   const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          email,
-          name,
-          contactNumber,
-          type: UserTypeEnum.STUDENT.name,
-          institute_id,
-        },
-      },
-    });
-
-    const userId = data?.user?.id;
-
- */
-
-    // use following code block only for existing users
-    const { error: profileError, data: profileData } = await supabase
-      .from(PROFILE_DB_NAME)
-      .select(
-        `
-        user_id
-      `
-      )
-      .eq("email", email);
-
-    const userId = profileData?.[0]?.user_id;
-
     console.log("creating user", email, name);
 
-    if (!userId || profileError) {
-      console.log("error in creating user", email, name);
-      console.log(error);
-      invalidUsers.push({
-        ...userDetails,
+    // new user signup
+    const { data: newUserData, error: newUserError } =
+      await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            email,
+            name,
+            contactNumber: contactNumber || 1234567890,
+            type: UserTypeEnum.STUDENT.name,
+            institute_id,
+          },
+        },
       });
-      continue;
+
+    let userId = newUserData?.user?.id;
+
+    if (!userId || newUserError) {
+      // use following code block only for existing users
+      const { error: profileError, data: profileData } = await supabase
+        .from(PROFILE_DB_NAME)
+        .select(
+          `
+        user_id
+      `
+        )
+        .eq("email", email);
+
+      userId = profileData?.[0]?.user_id;
+
+      if (!userId || profileError) {
+        console.log("error in creating user", email, name);
+        console.log(profileError);
+        invalidUsers.push({
+          ...userDetails,
+        });
+        continue;
+      }
     }
 
     const { error: profileUpdateError, data: profileUpdateData } =

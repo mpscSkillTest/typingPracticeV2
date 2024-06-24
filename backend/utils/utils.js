@@ -20,8 +20,7 @@ export const getUserIdFromToken = async (req) => {
    */
   const { data, error } = await supabase.auth.getUser(accessToken);
   if (error || !data?.user?.id) {
-    logger.error(`getUserIdFromToken method user failed due ${error.message}`);
-    logger.error(`verify user failed stack ${error.stack}`);
+    logger.error(`getUserIdFromToken method user failed due ${error?.message}`);
     logger.error(`no user found for access token: ${accessToken}`);
     return null;
   }

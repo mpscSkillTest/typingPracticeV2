@@ -21,8 +21,8 @@ export const verify = async (req, res) => {
      */
     const { data, error } = await supabase.auth.getUser(accessToken);
     if (error) {
-      logger.error(`verify user failed due ${error.message}`);
-      logger.error(`verify user failed stack ${error.stack}`);
+      logger.error(`verify user failed due ${error?.message}`);
+      logger.error(`verify user failed stack ${error?.stack}`);
 
       throw new Error("Access token expired. Please sign up again");
     }
@@ -58,6 +58,7 @@ export const verify = async (req, res) => {
       isVerified: false,
       token: null,
     });
+    return;
   }
   return;
 };

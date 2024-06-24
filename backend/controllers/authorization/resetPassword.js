@@ -25,8 +25,8 @@ export const resetPassword = async (req, res) => {
     const userId = userData?.user?.id || null;
 
     if (userError || !updatedAccessToken || !userId) {
-      logger.error(`get user failed due ${userError.message}`);
-      logger.error(`get user failed stack ${userError.stack}`);
+      logger.error(`get user failed due ${userError?.message}`);
+      logger.error(`get user failed stack ${userError?.stack}`);
       throw new Error("Access token expired.Password can not reset.");
     }
 
@@ -35,8 +35,8 @@ export const resetPassword = async (req, res) => {
     });
 
     if (error) {
-      logger.error(`reset user password failed due ${error.message}`);
-      logger.error(`reset user password failed stack ${error.stack}`);
+      logger.error(`reset user password failed due ${error?.message}`);
+      logger.error(`reset user password failed stack ${error?.stack}`);
       throw new Error("Access token expired. Please sign up again");
     }
 

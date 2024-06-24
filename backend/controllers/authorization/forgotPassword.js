@@ -41,8 +41,8 @@ export const resetPassword = async (req, res) => {
       password: "new password",
     });
     if (error) {
-      logger.error(`verify user failed due ${error.message}`);
-      logger.error(`verify user failed stack ${error.stack}`);
+      logger.error(`verify user failed due ${error?.message}`);
+      logger.error(`verify user failed stack ${error?.stack}`);
 
       throw new Error("Access token expired. Please sign up again");
     }
