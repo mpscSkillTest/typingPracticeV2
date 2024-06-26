@@ -55,4 +55,5 @@ export const getProducts = async (req, res) => {
       .send({ products: [], error: "No Products available" });
     return;
   }
+  return;
 };

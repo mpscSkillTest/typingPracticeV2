@@ -113,4 +113,5 @@ export const addNewSubscriptionDetails = async (req, res) => {
     });
     return;
   }
+  return;
 };

@@ -55,6 +55,7 @@ export const getMockTestDetails = async (req, res) => {
         accessLimitReached: true,
         error: null,
       });
+      return;
     }
 
     const { data: practicePassagesData, error: practicePassagesError } =

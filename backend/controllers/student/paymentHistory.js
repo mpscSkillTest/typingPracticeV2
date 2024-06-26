@@ -34,9 +34,9 @@ export const getPaymentHistory = async (req, res) => {
       .order("created_at", { ascending: false });
 
     if (paymentError) {
-      logger.error("Fetching Payment History Failed: " + paymentError.message);
+      logger.error("Fetching Payment History Failed: " + paymentError?.message);
       throw new Error(
-        "Fetching Payment History Failed: " + paymentError.message
+        "Fetching Payment History Failed: " + paymentError?.message
       );
     }
 
@@ -53,10 +53,11 @@ export const getPaymentHistory = async (req, res) => {
       error: null,
     });
   } catch (error) {
-    logger.error("Failed to fetch payment history: " + error.message);
+    logger.error("Failed to fetch payment history: " + error?.message);
     res.status(StatusCodes.BAD_REQUEST).send({
       payments: [],
-      error: "Fetching Payment History Failed: " + error.message,
+      error: "Fetching Payment History Failed: " + error?.message,
     });
   }
+  return;
 };

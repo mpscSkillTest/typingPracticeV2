@@ -47,4 +47,5 @@ export const getStudentDetails = async (req, res) => {
       .send({ user: null, error: "User not found. Please try again" });
     return;
   }
+  return;
 };
