@@ -7,6 +7,7 @@ import {
 } from "../../constant.js";
 import { getNextBillingDate } from "../../utils/getNextBillingDate.js";
 import UserTypeEnum from "../../enums/UserTypeEnum.js";
+//import users from "./Institute-Data/26th June Mock Test Mahesh Computer.js";
 // import users from "./Institute-Data/Nashik-institute-list.js";
 // import users from "./Institute-Data/MPSC CANDIDATE Nagpur 2.js";
 // import users from "./Institute-Data/Amravati-inst-04.js";
@@ -42,11 +43,11 @@ export const addUserWithMonthlySubscriptions = async (req, res) => {
     // new user signup
     const { data: newUserData, error: newUserError } =
       await supabase.auth.signUp({
-        email,
+        email: email.trim(),
         password,
         options: {
           data: {
-            email,
+            email: email.trim(),
             name,
             contactNumber: contactNumber || 1234567890,
             type: UserTypeEnum.STUDENT.name,
