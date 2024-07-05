@@ -2,6 +2,8 @@
   opacity: 1 !important;
   cursor: default !important;
   user-select: none !important;
+  border-radius: unset !important;
+  font-weight: 500;
 }
 
 .userSelect {
@@ -12,11 +14,5 @@
 }
 
 .textArea {
-  line-height: 1.65 !important;
   font-size: 18px;
-}
-
-.questionTextArea {
-  font-size: 16px;
-  line-height: normal;
 }

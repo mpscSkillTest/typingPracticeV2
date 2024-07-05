@@ -26,7 +26,7 @@ const QuestionPassage = ({
     <Textarea
       key={selectedPassageId}
       readOnly
-      className={`resize-none h-[200px] border-2 font-medium text-md text-black ${classes.passageText} ${classes.userSelect} ${classes.textArea} ${classes.questionTextArea}`}
+      className={`resize-none h-[200px] border-2 text-md ${classes.passageText} ${classes.userSelect} ${classes.textArea}`}
       disabled
       onClick={restrictActions}
       onChange={restrictActions}

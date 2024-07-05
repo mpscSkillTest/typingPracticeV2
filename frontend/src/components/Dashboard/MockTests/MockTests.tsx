@@ -399,7 +399,7 @@ const MockTests = ({ subject, mockTestDetails }: Props) => {
     }
 
     return (
-      <div className="grid grid-cols-1 gap-[20px] xl:grid-cols-4">
+      <div className="grid grid-cols-1 gap-[20px] xl:grid-cols-5">
         <div className="col-span-3">
           <div className="flex flex-col gap-5">
             {getQuestionPassageDom()}
