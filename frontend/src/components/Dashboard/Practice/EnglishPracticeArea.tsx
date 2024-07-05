@@ -154,12 +154,15 @@ const EnglishPracticeArea = ({ userDetails, subject, mode }: Props) => {
       setShouldStartTimer(false);
     }
     setShouldShowLoader(true);
-  
+
     try {
       const expectedWords = questionPassage.trim().split(" ").filter(Boolean);
       const typedWords = userInputText.trim().split(" ").filter(Boolean);
-      const validTypedWords = validUserInput.current?.trim().split(" ").filter(Boolean);
-  
+      const validTypedWords = validUserInput.current
+        ?.trim()
+        .split(" ")
+        .filter(Boolean);
+
       const result = getUserResults({ typedWords, expectedWords });
       const resultAsPerMPSC = getUserResults({
         typedWords: validTypedWords,
@@ -179,22 +182,23 @@ const EnglishPracticeArea = ({ userDetails, subject, mode }: Props) => {
         validUserInput: validUserInput.current,
         duration,
       });
-  
-    
+
       const { accessLimitReached } = response?.data || {};
 
       if (accessLimitReached) {
         toast({
           variant: "destructive",
           title: "You have exhausted your free trial limit",
-          description: "To retain your test and practice results and to use our other exciting features, please consider to subscribe our Premium Package",
+          description:
+            "To retain your test and practice results and to use our other exciting features, please consider to subscribe our Premium Package",
           duration: 6000,
           className: "absolute",
         });
       }
     } catch (error) {
       console.error("Error submitting passage:", error);
-      const errorMessage = error?.response?.data?.error || "Something went wrong";
+      const errorMessage =
+        error?.response?.data?.error || "Something went wrong";
       toast({
         variant: "destructive",
         title: "Uh oh! Something went wrong",
@@ -368,8 +372,8 @@ const EnglishPracticeArea = ({ userDetails, subject, mode }: Props) => {
   }
 
   return (
-    <div className="grid grid-cols-1 gap-[20px] xl:grid-cols-4">
-      <div className="col-span-3">
+    <div className="grid grid-cols-1 gap-[20px] xl:grid-cols-5">
+      <div className="col-span-3 xl:col-span-3">
         <div className="flex gap-2 items-center justify-center">
           {getPassageSelectDropdown()}
           <Timer
@@ -405,7 +409,7 @@ const EnglishPracticeArea = ({ userDetails, subject, mode }: Props) => {
           </div>
         </div>
       </div>
-      <div className="col-span-3 xl:col-span-1">
+      <div className="col-span-3 xl:col-span-2">
         <Result
           subject={subject}
           showResult={shouldShowResult}

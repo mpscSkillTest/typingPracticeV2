@@ -7,12 +7,16 @@ import {
 } from "../../constant.js";
 import { getNextBillingDate } from "../../utils/getNextBillingDate.js";
 import UserTypeEnum from "../../enums/UserTypeEnum.js";
+// import users from "./Institute-Data/nashik 2nd mock test-list.js";
+// import users from "./Institute-Data/29th June Mock Test Mahesh Computer.js";
 //import users from "./Institute-Data/26th June Mock Test Mahesh Computer.js";
 // import users from "./Institute-Data/Nashik-institute-list.js";
 // import users from "./Institute-Data/MPSC CANDIDATE Nagpur 2.js";
 // import users from "./Institute-Data/Amravati-inst-04.js";
 // import users from "./Institute-Data/amravati-istitute-2nd-list.js";
 
+// pay_maheshmock5
+// 105
 const users = [];
 const transactionId = "";
 const institute_id = null;
@@ -30,7 +34,7 @@ export const addUserWithMonthlySubscriptions = async (req, res) => {
     const { email, password, name, contactNumber, productId, amount } =
       userDetails;
 
-    if (!email || !password) {
+    if (!email || !password || !productId) {
       console.log("invalid user creating");
       invalidUsers.push({
         ...userDetails,
