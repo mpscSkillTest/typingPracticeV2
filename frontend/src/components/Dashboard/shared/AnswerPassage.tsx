@@ -140,7 +140,7 @@ const AnswerPassage = ({
       onCopy={restrictActions}
       onWheel={restrictActions}
       disabled={shouldDisable}
-      className={`h-[200px] resize-none font-normal text-md text-black ${classes.userSelect} ${classes.textArea}`}
+      className={`h-[200px] resize-none font-normal text-md text-black ${classes.userSelect} ${classes.textArea} text-[23px]`}
       placeholder="Type your passage here."
     />
   );
