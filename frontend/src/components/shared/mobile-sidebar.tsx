@@ -4,7 +4,7 @@ import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { navItems } from "../../utils/constant";
 import DashboardNav from "./dashboard-nav";
 import Logout from "./logout";
-import logo from "../../assets/Typing.png";
+import logo from "../../assets/mpsc.in_logo.png";
 
 
 type TMobileSidebarProps = {
@@ -29,7 +29,7 @@ export default function MobileSidebar({
           <div className="space-y-4 py-4 h-full">
             <div className="flex flex-col space-y-4 px-3 py-2 h-full">
               <Link to="/" className="py-1 text-2xl font-bold text-white ">
-                <img src={logo} alt="Logo" className="h-auto w-40 text-white" />
+                <img src={logo} alt="Logo" className="h-auto w-40 h-40 text-white" />
               </Link>
               <div className="flex flex-1 flex-col justify-between space-y-8 px-2">
                 <DashboardNav items={navItems} setOpen={setSidebarOpen} />

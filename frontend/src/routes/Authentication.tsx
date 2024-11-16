@@ -7,7 +7,8 @@ import { getHashParams } from "../utils/utils";
 import Registration from "../components/Authentication/Register/Registration";
 import Login from "../components/Authentication/Login/Login";
 import ResetPassword from "../components/Authentication/ResetPassword/ResetPassword";
-import Typingsvg from "../assets/typing.svg";
+import logo from "../assets/mpsc.in_logo.png";
+import { Link } from "react-router-dom";
 
 type Props = {
   type: "signin" | "signup" | "confirm-signup" | "reset-password";
@@ -73,46 +74,51 @@ function Authentication({ type = "signin" }: Props) {
   }
 
   return (
-    <div className="flex h-dvh w-dvw overflow-hidden">
-      <div className="h-[inherit] bg-primary w-0 md:w-[50%] text-white">
-       
-        <div className="flex items-center justify-center h-screen">
-          <div className="left_content px-5 text-xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="container col-span-9 col-span-12 md:col-span-9  w-full md:w-[75%]">
-              <h5 className="text-center text-orange-500">
-                Essential Guidelines for Efficient and Accurate Practice
-              </h5>
-              <ol className="mt-5 text-sm list-decimal">
-                <li className="mb-5">
-                  Start with proper hand placement on the keyboard, using the
-                  home row keys as a reference.
-                </li>
-                <li className="mb-5">
-                  Begin with basic typing exercises to build muscle memory and
-                  improve finger coordination.
-                </li>
-                <li className="mb-5">
-                  Focus on accuracy over speed initially, gradually increasing
-                  your typing speed as you become more comfortable.
-                </li>
-                <li className="mb-5">
-                  Practice regularly, incorporating varied texts and typing
-                  challenges to enhance your proficiency.
-                </li>
-                <li>
-                  Take short breaks to prevent fatigue and maintain
-                  concentration during typing sessions.
-                </li>
-              </ol>
+    <div className="relative h-dvh w-dvw overflow-hidden">
+      <Link to="/"
+        className="absolute top-5 left-5 md:top-10 md:left-10 text-2xl font-bold text-white">
+        <img src={logo} alt="Logo" className="w-20 md:w-32" />
+      </Link>
+      <div className="flex h-full">
+        <div className="h-full bg-primary w-0 md:w-[50%] text-white">
+          <div className="flex items-center justify-center h-screen">
+            <div className="left_content px-5 text-xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="container col-span-9 col-span-12 md:col-span-9 w-full md:w-[75%] mt-10">
+                <h5 className="text-center text-orange-500">
+                  Essential Guidelines for Efficient and Accurate Practice
+                </h5>
+                <ol className="mt-5 text-sm list-decimal">
+                  <li className="mb-5">
+                    Start with proper hand placement on the keyboard, using the
+                    home row keys as a reference.
+                  </li>
+                  <li className="mb-5">
+                    Begin with basic typing exercises to build muscle memory and
+                    improve finger coordination.
+                  </li>
+                  <li className="mb-5">
+                    Focus on accuracy over speed initially, gradually increasing
+                    your typing speed as you become more comfortable.
+                  </li>
+                  <li className="mb-5">
+                    Practice regularly, incorporating varied texts and typing
+                    challenges to enhance your proficiency.
+                  </li>
+                  <li>
+                    Take short breaks to prevent fatigue and maintain
+                    concentration during typing sessions.
+                  </li>
+                </ol>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div className="flex align-middle justify-center w-[100%] md:w-[50%] h-[inherit]">
-        {getUserDetailsComponent()}
+        <div className="flex align-middle justify-center w-full md:w-[50%] h-full mt-10">
+          {getUserDetailsComponent()}
+        </div>
+        <Toaster />
       </div>
-      <Toaster />
     </div>
   );
 }
