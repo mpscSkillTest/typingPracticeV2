@@ -27,6 +27,13 @@ export const navItems: NavItem[] = [
     icon: "MockTest",
     label: "Mock Tests",
   },
+
+  {
+    title: "Lessons",
+    href: "/lesson",
+    icon: "MockTest",
+    label: "Lessons",
+  },
   {
     title: "Subscriptions",
     href: "/subscription",
