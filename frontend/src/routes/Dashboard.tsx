@@ -5,6 +5,7 @@ import Practice from "../components/Dashboard/Practice/Practice";
 import MockTestsWrapper from "../components/Dashboard/MockTests/MockTestsWrapper";
 import Payment from "../components/Dashboard/Payment/Payment";
 import PaymentHistory from "../components/Dashboard/PaymentHistory/PaymentHistory";
+import Lesson from "../components/Dashboard/Lesson/Lesson";
 
 type Props = {
   page:
@@ -13,6 +14,7 @@ type Props = {
     | "speedTest"
     | "subscription"
     | "transaction"
+    | "lesson"
     | "mockTest";
 };
 
@@ -37,10 +39,13 @@ function Dashboard({ page = "dashboard" }: Props) {
     case "subscription":
       containerDom = <Payment />;
       break;
-
+    case "lesson":
+      containerDom = <Lesson />;
+      break;
     case "transaction":
       containerDom = <PaymentHistory />;
       break;
+      
     default:
       break;
   }
