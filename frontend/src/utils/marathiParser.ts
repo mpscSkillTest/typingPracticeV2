@@ -145,7 +145,7 @@ export const marathiTranslator = (EnglishTextReal: string): string => {
   const a = [];
 
   for (let i = 0; i < EnglishTextReal.length; i++) {
-    console.log("(EnglishTextReal", EnglishTextReal);
+    // console.log("(EnglishTextReal", EnglishTextReal);
 
     // for half letter and full letter rafar and kana with half letter for र्भा , र्भ .
     if (
