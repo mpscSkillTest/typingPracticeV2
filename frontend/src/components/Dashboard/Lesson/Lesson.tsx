@@ -6,12 +6,7 @@ const lessons = [
   { id: 3, title: "Space Bar", completed: false, route: "/lesson/3" },
   { id: 4, title: "Review f & j", completed: false, route: "/lesson/4" },
   { id: 5, title: "Keys d & k", completed: false, route: "/lesson/5" },
-  { id: 6, title: "Introduction to Typing", completed: true, route: "/lesson/1" },
-  { id: 7, title: "Keys f & j", completed: true, route: "/lesson/2" },
-  { id: 8, title: "Space Bar", completed: false, route: "/lesson/3" },
-  { id: 9, title: "Review f & j", completed: false, route: "/lesson/4" },
-  { id: 10, title: "Keys d & k", completed: false, route: "/lesson/5" },
-  
+  // Add more lessons as needed
 ];
 
 const Lesson = () => {
