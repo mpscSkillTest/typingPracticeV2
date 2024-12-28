@@ -1,5 +1,6 @@
 import { supabase } from "../dbClient.js";
 import logger from "../utils/logger.js";
+import {THRSHOLD_ACCURACY_FOR_LESSON} from "../constant.js"
 
 export const getAccessTokenFromHeaders = (req) => {
   return req?.headers?.authorization || "";
@@ -104,3 +105,31 @@ export const getParsedPassagesDetails = (passages) => {
     };
   });
 };
+
+export const getParsedLessonsList = (lessons) => {
+  if (!lessons?.length) {
+    return [];
+  }
+  return lessons?.map?.((lessonDetails) => {
+    return {
+      id: lessonDetails?.id,
+      title: lessonDetails?.title,
+      text: lessonDetails?.lesson_text,
+    };
+  });
+};
+
+export const getParsedLessonResultList=(results)=>{
+  console.log({results})
+  if(!results.length){
+    return []
+  }
+  return results?.map?.((resultDetails) => {
+    return {
+      id: resultDetails?.lesson_id,
+      accuracy: resultDetails?.accuracy,
+      isCompleted: resultDetails?.accuracy>=THRSHOLD_ACCURACY_FOR_LESSON,
+    };
+  });
+}
+

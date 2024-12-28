@@ -12,6 +12,10 @@ export const PRODUCT_DB_NAME = "products";
 export const SUBSCRIPTION_DB_NAME = "subscriptions";
 export const PAYMENT_DB_NAME = "payments";
 export const FEEDBACK_DB_NAME = "customer-queries";
+export const LESSONS_DB_NAME = "lessons";
+export const LESSON_RESULT_DB_NAME = "lesson_results";
+
+export const THRSHOLD_ACCURACY_FOR_LESSON= 60;
 
 export const FEATURE_DETAILS = {
   FREE: {
