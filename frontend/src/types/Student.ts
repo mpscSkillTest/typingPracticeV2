@@ -45,4 +45,5 @@ export type LessonResult = {
 	id: number;
 	accuracy: number;
 	isCompleted: boolean;
+	isLocked: boolean;
 };

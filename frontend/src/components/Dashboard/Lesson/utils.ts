@@ -9,11 +9,12 @@ export const getFinalisedLessonsList = (
 	}
 
 	if (!progressDetails?.length) {
-		return lessonsList.map((lessonDetails) => {
+		return lessonsList.map((lessonDetails, index) => {
 			return {
 				...lessonDetails,
 				accuracy: 0,
 				isCompleted: false,
+				isLocked: index !== 0,
 			};
 		});
 	}
@@ -26,17 +27,24 @@ export const getFinalisedLessonsList = (
 		progressDetailsMap[progress?.id] = progress;
 	});
 
-	lessonsList.map((lessonDetails) => {
+	let lastCompletedLesson = -1;
+	lessonsList.forEach((lessonDetails, index) => {
 		if (progressDetailsMap?.hasOwnProperty?.(lessonDetails?.id)) {
+			if (progressDetailsMap?.[lessonDetails?.id]?.isCompleted) {
+				lastCompletedLesson = index;
+			}
+
 			finalisedList.push({
 				...lessonDetails,
 				...progressDetailsMap?.[lessonDetails?.id],
+				isLocked: lastCompletedLesson + 1 < index,
 			});
 		} else {
 			finalisedList.push({
 				...lessonDetails,
 				isCompleted: false,
 				accuracy: 0,
+				isLocked: lastCompletedLesson + 1 < index,
 			});
 		}
 	});
