@@ -1,15 +1,16 @@
 import { Router } from "express";
 import {
-  getStudentDetails,
-  getPassages,
-  submitResults,
-  getStudentRecentResults,
-  getStudentResultReport,
-  getPaymentHistory,
-  getMockTestDetails,
-  submitUserFeedback,
-  getAllLessons,
-  getStudentProgress
+	getStudentDetails,
+	getPassages,
+	submitResults,
+	getStudentRecentResults,
+	getStudentResultReport,
+	getPaymentHistory,
+	getMockTestDetails,
+	submitUserFeedback,
+	getAllLessons,
+	getStudentProgress,
+	getLessonDetails,
 } from "../controllers/index.js";
 import { validateUser } from "../middlewares/index.js";
 
@@ -25,6 +26,6 @@ StudentDetailsRouter.post("/mock-tests", getMockTestDetails);
 StudentDetailsRouter.post("/submit-feedback", submitUserFeedback);
 StudentDetailsRouter.post("/lessons", getAllLessons);
 StudentDetailsRouter.post("/lesson-results", getStudentProgress);
-
+StudentDetailsRouter.post("/lesson-details", getLessonDetails);
 
 export default StudentDetailsRouter;

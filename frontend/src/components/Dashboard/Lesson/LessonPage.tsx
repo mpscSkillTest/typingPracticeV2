@@ -1,25 +1,36 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { Button } from "@/components/ui/button";
+import { Icons } from "@/components/ui/icons";
+import { Subject } from "@/types";
 import { QuestionPassage, AnswerPassage, PassingInfoMessage } from "../shared";
 import { OnKeyDownArgs } from "../shared/AnswerPassage";
-import { Button } from "@/components/ui/button";
+import { getLessonDetails } from "./api";
 
-const passages = [
-	{ passageId: "1", passageText: "This is the first passage text." },
-	{ passageId: "2", passageText: "This is the second passage text." },
-	{ passageId: "3", passageText: "This is the third passage text." },
-];
-
-const LessonPage = ({ subject = "MARATHI" }: { subject?: string }) => {
+const LessonPage = () => {
 	const [keystrokesCount, setKeystrokesCount] = useState<number>(0);
 	const [backspacesCount, setBackspacesCount] = useState<number>(0);
 	const [userInputText, setUserInputText] = useState<string>("");
 	const [totalTypedWords, setTotalTypedWords] = useState<number>(0);
-	const [currentPassageDetails, setCurrentPassageDetails] = useState(
-		passages[0]
-	);
-	const [selectedPassageId, setSelectedPassageId] = useState<string>("");
 
+	const params = useParams<Record<"subject" | "id", string>>();
+
+	const { subject: selectedSubject, id: lessonId } = params || {};
+	const subject = selectedSubject?.toUpperCase?.() as Subject;
+
+	const { isPending: lessonDetailsLoading, data: lessonData } = useQuery({
+		queryKey: ["lessonData", subject, lessonId],
+		queryFn: getLessonDetails,
+		retry: false,
+	});
+
+	const navigate = useNavigate();
 	const userInputRef = useRef<HTMLTextAreaElement>(null);
+
+	if (!lessonDetailsLoading && !lessonData?.lesson) {
+		navigate("/lesson");
+	}
 
 	const onUserInputKeyDown = ({
 		updatedBackspacesCount = 0,
@@ -48,22 +59,9 @@ const LessonPage = ({ subject = "MARATHI" }: { subject?: string }) => {
 		userInputRef.current?.focus();
 	};
 
-	const onQuestionPassageSelect = (selectedPassageId: string) => {
-		setSelectedPassageId(selectedPassageId);
-	};
-
-	useEffect(() => {
-		const selectedPassage = passages.find(
-			(passage) => passage.passageId === selectedPassageId
-		);
-		if (selectedPassage) {
-			setCurrentPassageDetails(selectedPassage);
-		}
-	}, [selectedPassageId]);
-
 	const getAnswerPassageDom = () => (
 		<AnswerPassage
-			subject={subject}
+			subject={subject as Subject}
 			onKeyDown={onUserInputKeyDown}
 			onChange={onUserInputChange}
 			totalTypedWords={totalTypedWords}
@@ -76,18 +74,26 @@ const LessonPage = ({ subject = "MARATHI" }: { subject?: string }) => {
 
 	const getQuestionPassageDom = () => (
 		<QuestionPassage
-			selectedPassageId={currentPassageDetails?.passageId}
-			questionPassage={currentPassageDetails?.passageText}
+			selectedPassageId={lessonData?.lesson?.id as number}
+			questionPassage={lessonData?.lesson?.text as string}
 			onScrollFocus={focusOnAnswerPassage}
 		/>
 	);
+
+	if (lessonDetailsLoading) {
+		return (
+			<div className="flex justify-center items-center h-full">
+				<Icons.spinner height={48} width={48} className="animate-spin" />
+			</div>
+		);
+	}
 
 	return (
 		<div className="flex flex-col m-auto gap-5 p-4 xl:max-w-[50%]">
 			{getQuestionPassageDom()}
 			<div className="flex gap-[10px] flex-col items-center">
 				{getAnswerPassageDom()}
-				<PassingInfoMessage subject={subject} />
+				<PassingInfoMessage subject={"ENGLISH"} />
 			</div>
 			<Button>Submit Passage</Button>
 		</div>

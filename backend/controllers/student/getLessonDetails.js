@@ -8,10 +8,10 @@ import {
 } from "../../utils/utils.js";
 import logger from "../../utils/logger.js";
 
-export const getAllLessons = async (req, res) => {
-	const { subject } = req.body || {};
+export const getLessonDetails = async (req, res) => {
+	const { subject, id } = req.body || {};
 	const accessToken = getAccessTokenFromHeaders(req);
-	logger.info("Checking the getAllLessons status: Everything is OK");
+	logger.info("Checking the lesson details status: Everything is OK");
 	try {
 		const { data: userData, error: userError } =
 			await supabase.auth.getUser(accessToken);
@@ -19,7 +19,7 @@ export const getAllLessons = async (req, res) => {
 
 		if (userError || !userId) {
 			logger.error(
-				`Fetching the lessons list status: no user associated with access_token: ${accessToken}`
+				`Fetching the lesson details status: no user associated with access_token: ${accessToken}`
 			);
 			throw new Error(userError?.message);
 		}
@@ -28,7 +28,6 @@ export const getAllLessons = async (req, res) => {
 			userId,
 			subject
 		);
-		const limit = shouldShowLimitedResults ? 5 : null;
 
 		const { data, error } = await supabase
 			.from(LESSONS_DB_NAME)
@@ -36,31 +35,42 @@ export const getAllLessons = async (req, res) => {
 				`
         id,
         title,
-        lesson_text
+        lesson_text,
+        isRestricted
 `
 			)
 			.eq("subject", subject)
-			.order("id", { ascending: true })
-			.limit(limit);
+			.eq("id", id);
+
+		const parsedLessonDetails = getParsedLessonsList(data)?.[0];
+
+		if (shouldShowLimitedResults && parsedLessonDetails?.isRestricted) {
+			logger.error("Checking the lesson details status: Limit exhausted");
+			res.status(StatusCodes.OK).send({
+				lesson: null,
+				error: "Access to this lesson is restricted",
+			});
+			return;
+		}
 
 		if (error) {
 			logger.error(
-				"Checking the getAllLessons status: Encountered error in lessons list retrieval"
+				"Checking the getLessonDetails status: Encountered error in lesson details retrieval"
 			);
 			throw new Error(error?.message);
 		}
 
-		logger.info("Checking the getAllLessons status: Fetched lessons details");
+		logger.info(
+			"Checking the getLessonDetails status: Fetched lessons details"
+		);
 		res.status(StatusCodes.OK).send({
-			lessons: getParsedLessonsList(data),
+			lesson: parsedLessonDetails,
 			error: null,
 		});
 		return;
 	} catch (error) {
 		logger.error(error);
-		res
-			.status(StatusCodes.BAD_REQUEST)
-			.send({ lessons: [], error: "No lessons available" });
+		res.status(StatusCodes.BAD_REQUEST).send({ lesson: null, error });
 		return;
 	}
 };
