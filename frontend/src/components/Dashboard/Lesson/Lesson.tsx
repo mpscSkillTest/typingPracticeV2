@@ -1,57 +1,168 @@
+import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-
-const lessons = [
-  { id: 1, title: "Introduction to Typing", completed: true, route: "/lesson/1" },
-  { id: 2, title: "Keys f & j", completed: true, route: "/lesson/2" },
-  { id: 3, title: "Space Bar", completed: false, route: "/lesson/3" },
-  { id: 4, title: "Review f & j", completed: false, route: "/lesson/4" },
-  { id: 5, title: "Keys d & k", completed: false, route: "/lesson/5" },
-  // Add more lessons as needed
-];
+import { useQuery } from "@tanstack/react-query";
+import { Subject } from "@/types";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Icons } from "@/components/ui/icons";
+import { getLessonsList, getStudentProgess, getStudentDetails } from "./api";
+import { getFinalisedLessonsList } from "./utils";
 
 const Lesson = () => {
-  const navigate = useNavigate();
+	const navigate = useNavigate();
+	const [selectedSubject, setSelectedSubject] = useState<Subject>("MARATHI");
 
-  return (
-    <div className="min-h-screen bg-gray-100 p-4 sm:p-6">
-      <div className="text-2xl font-bold text- mb-4 text-center sm:text-left">
-        Welcome, Student
-      </div>
-      <div className="text-gray-600 mb-6 text-center sm:text-left">
-        <span>0% progress | 0 stars | 2,000 points</span>
-      </div>
-      <div className="bg-white p-4 rounded-md shadow-md">
-        <h2 className="text-lg font-semibold text-gray-800 mb-4 text-center sm:text-left">
-          Home Row
-        </h2>
-        <div
-          className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"
-        >
-          {lessons.map((lesson) => (
-            <div
-              key={lesson.id}
-              onClick={() => navigate(lesson.route)}
-              className={`p-4 rounded-md shadow-md cursor-pointer ${
-                lesson.completed ? "bg-green-100" : "bg-gray-100"
-              } hover:shadow-lg`}
-            >
-              <div className="text-center">
-                <div className="text-gray-800 text-xl font-semibold">{lesson.id}</div>
-                <div className="mt-2 text-sm text-gray-600">{lesson.title}</div>
-                <div className="mt-2">
-                  {lesson.completed ? (
-                    <span className="text-green-600 font-bold">✓ Completed</span>
-                  ) : (
-                    <span className="text-gray-500">Locked</span>
-                  )}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
+	const { isPending: studentDataLoading, data: studentData } = useQuery({
+		queryKey: ["studentData"],
+		queryFn: getStudentDetails,
+		retry: false,
+	});
+
+	const { isPending: lessonsListLoading, data: lessonListData } = useQuery({
+		queryKey: ["allLessons", selectedSubject],
+		queryFn: getLessonsList,
+		retry: false,
+	});
+
+	const { isPending: studentResultLoading, data: studnentResultData } =
+		useQuery({
+			queryKey: ["studentProgress", selectedSubject],
+			queryFn: getStudentProgess,
+			retry: false,
+		});
+
+	const availableLessons = lessonListData?.lessons || [];
+
+	const studentProgress = studnentResultData?.progress || [];
+
+	const isDetailsLoading = lessonsListLoading || studentResultLoading;
+
+	const finalisedLessonList = useMemo(
+		() => getFinalisedLessonsList(availableLessons, studentProgress),
+		[studentResultLoading, lessonsListLoading, selectedSubject]
+	);
+
+	const onTabChange = (updatedSubject: Subject) => {
+		setSelectedSubject(updatedSubject);
+	};
+
+	const gotoLesson = (isLocked: boolean, id: number) => {
+		if (!isLocked) {
+			navigate(`/lesson/${selectedSubject?.toLowerCase()}/${id}`);
+		}
+		return;
+	};
+
+	const getLessonListDom = () => {
+		if (isDetailsLoading) {
+			return (
+				<div className="flex justify-center items-center h-full">
+					<Icons.spinner height={48} width={48} className="animate-spin" />
+				</div>
+			);
+		}
+
+		if (!finalisedLessonList?.length) {
+			return (
+				<div className="flex items-center justify-center">No Records Found</div>
+			);
+		}
+
+		return (
+			<div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 2xl:grid-cols-5 gap-4">
+				{finalisedLessonList.map(({ id, isCompleted, isLocked }, index) => {
+					let statusDom = null;
+
+					if (isCompleted) {
+						statusDom = <Icons.MedalIcon height={36} width={36} />;
+					} else if (isLocked) {
+						statusDom = <Icons.BookLockIcon height={36} width={36} />;
+					} else {
+						statusDom = <Icons.BookKeyIcon height={36} width={36} />;
+					}
+
+					return (
+						<Card
+							key={id}
+							onClick={gotoLesson.bind(this, isLocked, id)}
+							className={`capitalize
+						 	${
+								isLocked
+									? "cursor-not-allowed shadow-none bg-slate-200"
+									: "hover:shadow-lg bg-slate-50"
+							}
+							${isCompleted ? "bg-green-100" : ""} 
+							 text-gray-800 text-xl font-semibold`}
+						>
+							<CardHeader>
+								<CardTitle>{statusDom}</CardTitle>
+							</CardHeader>
+							<CardContent>
+								{selectedSubject === "ENGLISH" ? "English" : "Marathi"} Lesson
+								{` ${index + 1}`}
+							</CardContent>
+						</Card>
+					);
+				})}
+			</div>
+		);
+	};
+
+	const { name = "Student" } = studentData?.user || {};
+
+	if (studentDataLoading) {
+		return (
+			<div className="flex justify-center items-center h-full">
+				<Icons.spinner height={48} width={48} className="animate-spin" />
+			</div>
+		);
+	}
+
+	const getTabContentDom = (subject: Subject) => {
+		return (
+			<TabsContent value={subject} className="h-full space-y-4">
+				<div className="max-h-[100%] p-4 overflow-y-auto">
+					{getLessonListDom()}
+				</div>
+			</TabsContent>
+		);
+	};
+
+	return (
+		<>
+			<div className="min-h-[100%] overflow-hidden p-4 sm:p-6">
+				<div className="text-2xl font-bold text- mb-4 text-center sm:text-left">
+					Welcome, {name}
+				</div>
+				<div className="flex-1 space-y-4 py-2">
+					<Tabs
+						value={selectedSubject}
+						defaultValue="MARATHI"
+						className="flex-1 space-y-4"
+					>
+						<TabsList className="h-[64px] w-[240px] my-[20px]">
+							<TabsTrigger
+								onClick={onTabChange.bind(this, "MARATHI")}
+								className="h-full w-[50%]"
+								value="MARATHI"
+							>
+								Marathi
+							</TabsTrigger>
+							<TabsTrigger
+								onClick={onTabChange.bind(this, "ENGLISH")}
+								className="h-full w-[50%]"
+								value="ENGLISH"
+							>
+								English
+							</TabsTrigger>
+						</TabsList>
+						{getTabContentDom("MARATHI")}
+						{getTabContentDom("ENGLISH")}
+					</Tabs>
+				</div>
+			</div>
+		</>
+	);
 };
 
 export default Lesson;
