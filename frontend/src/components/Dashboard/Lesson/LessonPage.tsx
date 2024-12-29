@@ -1,12 +1,14 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Icons } from "@/components/ui/icons";
-import { Subject } from "@/types";
+import { useToast } from "@/components/ui/use-toast";
+import { Subject, UserResult } from "@/types";
 import { QuestionPassage, AnswerPassage, PassingInfoMessage } from "../shared";
+import { getUserResults } from "../../../utils/utils/passageUtils/getPassageUtils";
 import { OnKeyDownArgs } from "../shared/AnswerPassage";
-import { getLessonDetails } from "./api";
+import { getLessonDetails, submitLessonDetails } from "./api";
 
 const LessonPage = () => {
 	const [keystrokesCount, setKeystrokesCount] = useState<number>(0);
@@ -14,15 +16,28 @@ const LessonPage = () => {
 	const [userInputText, setUserInputText] = useState<string>("");
 	const [totalTypedWords, setTotalTypedWords] = useState<number>(0);
 
+	const userResult = useRef<UserResult>({});
+
+	const { toast } = useToast();
+
 	const params = useParams<Record<"subject" | "id", string>>();
 
 	const { subject: selectedSubject, id: lessonId } = params || {};
 	const subject = selectedSubject?.toUpperCase?.() as Subject;
+	const lessonIdClone = parseInt(lessonId as string);
 
 	const { isPending: lessonDetailsLoading, data: lessonData } = useQuery({
-		queryKey: ["lessonData", subject, lessonId],
+		queryKey: ["lessonData", subject, lessonIdClone],
 		queryFn: getLessonDetails,
 		retry: false,
+	});
+
+	const {
+		mutate,
+		isPending: updatingLessonResult,
+		isError,
+	} = useMutation({
+		mutationFn: submitLessonDetails,
 	});
 
 	const navigate = useNavigate();
@@ -31,6 +46,10 @@ const LessonPage = () => {
 	if (!lessonDetailsLoading && !lessonData?.lesson) {
 		navigate("/lesson");
 	}
+
+	const shouldDisableUserInputText = () => {
+		return typeof userInputText !== "string" || userInputText === "";
+	};
 
 	const onUserInputKeyDown = ({
 		updatedBackspacesCount = 0,
@@ -80,6 +99,39 @@ const LessonPage = () => {
 		/>
 	);
 
+	const onSubmitPassage = async () => {
+		const expectedWords =
+			lessonData?.lesson?.text?.trim?.()?.split?.(" ")?.filter?.(Boolean) || [];
+
+		const typedWords =
+			userInputText?.trim?.()?.split?.(" ")?.filter?.(Boolean) || [];
+
+		const result = getUserResults({ typedWords, expectedWords });
+
+		userResult.current = result;
+
+		mutate({
+			id: lessonIdClone,
+			inputText: userInputText,
+			passageText: lessonData?.lesson?.text || "",
+			subject,
+			duration: 0,
+		});
+	};
+
+	useEffect(() => {
+		if (isError) {
+			toast({
+				variant: "destructive",
+				title: "You have exhausted your free trial limit",
+				description:
+					"To retain your lesson progress and to use our other exciting features, please consider to subscribe our Premium Package",
+				duration: 3000,
+				className: "absolute",
+			});
+		}
+	}, [updatingLessonResult]);
+
 	if (lessonDetailsLoading) {
 		return (
 			<div className="flex justify-center items-center h-full">
@@ -95,7 +147,13 @@ const LessonPage = () => {
 				{getAnswerPassageDom()}
 				<PassingInfoMessage subject={"ENGLISH"} />
 			</div>
-			<Button>Submit Passage</Button>
+			<Button
+				disabled={!!shouldDisableUserInputText()}
+				onClick={onSubmitPassage}
+				showLoader={updatingLessonResult}
+			>
+				Submit
+			</Button>
 		</div>
 	);
 };

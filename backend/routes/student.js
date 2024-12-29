@@ -11,6 +11,7 @@ import {
 	getAllLessons,
 	getStudentProgress,
 	getLessonDetails,
+	updateLessonProgress,
 } from "../controllers/index.js";
 import { validateUser } from "../middlewares/index.js";
 
@@ -27,5 +28,6 @@ StudentDetailsRouter.post("/submit-feedback", submitUserFeedback);
 StudentDetailsRouter.post("/lessons", getAllLessons);
 StudentDetailsRouter.post("/lesson-results", getStudentProgress);
 StudentDetailsRouter.post("/lesson-details", getLessonDetails);
+StudentDetailsRouter.post("/submit-lesson", updateLessonProgress);
 
 export default StudentDetailsRouter;

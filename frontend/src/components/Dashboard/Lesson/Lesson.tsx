@@ -85,12 +85,13 @@ const Lesson = () => {
 						<Card
 							key={id}
 							onClick={gotoLesson.bind(this, isLocked, id)}
-							className={`capitalize  ${isCompleted ? "bg-green-100" : ""} 
+							className={`capitalize
 						 	${
 								isLocked
 									? "cursor-not-allowed shadow-none bg-slate-200"
 									: "hover:shadow-lg bg-slate-50"
 							}
+							${isCompleted ? "bg-green-100" : ""} 
 							 text-gray-800 text-xl font-semibold`}
 						>
 							<CardHeader>

@@ -186,7 +186,7 @@ export const getUserResults = ({
 		totalErrorCount,
 		totalCorrectWords,
 		totalTypedWords,
-		accuracy,
+		accuracy: accuracy || 0,
 		correctWordIndices: correctWordsIndicesInPassage,
 	};
 };

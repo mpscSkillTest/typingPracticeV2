@@ -1,4 +1,4 @@
-import { Lesson, LessonResult, UserDetails } from "@/types";
+import { Lesson, LessonResult, Subject, UserDetails } from "@/types";
 import axios from "../../../config/customAxios";
 import { QueryFunctionContext } from "@tanstack/react-query";
 
@@ -20,6 +20,19 @@ export type StudentProgress = {
 export type StudentDetailsResponse = {
 	user: UserDetails;
 	error?: Error;
+};
+
+export type LessonSubmitResponse = {
+	lesson: Lesson;
+	error?: Error;
+};
+
+export type LessonResultInput = {
+	inputText: string;
+	passageText: string;
+	subject: Subject;
+	duration: number;
+	id: number;
 };
 
 export const getLessonsList = async (
@@ -61,6 +74,16 @@ export const getLessonDetails = async (
 		subject: params?.queryKey?.[1],
 		id: params?.queryKey?.[2],
 	});
+	if (response?.data?.error) {
+		throw new Error(response.data.error);
+	}
+	return response.data;
+};
+
+export const submitLessonDetails = async (
+	data: LessonResultInput
+): Promise<LessonSubmitResponse> => {
+	const response = await axios.post("/student/submit-lesson/", data);
 	if (response?.data?.error) {
 		throw new Error(response.data.error);
 	}

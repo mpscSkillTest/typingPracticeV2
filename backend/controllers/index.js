@@ -8,6 +8,7 @@ export { submitResults } from "./student/submitResults.js";
 export { submitUserFeedback } from "./student/submitFeedback.js";
 export { getAllLessons } from "./student/getAllLessons.js";
 export { getStudentProgress } from "./student/getStudentProgress.js";
+export { updateLessonProgress } from "./student/updateLessonProgress.js";
 export { getStudentRecentResults } from "./student/studentRecentResults.js";
 export { getStudentResultReport } from "./student/studentResultsReports.js";
 export { getLessonDetails } from "./student/getLessonDetails.js";

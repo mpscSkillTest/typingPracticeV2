@@ -11,6 +11,7 @@ export type {
 	MockTestDetails,
 	Lesson,
 	LessonResult,
+	UserResult,
 } from "./Student";
 export type { Product, Feature } from "./Subscriptions";
 export type { PaymentHistory } from "./PaymentHistory";

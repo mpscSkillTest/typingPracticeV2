@@ -47,3 +47,10 @@ export type LessonResult = {
 	isCompleted: boolean;
 	isLocked: boolean;
 };
+
+export type UserResult = {
+	accuracy?: number;
+	totalErrorCount?: number;
+	totalTypedWords?: number;
+	correctWordIndices?: number[];
+};
