@@ -5,10 +5,16 @@ import { Button } from "@/components/ui/button";
 import { Icons } from "@/components/ui/icons";
 import { useToast } from "@/components/ui/use-toast";
 import { Subject, UserResult } from "@/types";
-import { QuestionPassage, AnswerPassage, PassingInfoMessage } from "../shared";
+import { QuestionPassage, AnswerPassage, PassingInfoMessage, HighlightedPassage } from "../shared";
 import { getUserResults } from "../../../utils/utils/passageUtils/getPassageUtils";
 import { OnKeyDownArgs } from "../shared/AnswerPassage";
 import { getLessonDetails, submitLessonDetails } from "./api";
+
+type UserResult = {
+  correctWordIndices?: number[];
+};
+
+
 
 const LessonPage = () => {
 	const [keystrokesCount, setKeystrokesCount] = useState<number>(0);
@@ -92,12 +98,21 @@ const LessonPage = () => {
 	);
 
 	const getQuestionPassageDom = () => (
-		<QuestionPassage
-			selectedPassageId={lessonData?.lesson?.id as number}
-			questionPassage={lessonData?.lesson?.text as string}
-			onScrollFocus={focusOnAnswerPassage}
-		/>
-	);
+    userResult.current?.correctWordIndices?.length ? (
+      <HighlightedPassage
+        correctWordIndices={userResult.current.correctWordIndices || []}
+        selectedPassageId={lessonData?.lesson?.id?.toString() || ''}
+        questionPassage={lessonData?.lesson?.text || ''}
+      />
+    ) : (
+      <QuestionPassage
+        selectedPassageId={lessonData?.lesson?.id || 0}
+        questionPassage={lessonData?.lesson?.text || ''}
+        onScrollFocus={focusOnAnswerPassage}
+      />
+    )
+  );
+  
 
 	const onSubmitPassage = async () => {
 		const expectedWords =
@@ -109,6 +124,8 @@ const LessonPage = () => {
 		const result = getUserResults({ typedWords, expectedWords });
 
 		userResult.current = result;
+
+    console.log('result', result)
 
 		mutate({
 			id: lessonIdClone,
