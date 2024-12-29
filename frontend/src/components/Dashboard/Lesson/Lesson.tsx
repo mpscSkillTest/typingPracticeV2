@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Subject } from "@/types";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Icons } from "@/components/ui/icons";
 import { getLessonsList, getStudentProgess, getStudentDetails } from "./api";
 import { getFinalisedLessonsList } from "./utils";
@@ -45,6 +46,13 @@ const Lesson = () => {
 		setSelectedSubject(updatedSubject);
 	};
 
+	const gotoLesson = (isLocked: boolean, id: number) => {
+		if (!isLocked) {
+			navigate(`/lesson/${selectedSubject?.toLowerCase()}/${id}`);
+		}
+		return;
+	};
+
 	const getLessonListDom = () => {
 		if (isDetailsLoading) {
 			return (
@@ -61,37 +69,38 @@ const Lesson = () => {
 		}
 
 		return (
-			<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-				{finalisedLessonList.map(({ id, title, isCompleted, isLocked }) => {
+			<div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 2xl:grid-cols-5 gap-4">
+				{finalisedLessonList.map(({ id, isCompleted, isLocked }, index) => {
 					let statusDom = null;
 
 					if (isCompleted) {
-						statusDom = (
-							<span className="text-green-600 font-bold">✓ Completed</span>
-						);
+						statusDom = <Icons.MedalIcon height={36} width={36} />;
 					} else if (isLocked) {
-						statusDom = <span className="text-gray-500">Locked</span>;
+						statusDom = <Icons.BookLockIcon height={36} width={36} />;
+					} else {
+						statusDom = <Icons.BookKeyIcon height={36} width={36} />;
 					}
 
 					return (
-						<div
+						<Card
 							key={id}
-							onClick={() => {
-								if (!isLocked) {
-									navigate(`/lesson/${selectedSubject?.toLowerCase()}/${id}`);
-								}
-								return;
-							}}
-							className={`p-4 rounded-md shadow-md cursor-pointer ${
-								isCompleted ? "bg-green-100" : "bg-gray-100"
-							} hover:shadow-lg`}
+							onClick={gotoLesson.bind(this, isLocked, id)}
+							className={`capitalize  ${isCompleted ? "bg-green-100" : ""} 
+						 	${
+								isLocked
+									? "cursor-not-allowed shadow-none bg-slate-200"
+									: "hover:shadow-lg bg-slate-50"
+							}
+							 text-gray-800 text-xl font-semibold`}
 						>
-							<div className="text-center">
-								<div className="text-gray-800 text-xl font-semibold">{id}</div>
-								<div className="mt-2 text-sm text-gray-600">{title}</div>
-								<div className="mt-2">{statusDom}</div>
-							</div>
-						</div>
+							<CardHeader>
+								<CardTitle>{statusDom}</CardTitle>
+							</CardHeader>
+							<CardContent>
+								{selectedSubject === "ENGLISH" ? "English" : "Marathi"} Lesson
+								{` ${index + 1}`}
+							</CardContent>
+						</Card>
 					);
 				})}
 			</div>
@@ -111,7 +120,7 @@ const Lesson = () => {
 	const getTabContentDom = (subject: Subject) => {
 		return (
 			<TabsContent value={subject} className="h-full space-y-4">
-				<div className="max-h-[calc(100dvh-224px)] bg-white border-black p-4 rounded-md shadow-md overflow-y-auto">
+				<div className="max-h-[100%] p-4 overflow-y-auto">
 					{getLessonListDom()}
 				</div>
 			</TabsContent>
@@ -120,11 +129,11 @@ const Lesson = () => {
 
 	return (
 		<>
-			<div className="min-h-[100%] overflow-hidden bg-gray-100 p-4 sm:p-6">
+			<div className="min-h-[100%] overflow-hidden p-4 sm:p-6">
 				<div className="text-2xl font-bold text- mb-4 text-center sm:text-left">
 					Welcome, {name}
 				</div>
-				<div className="flex-1 space-y-4 px-4 py-2">
+				<div className="flex-1 space-y-4 py-2">
 					<Tabs
 						value={selectedSubject}
 						defaultValue="MARATHI"
