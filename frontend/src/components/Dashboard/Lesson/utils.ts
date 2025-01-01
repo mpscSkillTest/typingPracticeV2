@@ -37,6 +37,9 @@ export const getFinalisedLessonsList = (
 			finalisedList.push({
 				...lessonDetails,
 				...progressDetailsMap?.[lessonDetails?.id],
+				accuracy: Number(
+					progressDetailsMap?.[lessonDetails?.id]?.accuracy?.toFixed(2)
+				),
 				isLocked: lastCompletedLesson + 1 < index,
 			});
 		} else {

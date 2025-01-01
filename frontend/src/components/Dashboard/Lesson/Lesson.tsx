@@ -53,6 +53,60 @@ const Lesson = () => {
 		return;
 	};
 
+	const getStatusDom = (isCompleted: boolean, isLocked: boolean) => {
+		let statusDom = null;
+
+		if (isCompleted) {
+			statusDom = <Icons.MedalIcon height={36} width={36} />;
+		} else if (isLocked) {
+			statusDom = <Icons.BookLockIcon height={36} width={36} />;
+		} else {
+			statusDom = <Icons.BookKeyIcon height={36} width={36} />;
+		}
+		return statusDom;
+	};
+
+	const getAccuracyDom = (
+		accuracy: number,
+		isCompleted: boolean,
+		isLocked: boolean
+	) => {
+		if (isLocked) {
+			return (
+				<p className="text-sm text-muted-foreground">
+					Complete the previous lesson to unlock this one
+				</p>
+			);
+		}
+
+		if (!accuracy) {
+			return (
+				<p className="text-sm text-muted-foreground">
+					Start your journey with this lesson!
+				</p>
+			);
+		}
+
+		if (!isCompleted) {
+			return (
+				<div className="flex flex-col gap-2">
+					<p className="font-semibold tracking-tight text-xl">
+						Accuracy: {accuracy}%
+					</p>
+					<p className="text-sm text-muted-foreground">
+						Keep going! Practice makes person perfect
+					</p>
+				</div>
+			);
+		}
+
+		return (
+			<p className="font-semibold tracking-tight text-xl">
+				Great job! Accuracy: {accuracy}%
+			</p>
+		);
+	};
+
 	const getLessonListDom = () => {
 		if (isDetailsLoading) {
 			return (
@@ -70,22 +124,13 @@ const Lesson = () => {
 
 		return (
 			<div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 2xl:grid-cols-5 gap-4">
-				{finalisedLessonList.map(({ id, isCompleted, isLocked }, index) => {
-					let statusDom = null;
-
-					if (isCompleted) {
-						statusDom = <Icons.MedalIcon height={36} width={36} />;
-					} else if (isLocked) {
-						statusDom = <Icons.BookLockIcon height={36} width={36} />;
-					} else {
-						statusDom = <Icons.BookKeyIcon height={36} width={36} />;
-					}
-
-					return (
-						<Card
-							key={id}
-							onClick={gotoLesson.bind(this, isLocked, id)}
-							className={`capitalize
+				{finalisedLessonList.map(
+					({ id, isCompleted, isLocked, accuracy }, index) => {
+						return (
+							<Card
+								key={id}
+								onClick={gotoLesson.bind(this, isLocked, id)}
+								className={`capitalize
 						 	${
 								isLocked
 									? "cursor-not-allowed shadow-none bg-slate-200"
@@ -93,17 +138,22 @@ const Lesson = () => {
 							}
 							${isCompleted ? "bg-green-100" : ""} 
 							 text-gray-800 text-xl font-semibold`}
-						>
-							<CardHeader>
-								<CardTitle>{statusDom}</CardTitle>
-							</CardHeader>
-							<CardContent>
-								{selectedSubject === "ENGLISH" ? "English" : "Marathi"} Lesson
-								{` ${index + 1}`}
-							</CardContent>
-						</Card>
-					);
-				})}
+							>
+								<CardHeader>
+									<CardTitle className="flex gap-2 items-center">
+										{getStatusDom(isCompleted, isLocked)}
+										{selectedSubject === "ENGLISH" ? "English" : "Marathi"}{" "}
+										Lesson
+										{` ${index + 1}`}
+									</CardTitle>
+								</CardHeader>
+								<CardContent>
+									{getAccuracyDom(accuracy, isCompleted, isLocked)}
+								</CardContent>
+							</Card>
+						);
+					}
+				)}
 			</div>
 		);
 	};

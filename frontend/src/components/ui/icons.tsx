@@ -45,6 +45,7 @@ import {
 	MedalIcon,
 	StarHalfIcon,
 	StarIcon,
+	FrownIcon,
 } from "lucide-react";
 
 export type Icon = LucideIcon;
@@ -95,4 +96,5 @@ export const Icons = {
 	MedalIcon,
 	StarIcon,
 	StarHalfIcon,
+	FrownIcon,
 };
