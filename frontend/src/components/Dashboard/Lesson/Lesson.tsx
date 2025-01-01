@@ -69,11 +69,32 @@ const Lesson = () => {
 	const getAccuracyDom = (
 		accuracy: number,
 		isCompleted: boolean,
-		isLocked: boolean
+		isLocked: boolean,
+		isRestricted: boolean
 	) => {
-		if (isLocked) {
+		let isLimitedAccess = false;
+
+		if (selectedSubject === "ENGLISH") {
+			isLimitedAccess = !!(
+				isRestricted && studentData?.user?.isLimitedAccessForEnglish
+			);
+		} else if (selectedSubject === "MARATHI") {
+			isLimitedAccess = !!(
+				isRestricted && studentData?.user?.isLimitedAccessForMarathi
+			);
+		}
+
+		if (isLimitedAccess) {
 			return (
 				<p className="text-sm text-muted-foreground">
+					This lesson is not accessible. Subscribe to unlock all lessons!
+				</p>
+			);
+		}
+
+		if (isLocked) {
+			return (
+				<p className="text-sm text-gray-600">
 					Complete the previous lesson to unlock this one
 				</p>
 			);
@@ -81,7 +102,7 @@ const Lesson = () => {
 
 		if (!accuracy) {
 			return (
-				<p className="text-sm text-muted-foreground">
+				<p className="text-sm text-gray-600">
 					Start your journey with this lesson!
 				</p>
 			);
@@ -125,7 +146,7 @@ const Lesson = () => {
 		return (
 			<div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 2xl:grid-cols-5 gap-4">
 				{finalisedLessonList.map(
-					({ id, isCompleted, isLocked, accuracy }, index) => {
+					({ id, isCompleted, isLocked, accuracy, isRestricted }, index) => {
 						return (
 							<Card
 								key={id}
@@ -148,7 +169,12 @@ const Lesson = () => {
 									</CardTitle>
 								</CardHeader>
 								<CardContent>
-									{getAccuracyDom(accuracy, isCompleted, isLocked)}
+									{getAccuracyDom(
+										accuracy,
+										isCompleted,
+										isLocked,
+										isRestricted
+									)}
 								</CardContent>
 							</Card>
 						);

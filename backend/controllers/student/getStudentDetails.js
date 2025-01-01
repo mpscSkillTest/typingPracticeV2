@@ -2,6 +2,7 @@ import { StatusCodes } from "http-status-codes";
 import { supabase } from "../../dbClient.js";
 import { PROFILE_DB_NAME } from "../../constant.js";
 import { getUserIdFromToken } from "../../utils/utils.js";
+import { shouldHaveLimitedAccess } from "../../utils/subscriptionUtils.js";
 import logger from "../../utils/logger.js";
 
 export const getStudentDetails = async (req, res) => {
@@ -15,9 +16,9 @@ export const getStudentDetails = async (req, res) => {
 			.from(PROFILE_DB_NAME)
 			.select(
 				`
-      name,
-      user_type
-    `
+     				name,
+    				user_type
+    			`
 			)
 			.eq("user_id", userId);
 
@@ -31,11 +32,23 @@ export const getStudentDetails = async (req, res) => {
 			throw new Error("missing key details");
 		}
 
+		const isLimitedAccessForMarathi = await shouldHaveLimitedAccess(
+			userId,
+			"MARATHI"
+		);
+
+		const isLimitedAccessForEnglish = await shouldHaveLimitedAccess(
+			userId,
+			"MARATHI"
+		);
+
 		res.status(StatusCodes.OK).send({
 			user: {
 				name,
 				userId,
 				type,
+				isLimitedAccessForMarathi,
+				isLimitedAccessForEnglish,
 			},
 			error: null,
 		});

@@ -39,6 +39,7 @@ export type Lesson = {
 	title: string;
 	id: number;
 	text: string;
+	isRestricted: boolean;
 };
 
 export type LessonResult = {

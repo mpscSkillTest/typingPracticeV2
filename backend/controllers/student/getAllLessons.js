@@ -13,8 +13,9 @@ export const getAllLessons = async (req, res) => {
 	const accessToken = getAccessTokenFromHeaders(req);
 	logger.info("Checking the getAllLessons status: Everything is OK");
 	try {
-		const { data: userData, error: userError } =
-			await supabase.auth.getUser(accessToken);
+		const { data: userData, error: userError } = await supabase.auth.getUser(
+			accessToken
+		);
 		const userId = userData?.user?.id;
 
 		if (userError || !userId) {
@@ -24,24 +25,18 @@ export const getAllLessons = async (req, res) => {
 			throw new Error(userError?.message);
 		}
 
-		const shouldShowLimitedResults = await shouldHaveLimitedAccess(
-			userId,
-			subject
-		);
-		const limit = shouldShowLimitedResults ? 5 : null;
-
 		const { data, error } = await supabase
 			.from(LESSONS_DB_NAME)
 			.select(
 				`
-        id,
-        title,
-        lesson_text
-`
+					id,
+					title,
+					lesson_text,
+					isRestricted
+				`
 			)
 			.eq("subject", subject)
-			.order("id", { ascending: true })
-			.limit(limit);
+			.order("id", { ascending: true });
 
 		if (error) {
 			logger.error(

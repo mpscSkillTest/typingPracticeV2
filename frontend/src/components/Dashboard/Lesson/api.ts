@@ -38,7 +38,7 @@ export type LessonResultInput = {
 export const getLessonsList = async (
 	params: QueryFunctionContext
 ): Promise<LessonResponse> => {
-	const response = await axios.post("/student/lessons/", {
+	const response = await axios.post("/student/lessons", {
 		subject: params?.queryKey?.[1],
 	});
 	if (response?.data?.error) {
