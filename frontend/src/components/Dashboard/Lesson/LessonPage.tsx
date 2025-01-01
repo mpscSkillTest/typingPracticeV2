@@ -1,20 +1,21 @@
 import { useState, useRef, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery, useMutation } from "@tanstack/react-query";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Icons } from "@/components/ui/icons";
 import { useToast } from "@/components/ui/use-toast";
 import { Subject, UserResult } from "@/types";
-import { QuestionPassage, AnswerPassage, PassingInfoMessage, HighlightedPassage } from "../shared";
+import {
+	QuestionPassage,
+	AnswerPassage,
+	PassingInfoMessage,
+	HighlightedPassage,
+} from "../shared";
 import { getUserResults } from "../../../utils/utils/passageUtils/getPassageUtils";
 import { OnKeyDownArgs } from "../shared/AnswerPassage";
 import { getLessonDetails, submitLessonDetails } from "./api";
-
-type UserResult = {
-  correctWordIndices?: number[];
-};
-
-
+import { THRSHOLD_ACCURACY_FOR_LESSON } from "@/utils/constant";
 
 const LessonPage = () => {
 	const [keystrokesCount, setKeystrokesCount] = useState<number>(0);
@@ -84,6 +85,30 @@ const LessonPage = () => {
 		userInputRef.current?.focus();
 	};
 
+	const onSubmitPassage = async () => {
+		const expectedWords =
+			lessonData?.lesson?.text?.trim?.()?.split?.(" ")?.filter?.(Boolean) || [];
+
+		const typedWords =
+			userInputText?.trim?.()?.split?.(" ")?.filter?.(Boolean) || [];
+
+		const result = getUserResults({
+			typedWords,
+			expectedWords,
+			isLesson: true,
+		});
+
+		userResult.current = result;
+
+		mutate({
+			id: lessonIdClone,
+			inputText: userInputText,
+			passageText: lessonData?.lesson?.text || "",
+			subject,
+			duration: 0,
+		});
+	};
+
 	const getAnswerPassageDom = () => (
 		<AnswerPassage
 			subject={subject as Subject}
@@ -94,46 +119,60 @@ const LessonPage = () => {
 			backspacesCount={backspacesCount}
 			userInputText={userInputText}
 			userInputRef={userInputRef}
+			shouldDisable={!!userResult?.current?.totalTypedWords}
 		/>
 	);
 
-	const getQuestionPassageDom = () => (
-    userResult.current?.correctWordIndices?.length ? (
-      <HighlightedPassage
-        correctWordIndices={userResult.current.correctWordIndices || []}
-        selectedPassageId={lessonData?.lesson?.id?.toString() || ''}
-        questionPassage={lessonData?.lesson?.text || ''}
-      />
-    ) : (
-      <QuestionPassage
-        selectedPassageId={lessonData?.lesson?.id || 0}
-        questionPassage={lessonData?.lesson?.text || ''}
-        onScrollFocus={focusOnAnswerPassage}
-      />
-    )
-  );
-  
+	const getQuestionPassageDom = () =>
+		userResult.current?.correctWordIndices?.length ? (
+			<HighlightedPassage
+				correctWordIndices={userResult.current.correctWordIndices || []}
+				selectedPassageId={lessonData?.lesson?.id?.toString() || ""}
+				questionPassage={lessonData?.lesson?.text || ""}
+			/>
+		) : (
+			<QuestionPassage
+				selectedPassageId={lessonData?.lesson?.id || 0}
+				questionPassage={lessonData?.lesson?.text || ""}
+				onScrollFocus={focusOnAnswerPassage}
+			/>
+		);
 
-	const onSubmitPassage = async () => {
-		const expectedWords =
-			lessonData?.lesson?.text?.trim?.()?.split?.(" ")?.filter?.(Boolean) || [];
+	const getResultTextDom = () => {
+		if (!userResult?.current?.totalTypedWords) {
+			return null;
+		}
+		const isCompleted =
+			(userResult?.current?.accuracy as number) >= THRSHOLD_ACCURACY_FOR_LESSON;
 
-		const typedWords =
-			userInputText?.trim?.()?.split?.(" ")?.filter?.(Boolean) || [];
+		const accuracyText = userResult?.current?.accuracy?.toFixed?.(2);
 
-		const result = getUserResults({ typedWords, expectedWords });
+		const commonClassNames =
+			"flex items-start justify-center gap-2 text-md bg-green-100 rounded-2xl p-2 text-green-700 sm:flex-row sm:text-xl sm:items-center";
 
-		userResult.current = result;
+		if (isCompleted) {
+			return (
+				<div className={commonClassNames}>
+					<Icons.LeaderBoard />
+					<p>
+						Great job! You have completed lesson with
+						<span className="font-bold px-1">{`${accuracyText}%`}</span>
+						accuracy
+					</p>
+				</div>
+			);
+		}
 
-    console.log('result', result)
-
-		mutate({
-			id: lessonIdClone,
-			inputText: userInputText,
-			passageText: lessonData?.lesson?.text || "",
-			subject,
-			duration: 0,
-		});
+		return (
+			<div className={`${commonClassNames} bg-red-100 text-red-700`}>
+				<Icons.FrownIcon />
+				<p>
+					Accuracy is too low
+					<span className="font-bold px-1">{`${accuracyText}%,`}</span>
+					try again to improve your score
+				</p>
+			</div>
+		);
 	};
 
 	useEffect(() => {
@@ -158,20 +197,30 @@ const LessonPage = () => {
 	}
 
 	return (
-		<div className="flex flex-col m-auto gap-5 p-4 xl:max-w-[50%]">
-			{getQuestionPassageDom()}
-			<div className="flex gap-[10px] flex-col items-center">
-				{getAnswerPassageDom()}
-				<PassingInfoMessage subject={"ENGLISH"} />
-			</div>
-			<Button
-				disabled={!!shouldDisableUserInputText()}
-				onClick={onSubmitPassage}
-				showLoader={updatingLessonResult}
-			>
-				Submit
-			</Button>
-		</div>
+		<Card className="h-full border-none outline-none">
+			<CardHeader>
+				<CardTitle>{lessonData?.lesson?.title}</CardTitle>
+			</CardHeader>
+			<CardContent>
+				<div className="flex flex-col m-auto gap-5">
+					{getQuestionPassageDom()}
+					<div className="flex gap-[10px] flex-col items-center">
+						{getAnswerPassageDom()}
+						<PassingInfoMessage subject={subject} />
+					</div>
+					{!userResult?.current?.totalTypedWords ? (
+						<Button
+							disabled={!!shouldDisableUserInputText()}
+							onClick={onSubmitPassage}
+							showLoader={updatingLessonResult}
+						>
+							Submit
+						</Button>
+					) : null}
+					{getResultTextDom()}
+				</div>
+			</CardContent>
+		</Card>
 	);
 };
 

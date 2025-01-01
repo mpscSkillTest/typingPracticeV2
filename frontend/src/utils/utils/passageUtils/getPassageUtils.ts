@@ -111,9 +111,11 @@ export const getCompleteWordDetails = ({
 export const getUserResults = ({
 	expectedWords,
 	typedWords,
+	isLesson = false,
 }: {
 	expectedWords: string[];
 	typedWords: string[];
+	isLesson?: boolean;
 }) => {
 	const correctWordsInSequence = getCorrectWordsFromPassage(
 		expectedWords,
@@ -179,8 +181,13 @@ export const getUserResults = ({
 		extraIncorrectWordsTyped -
 		(totalSkippedOrIncorrectWords + totalCorrectWords);
 
-	const accuracy =
+	let accuracy =
 		(totalCorrectWords / (totalCorrectWords + totalErrorCount)) * 100;
+
+	if (isLesson) {
+		accuracy =
+			(totalCorrectWords / parseInt(`${expectedWords.length * 0.75}`)) * 100;
+	}
 
 	return {
 		totalErrorCount,

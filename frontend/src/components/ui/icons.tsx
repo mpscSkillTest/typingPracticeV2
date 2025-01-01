@@ -43,6 +43,9 @@ import {
 	BookLockIcon,
 	BookKeyIcon,
 	MedalIcon,
+	StarHalfIcon,
+	StarIcon,
+	FrownIcon,
 } from "lucide-react";
 
 export type Icon = LucideIcon;
@@ -91,4 +94,7 @@ export const Icons = {
 	BookLockIcon,
 	BookKeyIcon,
 	MedalIcon,
+	StarIcon,
+	StarHalfIcon,
+	FrownIcon,
 };

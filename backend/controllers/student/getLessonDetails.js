@@ -13,8 +13,9 @@ export const getLessonDetails = async (req, res) => {
 	const accessToken = getAccessTokenFromHeaders(req);
 	logger.info("Checking the lesson details status: Everything is OK");
 	try {
-		const { data: userData, error: userError } =
-			await supabase.auth.getUser(accessToken);
+		const { data: userData, error: userError } = await supabase.auth.getUser(
+			accessToken
+		);
 		const userId = userData?.user?.id;
 
 		if (userError || !userId) {
@@ -33,11 +34,11 @@ export const getLessonDetails = async (req, res) => {
 			.from(LESSONS_DB_NAME)
 			.select(
 				`
-        id,
-        title,
-        lesson_text,
-        isRestricted
-`
+					id,
+					title,
+					lesson_text,
+					isRestricted
+				`
 			)
 			.eq("subject", subject)
 			.eq("id", id);
