@@ -218,6 +218,16 @@ const LessonPage = () => {
 						</Button>
 					) : null}
 					{getResultTextDom()}
+					{lessonData?.lesson?.lessonImage ? (
+						<img
+							style={{
+								alignSelf: "center",
+								height: 340,
+								width: 600,
+							}}
+							src={lessonData.lesson.lessonImage}
+						/>
+					) : null}
 				</div>
 			</CardContent>
 		</Card>

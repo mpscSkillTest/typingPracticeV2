@@ -40,6 +40,7 @@ export type Lesson = {
 	id: number;
 	text: string;
 	isRestricted: boolean;
+	lessonImage?: string;
 };
 
 export type LessonResult = {

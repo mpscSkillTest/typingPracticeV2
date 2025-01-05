@@ -61,6 +61,25 @@ export const getLessonDetails = async (req, res) => {
 			throw new Error(error?.message);
 		}
 
+		if (parsedLessonDetails?.id) {
+			const { data: lessonImage, error: lessonImageError } =
+				await supabase.storage
+					.from("typingpractice")
+					.createSignedUrl(`lessons/${parsedLessonDetails.id}.svg`, 60 * 60);
+			// url will expire in day
+
+			if (lessonImageError) {
+				logger.error(`Lesson Image for ${parsedLessonDetails?.id} not found.`);
+			}
+
+			if (lessonImage?.signedUrl) {
+				logger.info(
+					`Lesson Image for ${parsedLessonDetails?.id} found and retireved`
+				);
+				parsedLessonDetails.lessonImage = lessonImage.signedUrl;
+			}
+		}
+
 		logger.info(
 			"Checking the getLessonDetails status: Fetched lessons details"
 		);
