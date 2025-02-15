@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate} from "react-router-dom";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -14,7 +14,7 @@ import {
 } from "../shared";
 import { getUserResults } from "../../../utils/utils/passageUtils/getPassageUtils";
 import { OnKeyDownArgs } from "../shared/AnswerPassage";
-import { getLessonDetails, submitLessonDetails } from "./api";
+import { getLessonDetails, getLessonsList, submitLessonDetails } from "./api";
 import { THRSHOLD_ACCURACY_FOR_LESSON } from "@/utils/constant";
 
 const LessonPage = () => {
@@ -32,6 +32,19 @@ const LessonPage = () => {
 	const { subject: selectedSubject, id: lessonId } = params || {};
 	const subject = selectedSubject?.toUpperCase?.() as Subject;
 	const lessonIdClone = parseInt(lessonId as string);
+	
+	type Lesson = {
+		id: number;
+		title: string;
+		text: string;
+		isRestricted: boolean;
+	};
+
+	const { data: lessonListData } = useQuery({
+		queryKey: ["allLessons", selectedSubject],
+		queryFn: getLessonsList,
+		retry: false,
+	});
 
 	const { isPending: lessonDetailsLoading, data: lessonData } = useQuery({
 		queryKey: ["lessonData", subject, lessonIdClone],
@@ -109,6 +122,30 @@ const LessonPage = () => {
 		});
 	};
 
+ 
+
+
+	const goToNextLesson = (isLocked: boolean) => {
+		if (!lessonListData || typeof lessonListData !== "object") return;
+		const lessonArray = Object.values(lessonListData)
+			.flat()
+			.filter((lesson): lesson is Lesson =>
+				lesson && typeof lesson === "object" &&
+				"id" in lesson && typeof lesson.id === "number" &&
+				"title" in lesson && "text" in lesson && "isRestricted" in lesson
+			);
+		const sortedLessons = lessonArray.sort((a, b) => a.id - b.id);
+		const currentIndex = sortedLessons.findIndex(lesson => lesson.id === lessonIdClone);
+		const lowerCaseSubject = subject.toLowerCase();
+		if (currentIndex !== -1 && currentIndex < sortedLessons.length - 1) {
+			const nextLesson = sortedLessons[currentIndex + 1];
+			if (!isLocked) {
+				navigate(`/lesson/${lowerCaseSubject}/${nextLesson.id}`);
+			}else{
+				alert("Complete this lesson to move forward for next lesson ")
+			}
+		} 
+	};
 	const getAnswerPassageDom = () => (
 		<AnswerPassage
 			subject={subject as Subject}
@@ -208,15 +245,20 @@ const LessonPage = () => {
 						{getAnswerPassageDom()}
 						<PassingInfoMessage subject={subject} />
 					</div>
-					{!userResult?.current?.totalTypedWords ? (
-						<Button
-							disabled={!!shouldDisableUserInputText()}
-							onClick={onSubmitPassage}
-							showLoader={updatingLessonResult}
-						>
-							Submit
+					<div className="d-flex">
+						{!userResult?.current?.totalTypedWords ? (
+							<Button
+								disabled={!!shouldDisableUserInputText()}
+								onClick={onSubmitPassage}
+								showLoader={updatingLessonResult}
+							>
+								Submit
+							</Button>
+						) : null}
+						<Button className="ml-4" style={{ border: "2px solid #16245F", background :"white", color:"black" }} onClick={goToNextLesson} >
+							Next Lesson
 						</Button>
-					) : null}
+					</div>
 					{getResultTextDom()}
 					{lessonData?.lesson?.lessonImage ? (
 						<img
