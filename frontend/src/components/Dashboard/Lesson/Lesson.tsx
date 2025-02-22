@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo} from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Subject } from "@/types";
@@ -17,13 +17,13 @@ const Lesson = () => {
 		queryFn: getStudentDetails,
 		retry: false,
 	});
-
+	
 	const { isPending: lessonsListLoading, data: lessonListData } = useQuery({
 		queryKey: ["allLessons", selectedSubject],
 		queryFn: getLessonsList,
 		retry: false,
 	});
-
+	
 	const { isPending: studentResultLoading, data: studnentResultData } =
 		useQuery({
 			queryKey: ["studentProgress", selectedSubject],
@@ -52,6 +52,8 @@ const Lesson = () => {
 		}
 		return;
 	};
+
+	
 
 	const getStatusDom = (isCompleted: boolean, isLocked: boolean) => {
 		let statusDom = null;
