@@ -254,7 +254,11 @@ const LessonPage = () => {
 							>
 								Submit
 							</Button>
-						) : null}
+						) : (
+							<Button onClick={() => window.location.reload()}>
+								Try Again
+							</Button>
+						)}
 						<Button className="ml-4" style={{ border: "2px solid #16245F", background :"white", color:"black" }} onClick={goToNextLesson} >
 							Next Lesson
 						</Button>
