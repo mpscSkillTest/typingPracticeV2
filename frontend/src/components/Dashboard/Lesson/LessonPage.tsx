@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { useParams, useNavigate} from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -14,7 +14,12 @@ import {
 } from "../shared";
 import { getUserResults } from "../../../utils/utils/passageUtils/getPassageUtils";
 import { OnKeyDownArgs } from "../shared/AnswerPassage";
-import { getLessonDetails, getLessonsList, submitLessonDetails } from "./api";
+import {
+	getLessonDetails,
+	getLessonsList,
+	submitLessonDetails,
+	getStudentProgess,
+} from "./api";
 import { THRSHOLD_ACCURACY_FOR_LESSON } from "@/utils/constant";
 
 const LessonPage = () => {
@@ -23,6 +28,8 @@ const LessonPage = () => {
 	const [userInputText, setUserInputText] = useState<string>("");
 	const [totalTypedWords, setTotalTypedWords] = useState<number>(0);
 	const [resetTrigger, setResetTrigger] = useState(false);
+	const [nextLessonId, setNextLessonId] = useState<number>(0);
+	const [prevLessonId, setPrevLessonId] = useState<number>(0);
 
 	const userResult = useRef<UserResult>({});
 
@@ -33,15 +40,8 @@ const LessonPage = () => {
 	const { subject: selectedSubject, id: lessonId } = params || {};
 	const subject = selectedSubject?.toUpperCase?.() as Subject;
 	const lessonIdClone = parseInt(lessonId as string);
-	
-	type Lesson = {
-		id: number;
-		title: string;
-		text: string;
-		isRestricted: boolean;
-	};
 
-	const { data: lessonListData } = useQuery({
+	const { data: lessonListData, isPending: lessonListLoading } = useQuery({
 		queryKey: ["allLessons", selectedSubject],
 		queryFn: getLessonsList,
 		retry: false,
@@ -52,6 +52,13 @@ const LessonPage = () => {
 		queryFn: getLessonDetails,
 		retry: false,
 	});
+
+	const { isPending: studentResultLoading, data: studnentResultData } =
+		useQuery({
+			queryKey: ["studentProgress", selectedSubject],
+			queryFn: getStudentProgess,
+			retry: false,
+		});
 
 	const {
 		mutate,
@@ -123,33 +130,16 @@ const LessonPage = () => {
 		});
 	};
 
- 
-
-
-	const goToNextLesson = (isLocked: boolean) => {
-		if (!lessonListData || typeof lessonListData !== "object") return;
-		const lessonArray = Object.values(lessonListData)
-			.flat()
-			.filter((lesson): lesson is Lesson =>
-				lesson && typeof lesson === "object" &&
-				"id" in lesson && typeof lesson.id === "number" &&
-				"title" in lesson && "text" in lesson && "isRestricted" in lesson
-			);
-		const sortedLessons = lessonArray.sort((a, b) => a.id - b.id);
-		const currentIndex = sortedLessons.findIndex(lesson => lesson.id === lessonIdClone);
+	const goToLesson = (type: "next" | "prev") => {
 		const lowerCaseSubject = subject.toLowerCase();
-		if (currentIndex !== -1 && currentIndex < sortedLessons.length - 1) {
-			const nextLesson = sortedLessons[currentIndex + 1];
-			if (!isLocked) {
-				navigate(`/lesson/${lowerCaseSubject}/${nextLesson.id}`);
-			}else{
-				alert("Complete this lesson to move forward for next lesson ")
-			}
-		} 
+		const gotoLessonId = type === "next" ? nextLessonId : prevLessonId;
+		if (gotoLessonId) {
+			navigate(`/lesson/${lowerCaseSubject}/${gotoLessonId}`);
+		}
 	};
+
 	const getAnswerPassageDom = () => (
 		<AnswerPassage
-			key={resetTrigger}
 			subject={subject as Subject}
 			onKeyDown={onUserInputKeyDown}
 			onChange={onUserInputChange}
@@ -214,14 +204,13 @@ const LessonPage = () => {
 		);
 	};
 	useEffect(() => {
-	if (resetTrigger) {
-		userResult.current = {}; // Clear the user result (disables `shouldDisable`)\
-		console.log('userInputText', userInputText)
-		setResetTrigger(false); // Reset the trigger to prevent infinite loops
-		setUserInputText(" ");
-		console.log('userInputText2', userInputText)
+		if (resetTrigger) {
+			userResult.current = {}; // Clear the user result (disables `shouldDisable`)\
+			setResetTrigger(false); // Reset the trigger to prevent infinite loops
+			setUserInputText(" ");
 		}
 	}, [resetTrigger]);
+
 	useEffect(() => {
 		if (isError) {
 			toast({
@@ -234,6 +223,39 @@ const LessonPage = () => {
 			});
 		}
 	}, [updatingLessonResult]);
+
+	useEffect(() => {
+		if (
+			!studentResultLoading &&
+			!lessonListLoading &&
+			!!studnentResultData?.progress?.length &&
+			!!lessonListData?.lessons?.length
+		) {
+			const passedLessons = studnentResultData?.progress
+				?.map((currentLessonDetails) => {
+					if (currentLessonDetails.isCompleted) {
+						return currentLessonDetails.id;
+					}
+					return null;
+				})
+				.filter(Boolean);
+
+			const currentLessonIndex = lessonListData.lessons.findIndex(
+				(currentLesson) => {
+					return currentLesson.id === lessonIdClone;
+				}
+			);
+
+			const nextLessonDetails = lessonListData.lessons[currentLessonIndex + 1];
+
+			const prevLessonDetails = lessonListData.lessons[currentLessonIndex - 1];
+
+			const isLessonIncluded = passedLessons.includes(nextLessonDetails.id);
+
+			setNextLessonId(isLessonIncluded ? nextLessonDetails?.id : 0);
+			setPrevLessonId(prevLessonDetails?.id || 0);
+		}
+	}, [studentResultLoading, lessonListLoading, lessonId]);
 
 	if (lessonDetailsLoading) {
 		return (
@@ -256,6 +278,18 @@ const LessonPage = () => {
 						<PassingInfoMessage subject={subject} />
 					</div>
 					<div className="d-flex">
+						<Button
+							className="mx-4"
+							style={{
+								border: "2px solid #16245F",
+								background: "white",
+								color: "black",
+							}}
+							disabled={!prevLessonId}
+							onClick={goToLesson.bind(this, "prev")}
+						>
+							Previous Lesson
+						</Button>
 						{!userResult?.current?.totalTypedWords ? (
 							<Button
 								disabled={!!shouldDisableUserInputText()}
@@ -265,11 +299,18 @@ const LessonPage = () => {
 								Submit
 							</Button>
 						) : (
-							<Button onClick={() => setResetTrigger(true)}>
-								Try Again
-							</Button>
+							<Button onClick={() => setResetTrigger(true)}>Try Again</Button>
 						)}
-						<Button className="ml-4" style={{ border: "2px solid #16245F", background :"white", color:"black" }} onClick={goToNextLesson} >
+						<Button
+							className="mx-4"
+							style={{
+								border: "2px solid #16245F",
+								background: "white",
+								color: "black",
+							}}
+							disabled={!nextLessonId}
+							onClick={goToLesson.bind(this, "next")}
+						>
 							Next Lesson
 						</Button>
 					</div>
