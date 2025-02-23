@@ -39,7 +39,6 @@ export const getLessonsList = async (
 	params: QueryFunctionContext
 ): Promise<LessonResponse> => {
 	
-	console.log('params.queryKey', params.queryKey)
 	const response = await axios.post("/student/lessons", {
 		subject: (params?.queryKey?.[1] as string)?.toUpperCase(),
 	});

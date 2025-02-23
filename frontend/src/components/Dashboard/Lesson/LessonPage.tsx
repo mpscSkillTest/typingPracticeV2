@@ -22,6 +22,7 @@ const LessonPage = () => {
 	const [backspacesCount, setBackspacesCount] = useState<number>(0);
 	const [userInputText, setUserInputText] = useState<string>("");
 	const [totalTypedWords, setTotalTypedWords] = useState<number>(0);
+	const [resetTrigger, setResetTrigger] = useState(false);
 
 	const userResult = useRef<UserResult>({});
 
@@ -148,6 +149,7 @@ const LessonPage = () => {
 	};
 	const getAnswerPassageDom = () => (
 		<AnswerPassage
+			key={resetTrigger}
 			subject={subject as Subject}
 			onKeyDown={onUserInputKeyDown}
 			onChange={onUserInputChange}
@@ -211,7 +213,15 @@ const LessonPage = () => {
 			</div>
 		);
 	};
-
+	useEffect(() => {
+	if (resetTrigger) {
+		userResult.current = {}; // Clear the user result (disables `shouldDisable`)\
+		console.log('userInputText', userInputText)
+		setResetTrigger(false); // Reset the trigger to prevent infinite loops
+		setUserInputText(" ");
+		console.log('userInputText2', userInputText)
+		}
+	}, [resetTrigger]);
 	useEffect(() => {
 		if (isError) {
 			toast({
@@ -255,7 +265,7 @@ const LessonPage = () => {
 								Submit
 							</Button>
 						) : (
-							<Button onClick={() => window.location.reload()}>
+							<Button onClick={() => setResetTrigger(true)}>
 								Try Again
 							</Button>
 						)}
