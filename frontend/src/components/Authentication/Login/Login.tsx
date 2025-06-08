@@ -20,6 +20,7 @@ import { getCookieHandlers } from "../../../utils/utils";
 import { Icons } from "@/components/ui/icons";
 import userLoginSchema, { type UserLoginSchema } from "./LoginSchema";
 import axios from "../../../config/customAxios";
+import { supabase } from "../../../lib/dbClient";
 
 function Login() {
   const [loader, setLoader] = useState<boolean>(false);
@@ -70,6 +71,30 @@ function Login() {
         title: "Uh oh! Something went wrong",
         description: errorMessage,
         duration: 3000,
+      });
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+        },
+      });
+      if (error) {
+        toast({
+          variant: "destructive",
+          title: "Google Sign-In Failed",
+          description: error.message,
+        });
+      }
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Unexpected Error",
+        description: String(error),
       });
     }
   };
@@ -174,6 +199,19 @@ function Login() {
             disabled={shouldDisableForgotPassword}
           >
             Forgot password?
+          </Button>
+          <hr className="border-black border-1" />
+          <Button
+            type="button"
+            onClick={handleGoogleLogin}
+            className="w-full mb-4 mt-5 flex items-center justify-center gap-2 border border-gray-300 bg-white text-gray-700 font-medium shadow-md hover:bg-gray-100 transition"
+          >
+            <img
+              src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+              alt="Google"
+              className="w-5 h-5"
+            />
+            Continue with Google
           </Button>
         </form>
       </Form>

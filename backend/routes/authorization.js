@@ -6,6 +6,7 @@ import {
   logout,
   verify,
   resetPassword,
+  oauthSignin,
 } from "../controllers/index.js";
 import {
   userLoginSchema,
@@ -37,8 +38,16 @@ AuthorizationRouter.post(
   resetPassword
 );
 
-AuthorizationRouter.post("/verify", verify);
+AuthorizationRouter.post(
+  "/oauth-signin",
+  oauthSignin
+);
 
+
+
+
+
+AuthorizationRouter.post("/verify", verify);
 AuthorizationRouter.post("/logout", logout);
 
 export default AuthorizationRouter;
