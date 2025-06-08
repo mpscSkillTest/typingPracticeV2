@@ -14,6 +14,7 @@ export { getStudentResultReport } from "./student/studentResultsReports.js";
 export { getLessonDetails } from "./student/getLessonDetails.js";
 export { forgotPassword } from "./authorization/forgotPassword.js";
 export { resetPassword } from "./authorization/resetPassword.js";
+export { oauthSignin } from "./authorization/googleAuth.js";
 export { getProducts } from "./subscriptions/productDetails.js";
 export { addNewSubscriptionDetails } from "./subscriptions/newSubscription.js";
 export { getPaymentHistory } from "./student/paymentHistory.js";

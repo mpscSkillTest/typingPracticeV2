@@ -74,7 +74,7 @@ function Authentication({ type = "signin" }: Props) {
   }
 
   return (
-    <div className="relative h-dvh w-dvw overflow-hidden">
+    <div className="relative min-h-screen w-full overflow-auto">
       <Link to="/"
         className="absolute top-5 left-5 md:top-10 md:left-10 text-2xl font-bold text-white">
         <img src={logo} alt="Logo" className="w-20 md:w-32" />
