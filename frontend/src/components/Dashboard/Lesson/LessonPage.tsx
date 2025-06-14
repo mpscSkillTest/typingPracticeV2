@@ -21,6 +21,7 @@ import {
 	getStudentProgess,
 } from "./api";
 import { THRSHOLD_ACCURACY_FOR_LESSON } from "@/utils/constant";
+import { PassageType } from "@/enums/PassageType";
 
 const LessonPage = () => {
 	const [keystrokesCount, setKeystrokesCount] = useState<number>(0);
@@ -30,8 +31,11 @@ const LessonPage = () => {
 	const [resetTrigger, setResetTrigger] = useState(false);
 	const [nextLessonId, setNextLessonId] = useState<number>(0);
 	const [prevLessonId, setPrevLessonId] = useState<number>(0);
+	const [correctWordIndices, setcorrectWordIndices] = useState<number[]>([]);
 
 	const userResult = useRef<UserResult>({});
+
+	const passageWords = useRef<string[]>([]);
 
 	const { toast } = useToast();
 
@@ -79,6 +83,16 @@ const LessonPage = () => {
 		return typeof userInputText !== "string" || userInputText === "";
 	};
 
+	const onPassageCheck = (userInputText: string) => {
+		const answerWords = userInputText?.split?.(" ") || [];
+		const { correctWordIndices } = getUserResults({
+			typedWords: answerWords,
+			expectedWords: passageWords?.current,
+			isLesson: true,
+		});
+		setcorrectWordIndices(correctWordIndices);
+	};
+
 	const onUserInputKeyDown = ({
 		updatedBackspacesCount = 0,
 		updatedTypedWordsCount = 0,
@@ -95,11 +109,13 @@ const LessonPage = () => {
 			setTotalTypedWords(updatedTypedWordsCount);
 			setBackspacesCount(updatedBackspacesCount);
 			setUserInputText(updatedUserInputText);
+			onPassageCheck(updatedUserInputText);
 		}
 	};
 
 	const onUserInputChange = ({ updatedUserInputText = "" }: any) => {
 		setUserInputText(updatedUserInputText);
+		onPassageCheck(updatedUserInputText);
 	};
 
 	const focusOnAnswerPassage = () => {
@@ -152,20 +168,36 @@ const LessonPage = () => {
 		/>
 	);
 
-	const getQuestionPassageDom = () =>
-		userResult.current?.correctWordIndices?.length ? (
-			<HighlightedPassage
-				correctWordIndices={userResult.current.correctWordIndices || []}
-				selectedPassageId={lessonData?.lesson?.id?.toString() || ""}
-				questionPassage={lessonData?.lesson?.text || ""}
-			/>
-		) : (
+	const getQuestionPassageDom = () => {
+		if (!userResult.current?.correctWordIndices?.length) {
+			return (
+				<HighlightedPassage
+					correctWordIndices={correctWordIndices || []}
+					selectedPassageId={lessonData?.lesson?.id?.toString() || ""}
+					questionPassage={lessonData?.lesson?.text || ""}
+					passageType={PassageType.LESSON.name as keyof typeof PassageType}
+					totalTypedWords={totalTypedWords}
+				/>
+			);
+		}
+
+		if (userResult.current?.correctWordIndices?.length) {
+			return (
+				<HighlightedPassage
+					correctWordIndices={userResult.current.correctWordIndices || []}
+					selectedPassageId={lessonData?.lesson?.id?.toString() || ""}
+					questionPassage={lessonData?.lesson?.text || ""}
+				/>
+			);
+		}
+		return (
 			<QuestionPassage
 				selectedPassageId={lessonData?.lesson?.id || 0}
 				questionPassage={lessonData?.lesson?.text || ""}
 				onScrollFocus={focusOnAnswerPassage}
 			/>
 		);
+	};
 
 	const getResultTextDom = () => {
 		if (!userResult?.current?.totalTypedWords) {
@@ -256,6 +288,12 @@ const LessonPage = () => {
 			setPrevLessonId(prevLessonDetails?.id || 0);
 		}
 	}, [studentResultLoading, lessonListLoading, lessonId]);
+
+	useEffect(() => {
+		if (!lessonDetailsLoading) {
+			passageWords.current = lessonData?.lesson?.text?.split(" ") || [];
+		}
+	}, [lessonDetailsLoading]);
 
 	if (lessonDetailsLoading) {
 		return (
