@@ -83,7 +83,7 @@ const LessonPage = () => {
 		return typeof userInputText !== "string" || userInputText === "";
 	};
 
-	const onPassageCheck = (userInputText: string) => {
+	const onPassageCheck = () => {
 		const answerWords = userInputText?.split?.(" ") || [];
 		const { correctWordIndices } = getUserResults({
 			typedWords: answerWords,
@@ -109,15 +109,18 @@ const LessonPage = () => {
 			setTotalTypedWords(updatedTypedWordsCount);
 			setBackspacesCount(updatedBackspacesCount);
 			setUserInputText(updatedUserInputText);
-			onPassageCheck(updatedUserInputText);
 		}
 	};
 
 	const onUserInputChange = ({ updatedUserInputText = "" }) => {
+		if (subject === "ENGLISH") {
+			const totalTypedWords = updatedUserInputText
+				?.trim?.()
+				?.split?.(" ")
+				?.filter(Boolean)?.length;
+			setTotalTypedWords(totalTypedWords || 0);
+		}
 		setUserInputText(updatedUserInputText);
-		const typedWordsClone = updatedUserInputText?.split?.(" ") || [];
-		setTotalTypedWords(typedWordsClone?.length);
-		onPassageCheck(updatedUserInputText);
 	};
 
 	const focusOnAnswerPassage = () => {
@@ -257,6 +260,10 @@ const LessonPage = () => {
 			});
 		}
 	}, [updatingLessonResult]);
+
+	useEffect(() => {
+		onPassageCheck();
+	}, [totalTypedWords, userInputText]);
 
 	useEffect(() => {
 		if (

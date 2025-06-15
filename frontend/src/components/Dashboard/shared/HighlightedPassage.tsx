@@ -33,7 +33,7 @@ const HighlightedPassage = ({
 		}
 		const isLesson = passageType === PassageType.LESSON.name;
 		const shouldCheckCorrection =
-			!isLesson || (totalTypedWords && isLesson && index <= totalTypedWords);
+			!isLesson || (isLesson && index < totalTypedWords);
 		const isIncorrectword =
 			shouldCheckCorrection && !correctWordIndices?.includes?.(index);
 
