@@ -64,7 +64,7 @@ export const getHighlightIndexesForLesson = (
 		const qWord = questionWords[i];
 		const aWord = answerWords[i];
 
-		if (aWord === undefined) {
+		if (!aWord) {
 			untouchedIndices.push(i);
 		} else if (qWord === aWord) {
 			correctIndices.push(i);
