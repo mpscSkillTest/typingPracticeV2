@@ -10,6 +10,12 @@ export const navItems: NavItem[] = [
 		label: "Dashboard",
 	},
 	{
+		title: "Lessons",
+		href: "/lesson",
+		icon: "NotebookPen",
+		label: "Lessons",
+	},
+	{
 		title: "Practice",
 		href: "/practice",
 		icon: "Practice",
@@ -26,13 +32,6 @@ export const navItems: NavItem[] = [
 		href: "/mock-test",
 		icon: "MockTest",
 		label: "Mock Tests",
-	},
-
-	{
-		title: "Lessons",
-		href: "/lesson",
-		icon: "NotebookPen",
-		label: "Lessons",
 	},
 	{
 		title: "Subscriptions",
