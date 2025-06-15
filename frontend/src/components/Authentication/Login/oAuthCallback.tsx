@@ -14,19 +14,20 @@ function OAuthCallback() {
     const completeLogin = async () => {
       const hashParams = getHashParams();
 
-      if (!hashParams.access_token) {
-        navigate("/signin");
-        return;
-      }
+      // if (!hashParams.access_token) {
+      //   navigate("/signin");
+      //   return;
+      // }
       // Set access token in cookie
       setAccessToken(hashParams.access_token);
       // Fetch user info from Supabase
       const { data: userData, error } = await supabase.auth.getUser(hashParams.access_token);
-      if (error) {
-        console.error("Error fetching user:", error.message);
-        navigate("/signin");
-        return;
-      }
+      // if (error) {
+      //   console.error("Error fetching user:", error.message);
+      //   navigate("/signin");
+      //   return;
+      // }
+      console.log('error', error)
       const user = userData?.user;
       if (user) {
         // Optional: Call your backend to insert the user if not already in DB
@@ -38,7 +39,7 @@ function OAuthCallback() {
         });
       }
 
-      navigate("/");
+      // navigate("/");
     };
 
     completeLogin();
