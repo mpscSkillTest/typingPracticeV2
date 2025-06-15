@@ -49,6 +49,37 @@ export const getCorrectWordsFromPassage = (
 	return correctWords;
 };
 
+export const getHighlightIndexesForLesson = (
+	questionPassage: string,
+	answerPassage: string
+) => {
+	const questionWords = questionPassage.trim().split(/\s+/)?.filter(Boolean);
+	const answerWords = answerPassage?.trim?.().split?.(/\s+/)?.filter(Boolean);
+
+	const correctIndices = [];
+	const wrongIndices = [];
+	const untouchedIndices = [];
+
+	for (let i = 0; i < questionWords.length; i++) {
+		const qWord = questionWords[i];
+		const aWord = answerWords[i];
+
+		if (aWord === undefined) {
+			untouchedIndices.push(i);
+		} else if (qWord === aWord) {
+			correctIndices.push(i);
+		} else {
+			wrongIndices.push(i);
+		}
+	}
+
+	return {
+		correctIndices,
+		wrongIndices,
+		untouchedIndices,
+	};
+};
+
 export const getCompleteWordDetails = ({
 	correctWordsInSequence,
 	expectedWords,

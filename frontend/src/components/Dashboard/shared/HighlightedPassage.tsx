@@ -6,7 +6,8 @@ type Props = {
 	questionPassage?: string;
 	correctWordIndices: number[];
 	passageType?: keyof typeof PassageType;
-	totalTypedWords?: number;
+	correctIndices?: number[];
+	wrongIndices?: number[];
 };
 
 const HighlightedPassage = ({
@@ -14,7 +15,8 @@ const HighlightedPassage = ({
 	questionPassage,
 	correctWordIndices,
 	passageType,
-	totalTypedWords = 0,
+	correctIndices,
+	wrongIndices,
 }: Props) => {
 	if (!selectedPassageId || !questionPassage) {
 		return null;
@@ -28,19 +30,22 @@ const HighlightedPassage = ({
 	}
 
 	const getWordDom = (word: string, index: number) => {
+		const isLesson = passageType === PassageType.LESSON.name;
+		if (isLesson) {
+			if (correctIndices?.includes(index)) {
+				return <span className="text-[22px]  text-green-500">{word}</span>;
+			}
+
+			if (wrongIndices?.includes?.(index)) {
+				return <span className="text-[22px] text-red-500">{word}</span>;
+			}
+
+			return <span className="text-[22px] text-black">{word}</span>;
+		}
 		if (correctWordIndices?.includes?.(index)) {
 			return <span className="text-[22px]  text-green-500">{word}</span>;
 		}
-		const isLesson = passageType === PassageType.LESSON.name;
-		const shouldCheckCorrection =
-			!isLesson || (isLesson && index < totalTypedWords);
-		const isIncorrectword =
-			shouldCheckCorrection && !correctWordIndices?.includes?.(index);
-
-		if (isIncorrectword) {
-			return <span className="text-[22px] text-red-500">{word}</span>;
-		}
-		return <span className="text-[22px] text-black">{word}</span>;
+		return <span className="text-[22px] text-red-500">{word}</span>;
 	};
 
 	return (

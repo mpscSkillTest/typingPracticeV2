@@ -12,7 +12,10 @@ import {
 	PassingInfoMessage,
 	HighlightedPassage,
 } from "../shared";
-import { getUserResults } from "../../../utils/utils/passageUtils/getPassageUtils";
+import {
+	getUserResults,
+	getHighlightIndexesForLesson,
+} from "../../../utils/utils/passageUtils/getPassageUtils";
 import { OnKeyDownArgs } from "../shared/AnswerPassage";
 import {
 	getLessonDetails,
@@ -32,6 +35,7 @@ const LessonPage = () => {
 	const [nextLessonId, setNextLessonId] = useState<number>(0);
 	const [prevLessonId, setPrevLessonId] = useState<number>(0);
 	const [correctWordIndices, setcorrectWordIndices] = useState<number[]>([]);
+	const [wrongIndices, setWrongIndices] = useState<number[]>([]);
 
 	const userResult = useRef<UserResult>({});
 
@@ -84,13 +88,12 @@ const LessonPage = () => {
 	};
 
 	const onPassageCheck = () => {
-		const answerWords = userInputText?.split?.(" ") || [];
-		const { correctWordIndices } = getUserResults({
-			typedWords: answerWords,
-			expectedWords: passageWords?.current,
-			isLesson: true,
-		});
-		setcorrectWordIndices(correctWordIndices);
+		const { correctIndices, wrongIndices } = getHighlightIndexesForLesson(
+			lessonData?.lesson?.text || "",
+			userInputText
+		);
+		setcorrectWordIndices(correctIndices);
+		setWrongIndices(wrongIndices);
 	};
 
 	const onUserInputKeyDown = ({
@@ -181,7 +184,8 @@ const LessonPage = () => {
 					selectedPassageId={lessonData?.lesson?.id?.toString() || ""}
 					questionPassage={lessonData?.lesson?.text || ""}
 					passageType={PassageType.LESSON.name as keyof typeof PassageType}
-					totalTypedWords={totalTypedWords}
+					correctIndices={correctWordIndices}
+					wrongIndices={wrongIndices}
 				/>
 			);
 		}
