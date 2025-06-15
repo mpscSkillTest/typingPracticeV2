@@ -113,8 +113,10 @@ const LessonPage = () => {
 		}
 	};
 
-	const onUserInputChange = ({ updatedUserInputText = "" }: any) => {
+	const onUserInputChange = ({ updatedUserInputText = "" }) => {
 		setUserInputText(updatedUserInputText);
+		const typedWordsClone = updatedUserInputText?.split?.(" ") || [];
+		setTotalTypedWords(typedWordsClone?.length);
 		onPassageCheck(updatedUserInputText);
 	};
 

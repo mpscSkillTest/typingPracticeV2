@@ -13,8 +13,11 @@ export const getFinalisedLessonsList = (
 			return {
 				...lessonDetails,
 				accuracy: 0,
-				isCompleted: false,
-				isLocked: index !== 0,
+				// TODO: to remove post testing
+				// isCompleted: false,
+				isCompleted: true,
+				// isLocked: index !== 0,
+				isLocked: false,
 			};
 		});
 	}
@@ -40,14 +43,20 @@ export const getFinalisedLessonsList = (
 				accuracy: Number(
 					progressDetailsMap?.[lessonDetails?.id]?.accuracy?.toFixed(2)
 				),
-				isLocked: lastCompletedLesson + 1 < index,
+				// TODO: to remove post testing
+				// isLocked: lastCompletedLesson + 1 < index,
+				isLocked: false,
+				isCompleted: true,
 			});
 		} else {
 			finalisedList.push({
 				...lessonDetails,
-				isCompleted: false,
+				// isCompleted: false,
 				accuracy: 0,
-				isLocked: lastCompletedLesson + 1 < index,
+				// TODO: to remove post testing
+				// isLocked: lastCompletedLesson + 1 < index,
+				isLocked: false,
+				isCompleted: true,
 			});
 		}
 	});

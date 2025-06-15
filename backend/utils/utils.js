@@ -115,7 +115,9 @@ export const getParsedLessonsList = (lessons) => {
 			id: lessonDetails?.id,
 			title: lessonDetails?.title,
 			text: lessonDetails?.lesson_text,
-			isRestricted: lessonDetails?.isRestricted,
+			// TODO: to remove post testing
+			// isRestricted: lessonDetails?.isRestricted,
+			isRestricted: false,
 		};
 	});
 };
@@ -128,7 +130,9 @@ export const getParsedLessonResultList = (results) => {
 		return {
 			id: resultDetails?.lesson_id,
 			accuracy: resultDetails?.accuracy,
-			isCompleted: resultDetails?.accuracy >= THRSHOLD_ACCURACY_FOR_LESSON,
+			// TODO: to remove post testing
+			// isCompleted: resultDetails?.accuracy >= THRSHOLD_ACCURACY_FOR_LESSON,
+			isCompleted: true,
 		};
 	});
 };
