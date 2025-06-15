@@ -19,17 +19,15 @@ function OAuthCallback() {
         return;
       }
       // Set access token in cookie
-      await setAccessToken(hashParams.access_token);
+      setAccessToken(hashParams.access_token);
       // Fetch user info from Supabase
-      const { data: userData, error } = await supabase.auth.getUser();
+      const { data: userData, error } = await supabase.auth.getUser(hashParams.access_token);
       if (error) {
         console.error("Error fetching user:", error.message);
         navigate("/signin");
         return;
       }
-
       const user = userData?.user;
-      
       if (user) {
         // Optional: Call your backend to insert the user if not already in DB
         await axios.post("/authorize/oauth-signin", {
