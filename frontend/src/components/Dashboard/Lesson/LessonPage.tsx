@@ -7,379 +7,415 @@ import { Icons } from "@/components/ui/icons";
 import { useToast } from "@/components/ui/use-toast";
 import { Subject, UserResult } from "@/types";
 import {
-	QuestionPassage,
-	AnswerPassage,
-	PassingInfoMessage,
-	HighlightedPassage,
+  QuestionPassage,
+  AnswerPassage,
+  PassingInfoMessage,
+  HighlightedPassage,
 } from "../shared";
 import {
-	getUserResults,
-	getHighlightIndexesForLesson,
+  getUserResults,
+  getHighlightIndexesForLesson,
 } from "../../../utils/utils/passageUtils/getPassageUtils";
 import { OnKeyDownArgs } from "../shared/AnswerPassage";
 import {
-	getLessonDetails,
-	getLessonsList,
-	submitLessonDetails,
-	getStudentProgess,
+  getLessonDetails,
+  getLessonsList,
+  submitLessonDetails,
+  getStudentProgess,
 } from "./api";
 import { THRSHOLD_ACCURACY_FOR_LESSON } from "@/utils/constant";
 import { PassageType } from "@/enums/PassageType";
+import ImagePreviewDialog from "./ImagePreviewDialog";
+import {
+  TooltipProvider,
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from "@/components/ui/tooltip";
 
 const LessonPage = () => {
-	const [keystrokesCount, setKeystrokesCount] = useState<number>(0);
-	const [backspacesCount, setBackspacesCount] = useState<number>(0);
-	const [userInputText, setUserInputText] = useState<string>("");
-	const [totalTypedWords, setTotalTypedWords] = useState<number>(0);
-	const [resetTrigger, setResetTrigger] = useState(false);
-	const [nextLessonId, setNextLessonId] = useState<number>(0);
-	const [prevLessonId, setPrevLessonId] = useState<number>(0);
-	const [correctWordIndices, setcorrectWordIndices] = useState<number[]>([]);
-	const [wrongIndices, setWrongIndices] = useState<number[]>([]);
+  const [keystrokesCount, setKeystrokesCount] = useState<number>(0);
+  const [backspacesCount, setBackspacesCount] = useState<number>(0);
+  const [userInputText, setUserInputText] = useState<string>("");
+  const [totalTypedWords, setTotalTypedWords] = useState<number>(0);
+  const [resetTrigger, setResetTrigger] = useState(false);
+  const [nextLessonId, setNextLessonId] = useState<number>(0);
+  const [prevLessonId, setPrevLessonId] = useState<number>(0);
+  const [correctWordIndices, setcorrectWordIndices] = useState<number[]>([]);
+  const [wrongIndices, setWrongIndices] = useState<number[]>([]);
+  const [shouldShowImageModal, setShouldShowImageModal] = useState(false);
 
-	const userResult = useRef<UserResult>({});
+  const userResult = useRef<UserResult>({});
 
-	const passageWords = useRef<string[]>([]);
+  const passageWords = useRef<string[]>([]);
 
-	const { toast } = useToast();
+  const { toast } = useToast();
 
-	const params = useParams<Record<"subject" | "id", string>>();
+  const params = useParams<Record<"subject" | "id", string>>();
 
-	const { subject: selectedSubject, id: lessonId } = params || {};
-	const subject = selectedSubject?.toUpperCase?.() as Subject;
-	const lessonIdClone = parseInt(lessonId as string);
+  const { subject: selectedSubject, id: lessonId } = params || {};
+  const subject = selectedSubject?.toUpperCase?.() as Subject;
+  const lessonIdClone = parseInt(lessonId as string);
 
-	const { data: lessonListData, isPending: lessonListLoading } = useQuery({
-		queryKey: ["allLessons", selectedSubject],
-		queryFn: getLessonsList,
-		retry: false,
-	});
+  const { data: lessonListData, isPending: lessonListLoading } = useQuery({
+    queryKey: ["allLessons", selectedSubject],
+    queryFn: getLessonsList,
+    retry: false,
+  });
 
-	const { isPending: lessonDetailsLoading, data: lessonData } = useQuery({
-		queryKey: ["lessonData", subject, lessonIdClone],
-		queryFn: getLessonDetails,
-		retry: false,
-	});
+  const { isPending: lessonDetailsLoading, data: lessonData } = useQuery({
+    queryKey: ["lessonData", subject, lessonIdClone],
+    queryFn: getLessonDetails,
+    retry: false,
+  });
 
-	const { isPending: studentResultLoading, data: studnentResultData } =
-		useQuery({
-			queryKey: ["studentProgress", selectedSubject],
-			queryFn: getStudentProgess,
-			retry: false,
-		});
+  const { isPending: studentResultLoading, data: studnentResultData } =
+    useQuery({
+      queryKey: ["studentProgress", selectedSubject],
+      queryFn: getStudentProgess,
+      retry: false,
+    });
 
-	const {
-		mutate,
-		isPending: updatingLessonResult,
-		isError,
-	} = useMutation({
-		mutationFn: submitLessonDetails,
-	});
+  const {
+    mutate,
+    isPending: updatingLessonResult,
+    isError,
+  } = useMutation({
+    mutationFn: submitLessonDetails,
+  });
 
-	const navigate = useNavigate();
-	const userInputRef = useRef<HTMLTextAreaElement>(null);
+  const navigate = useNavigate();
+  const userInputRef = useRef<HTMLTextAreaElement>(null);
 
-	if (!lessonDetailsLoading && !lessonData?.lesson) {
-		navigate("/lesson");
-	}
+  if (!lessonDetailsLoading && !lessonData?.lesson) {
+    navigate("/lesson");
+  }
 
-	const shouldDisableUserInputText = () => {
-		return typeof userInputText !== "string" || userInputText === "";
-	};
+  const shouldDisableUserInputText = () => {
+    return typeof userInputText !== "string" || userInputText === "";
+  };
 
-	const onPassageCheck = () => {
-		const { correctIndices, wrongIndices } = getHighlightIndexesForLesson(
-			lessonData?.lesson?.text || "",
-			userInputText
-		);
-		setcorrectWordIndices(correctIndices);
-		setWrongIndices(wrongIndices);
-	};
+  const onPassageCheck = () => {
+    const { correctIndices, wrongIndices } = getHighlightIndexesForLesson(
+      lessonData?.lesson?.text || "",
+      userInputText
+    );
+    setcorrectWordIndices(correctIndices);
+    setWrongIndices(wrongIndices);
+  };
 
-	const onUserInputKeyDown = ({
-		updatedBackspacesCount = 0,
-		updatedTypedWordsCount = 0,
-		updatedKeystrokesCount = 0,
-		updatedUserInputText = "",
-	}: OnKeyDownArgs) => {
-		if (subject === "ENGLISH") {
-			setBackspacesCount(updatedBackspacesCount);
-			setKeystrokesCount(updatedKeystrokesCount);
-		}
+  const onUserInputKeyDown = ({
+    updatedBackspacesCount = 0,
+    updatedTypedWordsCount = 0,
+    updatedKeystrokesCount = 0,
+    updatedUserInputText = "",
+  }: OnKeyDownArgs) => {
+    if (subject === "ENGLISH") {
+      setBackspacesCount(updatedBackspacesCount);
+      setKeystrokesCount(updatedKeystrokesCount);
+    }
 
-		if (subject === "MARATHI") {
-			setKeystrokesCount(updatedKeystrokesCount);
-			setTotalTypedWords(updatedTypedWordsCount);
-			setBackspacesCount(updatedBackspacesCount);
-			setUserInputText(updatedUserInputText);
-		}
-	};
+    if (subject === "MARATHI") {
+      setKeystrokesCount(updatedKeystrokesCount);
+      setTotalTypedWords(updatedTypedWordsCount);
+      setBackspacesCount(updatedBackspacesCount);
+      setUserInputText(updatedUserInputText);
+    }
+  };
 
-	const onUserInputChange = ({ updatedUserInputText = "" }) => {
-		if (subject === "ENGLISH") {
-			const totalTypedWords = updatedUserInputText
-				?.trim?.()
-				?.split?.(" ")
-				?.filter(Boolean)?.length;
-			setTotalTypedWords(totalTypedWords || 0);
-		}
-		setUserInputText(updatedUserInputText);
-	};
+  const onUserInputChange = ({ updatedUserInputText = "" }) => {
+    if (subject === "ENGLISH") {
+      const totalTypedWords = updatedUserInputText
+        ?.trim?.()
+        ?.split?.(" ")
+        ?.filter(Boolean)?.length;
+      setTotalTypedWords(totalTypedWords || 0);
+    }
+    setUserInputText(updatedUserInputText);
+  };
 
-	const focusOnAnswerPassage = () => {
-		userInputRef.current?.focus();
-	};
+  const focusOnAnswerPassage = () => {
+    userInputRef.current?.focus();
+  };
 
-	const onSubmitPassage = async () => {
-		const expectedWords =
-			lessonData?.lesson?.text?.trim?.()?.split?.(" ")?.filter?.(Boolean) || [];
+  const onSubmitPassage = async () => {
+    const expectedWords =
+      lessonData?.lesson?.text?.trim?.()?.split?.(" ")?.filter?.(Boolean) || [];
 
-		const typedWords =
-			userInputText?.trim?.()?.split?.(" ")?.filter?.(Boolean) || [];
+    const typedWords =
+      userInputText?.trim?.()?.split?.(" ")?.filter?.(Boolean) || [];
 
-		const result = getUserResults({
-			typedWords,
-			expectedWords,
-			isLesson: true,
-		});
+    const result = getUserResults({
+      typedWords,
+      expectedWords,
+      isLesson: true,
+    });
 
-		userResult.current = result;
+    userResult.current = result;
 
-		mutate({
-			id: lessonIdClone,
-			inputText: userInputText,
-			passageText: lessonData?.lesson?.text || "",
-			subject,
-			duration: 0,
-		});
-	};
+    mutate({
+      id: lessonIdClone,
+      inputText: userInputText,
+      passageText: lessonData?.lesson?.text || "",
+      subject,
+      duration: 0,
+    });
+  };
 
-	const goToLesson = (type: "next" | "prev") => {
-		const lowerCaseSubject = subject.toLowerCase();
-		const gotoLessonId = type === "next" ? nextLessonId : prevLessonId;
-		if (gotoLessonId) {
-			navigate(`/lesson/${lowerCaseSubject}/${gotoLessonId}`);
-		}
-	};
+  const goToLesson = (type: "next" | "prev") => {
+    const lowerCaseSubject = subject.toLowerCase();
+    const gotoLessonId = type === "next" ? nextLessonId : prevLessonId;
+    if (gotoLessonId) {
+      navigate(`/lesson/${lowerCaseSubject}/${gotoLessonId}`);
+    }
+  };
 
-	const getAnswerPassageDom = () => (
-		<AnswerPassage
-			subject={subject as Subject}
-			onKeyDown={onUserInputKeyDown}
-			onChange={onUserInputChange}
-			totalTypedWords={totalTypedWords}
-			keystrokesCount={keystrokesCount}
-			backspacesCount={backspacesCount}
-			userInputText={userInputText}
-			userInputRef={userInputRef}
-			shouldDisable={!!userResult?.current?.totalTypedWords}
-		/>
-	);
+  const toggleImageModal = () => {
+    setShouldShowImageModal((prev) => !prev);
+  };
 
-	const getQuestionPassageDom = () => {
-		if (!userResult.current?.correctWordIndices?.length) {
-			return (
-				<HighlightedPassage
-					correctWordIndices={correctWordIndices || []}
-					selectedPassageId={lessonData?.lesson?.id?.toString() || ""}
-					questionPassage={lessonData?.lesson?.text || ""}
-					passageType={PassageType.LESSON.name as keyof typeof PassageType}
-					correctIndices={correctWordIndices}
-					wrongIndices={wrongIndices}
-				/>
-			);
-		}
+  const getImageDialogDom = () => {
+    if (!shouldShowImageModal) return null;
 
-		if (userResult.current?.correctWordIndices?.length) {
-			return (
-				<HighlightedPassage
-					correctWordIndices={userResult.current.correctWordIndices || []}
-					selectedPassageId={lessonData?.lesson?.id?.toString() || ""}
-					questionPassage={lessonData?.lesson?.text || ""}
-				/>
-			);
-		}
-		return (
-			<QuestionPassage
-				selectedPassageId={lessonData?.lesson?.id || 0}
-				questionPassage={lessonData?.lesson?.text || ""}
-				onScrollFocus={focusOnAnswerPassage}
-			/>
-		);
-	};
+    return (
+      <ImagePreviewDialog
+        shouldOpen={shouldShowImageModal}
+        toggleOpen={toggleImageModal}
+        imageUrl={lessonData?.lesson?.lessonImage}
+      />
+    );
+  };
 
-	const getResultTextDom = () => {
-		if (!userResult?.current?.totalTypedWords) {
-			return null;
-		}
-		const isCompleted =
-			(userResult?.current?.accuracy as number) >= THRSHOLD_ACCURACY_FOR_LESSON;
+  const getImageIconDom = () => {
+    return (
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger>
+            <Icons.Info
+              className="cursor-pointer ml-2 inline-block"
+              onClick={toggleImageModal}
+            />
+          </TooltipTrigger>
+          <TooltipContent side="left">
+            <p>Show Lesson Image</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    );
+  };
 
-		const accuracyText = userResult?.current?.accuracy?.toFixed?.(2);
+  const getAnswerPassageDom = () => (
+    <AnswerPassage
+      subject={subject as Subject}
+      onKeyDown={onUserInputKeyDown}
+      onChange={onUserInputChange}
+      totalTypedWords={totalTypedWords}
+      keystrokesCount={keystrokesCount}
+      backspacesCount={backspacesCount}
+      userInputText={userInputText}
+      userInputRef={userInputRef}
+      shouldDisable={!!userResult?.current?.totalTypedWords}
+    />
+  );
 
-		const commonClassNames =
-			"flex items-start justify-center gap-2 text-md bg-green-100 rounded-2xl p-2 text-green-700 sm:flex-row sm:text-xl sm:items-center";
+  const getQuestionPassageDom = () => {
+    if (!userResult.current?.correctWordIndices?.length) {
+      return (
+        <HighlightedPassage
+          correctWordIndices={correctWordIndices || []}
+          selectedPassageId={lessonData?.lesson?.id?.toString() || ""}
+          questionPassage={lessonData?.lesson?.text || ""}
+          passageType={PassageType.LESSON.name as keyof typeof PassageType}
+          correctIndices={correctWordIndices}
+          wrongIndices={wrongIndices}
+        />
+      );
+    }
 
-		if (isCompleted) {
-			return (
-				<div className={commonClassNames}>
-					<Icons.LeaderBoard />
-					<p>
-						Great job! You have completed lesson with
-						<span className="font-bold px-1">{`${accuracyText}%`}</span>
-						accuracy
-					</p>
-				</div>
-			);
-		}
+    if (userResult.current?.correctWordIndices?.length) {
+      return (
+        <HighlightedPassage
+          correctWordIndices={userResult.current.correctWordIndices || []}
+          selectedPassageId={lessonData?.lesson?.id?.toString() || ""}
+          questionPassage={lessonData?.lesson?.text || ""}
+        />
+      );
+    }
+    return (
+      <QuestionPassage
+        selectedPassageId={lessonData?.lesson?.id || 0}
+        questionPassage={lessonData?.lesson?.text || ""}
+        onScrollFocus={focusOnAnswerPassage}
+      />
+    );
+  };
 
-		return (
-			<div className={`${commonClassNames} bg-red-100 text-red-700`}>
-				<Icons.FrownIcon />
-				<p>
-					Accuracy is too low
-					<span className="font-bold px-1">{`${accuracyText}%,`}</span>
-					try again to improve your score
-				</p>
-			</div>
-		);
-	};
-	useEffect(() => {
-		if (resetTrigger) {
-			userResult.current = {}; // Clear the user result (disables `shouldDisable`)\
-			setResetTrigger(false); // Reset the trigger to prevent infinite loops
-			setUserInputText(" ");
-		}
-	}, [resetTrigger]);
+  const getResultTextDom = () => {
+    if (!userResult?.current?.totalTypedWords) {
+      return null;
+    }
+    const isCompleted =
+      (userResult?.current?.accuracy as number) >= THRSHOLD_ACCURACY_FOR_LESSON;
 
-	useEffect(() => {
-		if (isError) {
-			toast({
-				variant: "destructive",
-				title: "You have exhausted your free trial limit",
-				description:
-					"To retain your lesson progress and to use our other exciting features, please consider to subscribe our Premium Package",
-				duration: 3000,
-				className: "absolute",
-			});
-		}
-	}, [updatingLessonResult]);
+    const accuracyText = userResult?.current?.accuracy?.toFixed?.(2);
 
-	useEffect(() => {
-		onPassageCheck();
-	}, [totalTypedWords, userInputText]);
+    const commonClassNames =
+      "flex items-start justify-center gap-2 text-md bg-green-100 rounded-2xl p-2 text-green-700 sm:flex-row sm:text-xl sm:items-center";
 
-	useEffect(() => {
-		if (
-			!studentResultLoading &&
-			!lessonListLoading &&
-			!!studnentResultData?.progress?.length &&
-			!!lessonListData?.lessons?.length
-		) {
-			const passedLessons = studnentResultData?.progress
-				?.map((currentLessonDetails) => {
-					if (currentLessonDetails.isCompleted) {
-						return currentLessonDetails.id;
-					}
-					return null;
-				})
-				.filter(Boolean);
+    if (isCompleted) {
+      return (
+        <div className={commonClassNames}>
+          <Icons.LeaderBoard />
+          <p>
+            Great job! You have completed lesson with
+            <span className="font-bold px-1">{`${accuracyText}%`}</span>
+            accuracy
+          </p>
+        </div>
+      );
+    }
 
-			const currentLessonIndex = lessonListData.lessons.findIndex(
-				(currentLesson) => {
-					return currentLesson.id === lessonIdClone;
-				}
-			);
+    return (
+      <div className={`${commonClassNames} bg-red-100 text-red-700`}>
+        <Icons.FrownIcon />
+        <p>
+          Accuracy is too low
+          <span className="font-bold px-1">{`${accuracyText}%,`}</span>
+          try again to improve your score
+        </p>
+      </div>
+    );
+  };
+  useEffect(() => {
+    if (resetTrigger) {
+      userResult.current = {}; // Clear the user result (disables `shouldDisable`)\
+      setResetTrigger(false); // Reset the trigger to prevent infinite loops
+      setUserInputText(" ");
+    }
+  }, [resetTrigger]);
 
-			const nextLessonDetails = lessonListData.lessons[currentLessonIndex + 1];
+  useEffect(() => {
+    if (isError) {
+      toast({
+        variant: "destructive",
+        title: "You have exhausted your free trial limit",
+        description:
+          "To retain your lesson progress and to use our other exciting features, please consider to subscribe our Premium Package",
+        duration: 3000,
+        className: "absolute",
+      });
+    }
+  }, [updatingLessonResult]);
 
-			const prevLessonDetails = lessonListData.lessons[currentLessonIndex - 1];
+  useEffect(() => {
+    onPassageCheck();
+  }, [totalTypedWords, userInputText]);
 
-			const isLessonIncluded = passedLessons.includes(nextLessonDetails.id);
+  useEffect(() => {
+    if (
+      !studentResultLoading &&
+      !lessonListLoading &&
+      !!studnentResultData?.progress?.length &&
+      !!lessonListData?.lessons?.length
+    ) {
+      const passedLessons = studnentResultData?.progress
+        ?.map((currentLessonDetails) => {
+          if (currentLessonDetails.isCompleted) {
+            return currentLessonDetails.id;
+          }
+          return null;
+        })
+        .filter(Boolean);
 
-			setNextLessonId(isLessonIncluded ? nextLessonDetails?.id : 0);
-			setPrevLessonId(prevLessonDetails?.id || 0);
-		}
-	}, [studentResultLoading, lessonListLoading, lessonId]);
+      const currentLessonIndex = lessonListData.lessons.findIndex(
+        (currentLesson) => {
+          return currentLesson.id === lessonIdClone;
+        }
+      );
 
-	useEffect(() => {
-		if (!lessonDetailsLoading) {
-			passageWords.current = lessonData?.lesson?.text?.split(" ") || [];
-		}
-	}, [lessonDetailsLoading]);
+      const nextLessonDetails = lessonListData.lessons[currentLessonIndex + 1];
 
-	if (lessonDetailsLoading) {
-		return (
-			<div className="flex justify-center items-center h-full">
-				<Icons.spinner height={48} width={48} className="animate-spin" />
-			</div>
-		);
-	}
+      const prevLessonDetails = lessonListData.lessons[currentLessonIndex - 1];
 
-	return (
-		<Card className="h-full border-none outline-none">
-			<CardHeader>
-				<CardTitle>{lessonData?.lesson?.title}</CardTitle>
-			</CardHeader>
-			<CardContent>
-				<div className="flex flex-col m-auto gap-5">
-					{getQuestionPassageDom()}
-					<div className="flex gap-[10px] flex-col items-center">
-						{getAnswerPassageDom()}
-						<PassingInfoMessage subject={subject} />
-					</div>
-					<div className="d-flex">
-						<Button
-							className="mx-4"
-							style={{
-								border: "2px solid #16245F",
-								background: "white",
-								color: "black",
-							}}
-							disabled={!prevLessonId}
-							onClick={goToLesson.bind(this, "prev")}
-						>
-							Previous Lesson
-						</Button>
-						{!userResult?.current?.totalTypedWords ? (
-							<Button
-								disabled={!!shouldDisableUserInputText()}
-								onClick={onSubmitPassage}
-								showLoader={updatingLessonResult}
-							>
-								Submit
-							</Button>
-						) : (
-							<Button onClick={() => setResetTrigger(true)}>Try Again</Button>
-						)}
-						<Button
-							className="mx-4"
-							style={{
-								border: "2px solid #16245F",
-								background: "white",
-								color: "black",
-							}}
-							disabled={!nextLessonId}
-							onClick={goToLesson.bind(this, "next")}
-						>
-							Next Lesson
-						</Button>
-					</div>
-					{getResultTextDom()}
-					{lessonData?.lesson?.lessonImage ? (
-						<img
-							style={{
-								alignSelf: "center",
-								height: 340,
-								width: 600,
-							}}
-							src={lessonData.lesson.lessonImage}
-						/>
-					) : null}
-				</div>
-			</CardContent>
-		</Card>
-	);
+      const isLessonIncluded = passedLessons.includes(nextLessonDetails.id);
+
+      setNextLessonId(isLessonIncluded ? nextLessonDetails?.id : 0);
+      setPrevLessonId(prevLessonDetails?.id || 0);
+    }
+  }, [studentResultLoading, lessonListLoading, lessonId]);
+
+  useEffect(() => {
+    if (!lessonDetailsLoading) {
+      passageWords.current = lessonData?.lesson?.text?.split(" ") || [];
+    }
+  }, [lessonDetailsLoading]);
+
+  if (lessonDetailsLoading) {
+    return (
+      <div className="flex justify-center items-center h-full">
+        <Icons.spinner height={48} width={48} className="animate-spin" />
+      </div>
+    );
+  }
+
+  return (
+    <Card className="h-full border-none outline-none">
+      <CardHeader>
+        <CardTitle className="flex items-center justify-between px-1 font-semibold">
+          {lessonData?.lesson?.title}
+          {getImageIconDom()}
+        </CardTitle>
+      </CardHeader>
+      {getImageDialogDom()}
+      <CardContent>
+        <div className="flex flex-col m-auto gap-5">
+          {getQuestionPassageDom()}
+          <div className="flex gap-[10px] flex-col items-center">
+            {getAnswerPassageDom()}
+            <PassingInfoMessage subject={subject} />
+          </div>
+          <div className="d-flex">
+            <Button
+              className="mx-4"
+              style={{
+                border: "2px solid #16245F",
+                background: "white",
+                color: "black",
+              }}
+              disabled={!prevLessonId}
+              onClick={goToLesson.bind(this, "prev")}
+            >
+              Previous Lesson
+            </Button>
+            {!userResult?.current?.totalTypedWords ? (
+              <Button
+                disabled={!!shouldDisableUserInputText()}
+                onClick={onSubmitPassage}
+                showLoader={updatingLessonResult}
+              >
+                Submit
+              </Button>
+            ) : (
+              <Button onClick={() => setResetTrigger(true)}>Try Again</Button>
+            )}
+            <Button
+              className="mx-4"
+              style={{
+                border: "2px solid #16245F",
+                background: "white",
+                color: "black",
+              }}
+              disabled={!nextLessonId}
+              onClick={goToLesson.bind(this, "next")}
+            >
+              Next Lesson
+            </Button>
+          </div>
+          {getResultTextDom()}
+        </div>
+      </CardContent>
+    </Card>
+  );
 };
 
 export default LessonPage;
