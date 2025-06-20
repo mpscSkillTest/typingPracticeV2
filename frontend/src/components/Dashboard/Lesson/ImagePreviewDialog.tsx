@@ -15,7 +15,7 @@ type Props = {
 const ImagePreviewDialog = ({ toggleOpen, shouldOpen, imageUrl }: Props) => {
   return (
     <Dialog onOpenChange={toggleOpen} open={shouldOpen}>
-      <DialogContent className="sm:max-w-[650px]">
+      <DialogContent className="w-full sm:max-w-[900px] md:max-w-[1000px]">
         <DialogHeader>
           <DialogTitle>Lesson Image</DialogTitle>
           <DialogDescription>
@@ -26,8 +26,8 @@ const ImagePreviewDialog = ({ toggleOpen, shouldOpen, imageUrl }: Props) => {
           <img
             src={imageUrl}
             alt="Lesson"
-            style={{ alignSelf: "center", height: 340, width: 600 }}
-            className="rounded-lg border shadow"
+            // style={{ alignSelf: "center", height: 340, width: 600 }}
+            className="rounded-lg border shadow max-w-full md:w-[1000px] h-[450px] self-center"
           />
         ) : (
           <p>No image available</p>
