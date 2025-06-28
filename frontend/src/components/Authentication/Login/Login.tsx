@@ -201,7 +201,7 @@ function Login() {
             Forgot password?
           </Button>
           <hr className="border-black border-1" />
-          <Button
+          {/* <Button
             type="button"
             onClick={handleGoogleLogin}
             className="w-full mb-4 mt-5 flex items-center justify-center gap-2 border border-gray-300 bg-white text-gray-700 font-medium shadow-md hover:bg-gray-100 transition"
@@ -212,7 +212,7 @@ function Login() {
               className="w-5 h-5"
             />
             Continue with Google
-          </Button>
+          </Button> */}
         </form>
       </Form>
     </Card>
