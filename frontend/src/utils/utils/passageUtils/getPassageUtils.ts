@@ -216,8 +216,7 @@ export const getUserResults = ({
 		(totalCorrectWords / (totalCorrectWords + totalErrorCount)) * 100;
 
 	if (isLesson) {
-		accuracy =
-			(totalCorrectWords / parseInt(`${expectedWords.length * 0.75}`)) * 100;
+		accuracy = (totalCorrectWords / parseInt(`${expectedWords.length}`)) * 100;
 	}
 
 	return {
