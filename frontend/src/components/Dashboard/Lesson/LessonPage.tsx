@@ -26,12 +26,7 @@ import {
 import { THRSHOLD_ACCURACY_FOR_LESSON } from "@/utils/constant";
 import { PassageType } from "@/enums/PassageType";
 import ImagePreviewDialog from "./ImagePreviewDialog";
-import {
-  TooltipProvider,
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
-} from "@/components/ui/tooltip";
+
 
 const LessonPage = () => {
   const [keystrokesCount, setKeystrokesCount] = useState<number>(0);
@@ -188,19 +183,17 @@ const LessonPage = () => {
 
   const getImageIconDom = () => {
     return (
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger>
-            <Icons.Info
-              className="cursor-pointer ml-2 inline-block"
-              onClick={toggleImageModal}
-            />
-          </TooltipTrigger>
-          <TooltipContent side="left">
-            <p>Show Lesson Image</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+      <Button
+        className="mx-2 p-2 rounded-full"
+        style={{
+          border: "2px solid #16245F",
+          background: "white",
+          color: "black",
+        }}
+        onClick={toggleImageModal}
+      >
+        Show Lesson Image
+      </Button>
     );
   };
 
