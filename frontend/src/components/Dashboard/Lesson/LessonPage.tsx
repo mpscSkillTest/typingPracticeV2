@@ -27,7 +27,6 @@ import { THRSHOLD_ACCURACY_FOR_LESSON } from "@/utils/constant";
 import { PassageType } from "@/enums/PassageType";
 import ImagePreviewDialog from "./ImagePreviewDialog";
 
-
 const LessonPage = () => {
   const [keystrokesCount, setKeystrokesCount] = useState<number>(0);
   const [backspacesCount, setBackspacesCount] = useState<number>(0);
@@ -161,6 +160,14 @@ const LessonPage = () => {
     const lowerCaseSubject = subject.toLowerCase();
     const gotoLessonId = type === "next" ? nextLessonId : prevLessonId;
     if (gotoLessonId) {
+      setUserInputText("");
+      setTotalTypedWords(0);
+      setKeystrokesCount(0);
+      setBackspacesCount(0);
+      setcorrectWordIndices([]);
+      setWrongIndices([]);
+      userResult.current = {};
+
       navigate(`/lesson/${lowerCaseSubject}/${gotoLessonId}`);
     }
   };
@@ -298,50 +305,63 @@ const LessonPage = () => {
         className: "absolute",
       });
     }
-  }, [updatingLessonResult]);
+  }, [isError, toast, updatingLessonResult]);
 
   useEffect(() => {
     onPassageCheck();
-  }, [totalTypedWords, userInputText]);
+  }, [onPassageCheck, totalTypedWords, userInputText]);
 
   useEffect(() => {
     if (
-      !studentResultLoading &&
-      !lessonListLoading &&
-      !!studnentResultData?.progress?.length &&
-      !!lessonListData?.lessons?.length
+      studentResultLoading ||
+      lessonListLoading ||
+      !studnentResultData ||
+      !lessonListData ||
+      !Array.isArray(studnentResultData.progress) ||
+      !Array.isArray(lessonListData.lessons)
     ) {
-      const passedLessons = studnentResultData?.progress
-        ?.map((currentLessonDetails) => {
-          if (currentLessonDetails.isCompleted) {
-            return currentLessonDetails.id;
-          }
-          return null;
-        })
-        .filter(Boolean);
-
-      const currentLessonIndex = lessonListData.lessons.findIndex(
-        (currentLesson) => {
-          return currentLesson.id === lessonIdClone;
-        }
-      );
-
-      const nextLessonDetails = lessonListData.lessons[currentLessonIndex + 1];
-
-      const prevLessonDetails = lessonListData.lessons[currentLessonIndex - 1];
-
-      const isLessonIncluded = passedLessons.includes(nextLessonDetails.id);
-
-      setNextLessonId(isLessonIncluded ? nextLessonDetails?.id : 0);
-      setPrevLessonId(prevLessonDetails?.id || 0);
+      return;
     }
-  }, [studentResultLoading, lessonListLoading, lessonId]);
+
+    const progressMap = new Map(
+      studnentResultData.progress.map((item) => [item.id, item])
+    );
+
+    const currentLessonIndex = lessonListData.lessons.findIndex(
+      (currentLesson) => currentLesson.id === lessonIdClone
+    );
+
+    const nextLessonDetails = lessonListData.lessons[currentLessonIndex + 1];
+    const prevLessonDetails = lessonListData.lessons[currentLessonIndex - 1];
+
+    setPrevLessonId(prevLessonDetails?.id || 0);
+
+    const currentLessonProgress = progressMap.get(lessonIdClone);
+
+    const isCurrentCompleted =
+      userResult?.current?.accuracy >= THRSHOLD_ACCURACY_FOR_LESSON ||
+      (currentLessonProgress?.isCompleted &&
+        currentLessonProgress?.accuracy >= THRSHOLD_ACCURACY_FOR_LESSON);
+
+    if (nextLessonDetails && isCurrentCompleted) {
+      setNextLessonId(nextLessonDetails.id);
+    } else {
+      setNextLessonId(0);
+    }
+  }, [
+    studentResultLoading,
+    lessonListLoading,
+    studnentResultData,
+    lessonListData,
+    lessonIdClone,
+    userResult?.current?.accuracy,
+  ]);
 
   useEffect(() => {
     if (!lessonDetailsLoading) {
       passageWords.current = lessonData?.lesson?.text?.split(" ") || [];
     }
-  }, [lessonDetailsLoading]);
+  }, [lessonData?.lesson?.text, lessonDetailsLoading]);
 
   if (lessonDetailsLoading) {
     return (
@@ -380,8 +400,10 @@ const LessonPage = () => {
             >
               Previous Lesson
             </Button>
+
             {!userResult?.current?.totalTypedWords ? (
               <Button
+                className="cursor-pointer"
                 disabled={!!shouldDisableUserInputText()}
                 onClick={onSubmitPassage}
                 showLoader={updatingLessonResult}
@@ -391,19 +413,29 @@ const LessonPage = () => {
             ) : (
               <Button onClick={() => setResetTrigger(true)}>Try Again</Button>
             )}
-            <Button
-              className="mx-4"
-              style={{
-                border: "2px solid #16245F",
-                background: "white",
-                color: "black",
-              }}
-              disabled={!nextLessonId}
-              onClick={goToLesson.bind(this, "next")}
+
+            <div
+              title={
+                !nextLessonId ? "Please complete 60% accuracy to proceed." : ""
+              }
+              style={{ display: "inline-block" }}
             >
-              Next Lesson
-            </Button>
+              <Button
+                className="mx-4 cursor-pointer"
+                style={{
+                  border: "2px solid #16245F",
+                  background: "white",
+                  color: "black",
+                  cursor: nextLessonId ? "pointer" : "not-allowed",
+                }}
+                disabled={!nextLessonId}
+                onClick={goToLesson.bind(this, "next")}
+              >
+                Next Lesson
+              </Button>
+            </div>
           </div>
+
           {getResultTextDom()}
         </div>
       </CardContent>
