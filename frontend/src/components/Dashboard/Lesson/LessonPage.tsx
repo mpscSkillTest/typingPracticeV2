@@ -25,13 +25,13 @@ import {
 } from "./api";
 import { THRSHOLD_ACCURACY_FOR_LESSON } from "@/utils/constant";
 import { PassageType } from "@/enums/PassageType";
-import ImagePreviewDialog from "./ImagePreviewDialog";
 import {
 	TooltipProvider,
 	Tooltip,
 	TooltipTrigger,
 	TooltipContent,
 } from "@/components/ui/tooltip";
+import ImagePreviewDialog from "./ImagePreviewDialog";
 
 const LessonPage = () => {
 	const [keystrokesCount, setKeystrokesCount] = useState<number>(0);
@@ -169,6 +169,14 @@ const LessonPage = () => {
 		const lowerCaseSubject = subject.toLowerCase();
 		const gotoLessonId = type === "next" ? nextLessonId : prevLessonId;
 		if (gotoLessonId) {
+			setUserInputText("");
+			setTotalTypedWords(0);
+			setKeystrokesCount(0);
+			setBackspacesCount(0);
+			setcorrectWordIndices([]);
+			setWrongIndices([]);
+			userResult.current = {};
+
 			navigate(`/lesson/${lowerCaseSubject}/${gotoLessonId}`);
 		}
 	};
@@ -347,7 +355,7 @@ const LessonPage = () => {
 			setNextLessonId(nextLessonDetails?.id);
 			setPrevLessonId(prevLessonDetails?.id);
 		}
-	}, [lessonListLoading]);
+	}, [lessonListLoading, lessonId]);
 
 	useEffect(() => {
 		if (!lessonDetailsLoading) {
