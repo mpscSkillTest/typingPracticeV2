@@ -27,12 +27,12 @@ export const navItems: NavItem[] = [
 		icon: "SpeedTest",
 		label: "Speed Test",
 	},
-	{
-		title: "Mock Tests",
-		href: "/mock-test",
-		icon: "MockTest",
-		label: "Mock Tests",
-	},
+	// {
+	// 	title: "Mock Tests",
+	// 	href: "/mock-test",
+	// 	icon: "MockTest",
+	// 	label: "Mock Tests",
+	// },
 	{
 		title: "Subscriptions",
 		href: "/subscription",

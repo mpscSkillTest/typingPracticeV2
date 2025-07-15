@@ -136,12 +136,12 @@ const StudentDashboard = () => {
           >
             Practice
           </ToggleGroupItem>
-          <ToggleGroupItem
+          {/* <ToggleGroupItem
             className="rounded-none data-[state=on]:bg-primary data-[state=on]:text-white data-[state=on]:rounded-md"
             value="MOCK"
           >
             Mock Tests
-          </ToggleGroupItem>
+          </ToggleGroupItem> */}
         </ToggleGroup>
       </div>
     );
