@@ -139,6 +139,31 @@ export const getCompleteWordDetails = ({
 	};
 };
 
+export const calculateAccuracy = (
+	expectedWords: string[],
+	typedWords: string[]
+) => {
+	// Error handling
+	if (typedWords.length === 0) {
+		return 0;
+	}
+
+	let correctCount = 0;
+
+	// Compare only up to expectedWords.length
+	for (let i = 0; i < expectedWords.length; i++) {
+		if (
+			(typedWords[i] || "").toLowerCase() === expectedWords[i].toLowerCase()
+		) {
+			correctCount++;
+		}
+	}
+
+	const accuracy = (correctCount / expectedWords.length) * 100;
+
+	return parseFloat(accuracy.toFixed(2));
+};
+
 export const getUserResults = ({
 	expectedWords,
 	typedWords,
@@ -216,7 +241,7 @@ export const getUserResults = ({
 		(totalCorrectWords / (totalCorrectWords + totalErrorCount)) * 100;
 
 	if (isLesson) {
-		accuracy = (totalCorrectWords / parseInt(`${expectedWords.length}`)) * 100;
+		accuracy = calculateAccuracy(expectedWords, typedWords);
 	}
 
 	return {

@@ -69,15 +69,13 @@ const LessonPage = () => {
 		retry: false,
 	});
 
-	const {
-		isPending: studentResultLoading,
-		data: studnentResultData,
-		refetch: refetchStudentResults,
-	} = useQuery({
-		queryKey: ["studentProgress", selectedSubject],
-		queryFn: getStudentProgess,
-		retry: false,
-	});
+	const { data: studnentResultData, refetch: refetchStudentResults } = useQuery(
+		{
+			queryKey: ["studentProgress", selectedSubject],
+			queryFn: getStudentProgess,
+			retry: false,
+		}
+	);
 
 	const {
 		mutate,
