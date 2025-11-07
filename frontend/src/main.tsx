@@ -8,7 +8,10 @@ import ProtectedRoute from "./routes/ProtectedRoute";
 import ErrorPage from "./routes/ErrorPage.tsx";
 import "./index.css";
 import OAuthCallback from "./components/Authentication/Login/oAuthCallback.tsx";
-
+import TermsAndConditions from "./routes/TermsAndConditions.tsx";
+import PrivacyPolicy from "./routes/PrivacyPolicy.tsx";
+import RefundPolicy from "./routes/RefundPolicy.tsx";
+import ContactUs from "./routes/ContactUs.tsx";
 const getProtectedRoute = (component: ReactElement) => {
   return <ProtectedRoute>{component}</ProtectedRoute>;
 };
@@ -78,6 +81,26 @@ const router = createBrowserRouter([
   {
     path: "/reset-password",
     element: <Authentication type="reset-password" />,
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: "/terms",
+    element: <TermsAndConditions />,
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: "/privacy",
+    element: <PrivacyPolicy />,
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: "/refund",
+    element: <RefundPolicy />,
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: "/contact",
+    element: <ContactUs />,
     errorElement: <ErrorPage />,
   },
 ]);

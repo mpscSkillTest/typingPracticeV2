@@ -119,6 +119,31 @@ function Authentication({ type = "signin" }: Props) {
         </div>
         <Toaster />
       </div>
+      <footer className="w-full text-center absolute bottom-1 p-4 text-xs sm:text-sm text-muted-foreground">
+            <div className="flex  flex-wrap gap-x-4 gap-y-2">
+              <Link to="/terms" className="hover:underline">
+                Terms & Conditions
+              </Link>
+              <span className="hidden sm:inline">|</span>
+              <Link
+                to="/privacy"
+                className="hover:underline"
+              >
+                Privacy Policy
+              </Link>
+              <span className="hidden sm:inline">|</span>
+              <Link to="/refund" className="hover:underline">
+                Cancellation & Refund Policy
+              </Link>
+              <span className="hidden sm:inline">|</span>
+              <Link
+                to="/contact"
+                className="hover:underline"
+              >
+                Contact Us
+              </Link>
+            </div>
+          </footer>
     </div>
   );
 }
