@@ -103,13 +103,13 @@ const ProductCard = ({ title, price, features, type, productId }: Product) => {
           preferences: { show_default_blocks: true },
         },
       },
-      method: {
-        netbanking: false,
+      method: { 
+        netbanking: true,   // Enable net banking payments
         card: true,
         wallet: false,
         upi: true,
-        payLater: false,
-        qr: false,
+        payLater: false, // Disable Pay Later option
+        qr: true, // Enable UPI QR code payments
         upi_intent: true,
       },
     };
