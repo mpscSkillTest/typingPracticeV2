@@ -27,12 +27,12 @@ export const navItems: NavItem[] = [
 		icon: "SpeedTest",
 		label: "Speed Test",
 	},
-	// {
-	// 	title: "Mock Tests",
-	// 	href: "/mock-test",
-	// 	icon: "MockTest",
-	// 	label: "Mock Tests",
-	// },
+	{
+		title: "Mock Tests",
+		href: "/mock-test",
+		icon: "MockTest",
+		label: "Mock Tests",
+	},
 	{
 		title: "Subscriptions",
 		href: "/subscription",
@@ -63,4 +63,4 @@ export const MPSC_ENGLISH_KEYSTROKES_FOR_RESERVED = 1800;
 
 export const MPSC_ACCURACY_FOR_OPEN = 93;
 export const MPSC_ACCURACY_FOR_RESERVED = 90;
-export const THRSHOLD_ACCURACY_FOR_LESSON = 60;
+export const THRSHOLD_ACCURACY_FOR_LESSON = 0;
