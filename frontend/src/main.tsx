@@ -37,11 +37,11 @@ const router = createBrowserRouter([
     element: getProtectedRoute(<Dashboard page="speedTest" />),
     errorElement: <ErrorPage />,
   },
-  {
-    path: "/mock-test",
-    element: getProtectedRoute(<Dashboard page="mockTest" />),
-    errorElement: <ErrorPage />,
-  },
+  // {
+  //   path: "/mock-test",
+  //   element: getProtectedRoute(<Dashboard page="mockTest" />),
+  //   errorElement: <ErrorPage />,
+  // },
   {
     path: "/subscription",
     element: getProtectedRoute(<Dashboard page="subscription" />),
