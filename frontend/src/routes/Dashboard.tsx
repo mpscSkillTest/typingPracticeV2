@@ -35,9 +35,9 @@ function Dashboard({ page = "dashboard" }: Props) {
 		case "speedTest":
 			containerDom = <Practice key="test" mode="TEST" title="Speed Test" />;
 			break;
-		// case "mockTest":
-		// 	containerDom = <MockTestsWrapper key="mock" title="Mock Test" />;
-		// 	break;
+		case "mockTest":
+			containerDom = <MockTestsWrapper key="mock" title="Mock Test" />;
+			break;
 		case "subscription":
 			containerDom = <Payment />;
 			break;
